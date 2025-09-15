@@ -49,6 +49,38 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     document.documentElement.lang = language;
   }, [language, isRTL, i18n]);
 
+  // Initialize sidebar state based on screen size
+  useEffect(() => {
+    const initializeSidebar = () => {
+      const isDesktop = window.innerWidth >= 1024;
+      const savedState = localStorage.getItem('sidebarOpen');
+
+      if (savedState !== null) {
+        setSidebarOpen(JSON.parse(savedState) && isDesktop);
+      } else {
+        setSidebarOpen(isDesktop);
+      }
+    };
+
+    initializeSidebar();
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
+  }, [sidebarOpen]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isDesktop = window.innerWidth >= 1024;
+      if (!isDesktop && sidebarOpen) {
+        setSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [sidebarOpen]);
+
   const value: AppContextType = {
     theme,
     setTheme,

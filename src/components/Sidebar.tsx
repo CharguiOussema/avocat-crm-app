@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
-import { 
-  Home, 
-  Users, 
-  FileText, 
-  FolderOpen, 
-  Calendar, 
-  BarChart3, 
-  Settings, 
-  X 
+import {
+  Home,
+  Users,
+  FileText,
+  FolderOpen,
+  Calendar,
+  BarChart3,
+  Settings,
+  X
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -29,28 +29,56 @@ export const Sidebar: React.FC = () => {
 
   const closeSidebar = () => setSidebarOpen(false);
 
+  // Keyboard accessibility - ESC to close sidebar
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && sidebarOpen) {
+        closeSidebar();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [sidebarOpen]);
+
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (sidebarOpen && window.innerWidth < 1024) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [sidebarOpen]);
+
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Overlay for mobile and tablet */}
       {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden sidebar-overlay"
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden sidebar-overlay"
           onClick={closeSidebar}
         />
       )}
-      
+
       {/* Sidebar */}
-      <div
+      <aside
         className={clsx(
-          'fixed top-0 z-50 h-full w-64 bg-card border-r border-border sidebar-transition',
-          'md:relative md:translate-x-0',
+          'fixed top-0 h-full w-64 bg-card border-r border-border sidebar-transition z-50',
+          // Position based on RTL
+          isRTL ? 'right-0' : 'left-0',
+          // Transform based on open state
           {
             'translate-x-0': sidebarOpen,
             '-translate-x-full': !sidebarOpen && !isRTL,
             'translate-x-full': !sidebarOpen && isRTL,
-          },
-          isRTL ? 'right-0' : 'left-0'
+          }
         )}
+        role="navigation"
+        aria-label={t('ui.navigation')}
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
@@ -59,11 +87,13 @@ export const Sidebar: React.FC = () => {
           </h2>
           <button
             onClick={closeSidebar}
-            className="md:hidden p-1 rounded-md hover:bg-accent text-foreground"
+            className="lg:hidden p-1 rounded-md hover:bg-accent text-foreground"
+            aria-label="Close sidebar"
           >
             <X size={20} />
           </button>
         </div>
+
 
         {/* Navigation */}
         <nav className="p-4 space-y-2">
@@ -78,12 +108,7 @@ export const Sidebar: React.FC = () => {
                   'text-foreground hover:bg-accent hover:text-accent-foreground',
                   isRTL && 'flex-row-reverse'
                 )}
-                onClick={() => {
-                  // Close sidebar on mobile when clicking a link
-                  if (window.innerWidth < 768) {
-                    closeSidebar();
-                  }
-                }}
+                onClick={closeSidebar}
               >
                 <Icon size={20} />
                 <span>{t(`navigation.${item.key}`)}</span>
@@ -91,7 +116,7 @@ export const Sidebar: React.FC = () => {
             );
           })}
         </nav>
-      </div>
+      </aside>
     </>
   );
 };

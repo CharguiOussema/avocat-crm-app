@@ -48,8 +48,9 @@ export const Navbar: React.FC = () => {
       {/* Left Section */}
       <div className={clsx('flex items-center gap-4', isRTL && 'flex-row-reverse')}>
         <button
+          type="button"
           onClick={toggleSidebar}
-          className="p-2 rounded-md hover:bg-accent text-foreground md:hidden"
+          className="p-2 rounded-md hover:bg-accent text-foreground"
           aria-label={t('ui.menu')}
         >
           <Menu size={20} />
@@ -58,6 +59,7 @@ export const Navbar: React.FC = () => {
         <h1 className="text-xl font-semibold text-foreground hidden md:block">
           {t('app.welcome')}
         </h1>
+
       </div>
 
       {/* Right Section */}
