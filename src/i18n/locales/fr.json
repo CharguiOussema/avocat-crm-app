@@ -1,0 +1,36 @@
+{
+  "app": {
+    "title": "CRM Avocat",
+    "welcome": "Bienvenue dans CRM Avocat"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "clients": "Clients",
+    "cases": "Dossiers",
+    "documents": "Documents",
+    "calendar": "Calendrier",
+    "reports": "Rapports",
+    "settings": "Paramètres"
+  },
+  "ui": {
+    "menu": "Menu",
+    "close": "Fermer",
+    "open": "Ouvrir",
+    "language": "Langue",
+    "theme": "Thème",
+    "profile": "Profil",
+    "logout": "Déconnexion"
+  },
+  "themes": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "blue": "Bleu",
+    "green": "Vert",
+    "purple": "Violet"
+  },
+  "languages": {
+    "en": "Anglais",
+    "fr": "Français",
+    "ar": "Arabe"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "app": {
+    "title": "Avocat CRM",
+    "welcome": "Welcome to Avocat CRM"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "cases": "Cases",
+    "documents": "Documents",
+    "calendar": "Calendar",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "ui": {
+    "menu": "Menu",
+    "close": "Close",
+    "open": "Open",
+    "language": "Language",
+    "theme": "Theme",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "themes": {
+    "light": "Light",
+    "dark": "Dark",
+    "blue": "Blue",
+    "green": "Green",
+    "purple": "Purple"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "French",
+    "ar": "Arabic"
+  }
+}
