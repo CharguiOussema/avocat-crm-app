@@ -44,7 +44,10 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="h-16 bg-card border-b border-border flex items-center justify-between px-4 relative z-30">
+    <nav className={clsx(
+      "header-border-alignment flex items-center justify-between px-4 relative z-30",
+      sidebarOpen && "lg:navbar-with-sidebar"
+    )}>
       {/* Left Section */}
       <div className={clsx('flex items-center gap-4', isRTL && 'flex-row-reverse')}>
         <button

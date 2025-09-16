@@ -49,15 +49,26 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     document.documentElement.lang = language;
   }, [language, isRTL, i18n]);
 
-  // Initialize sidebar state based on screen size
+  // Initialize sidebar state based on session preference and screen size
   useEffect(() => {
     const initializeSidebar = () => {
       const isDesktop = window.innerWidth >= 1024;
-      const savedState = localStorage.getItem('sidebarOpen');
 
-      if (savedState !== null) {
-        setSidebarOpen(JSON.parse(savedState) && isDesktop);
-      } else {
+      try {
+        const savedState = sessionStorage.getItem('sidebarOpen');
+
+        if (savedState !== null) {
+          const userPreference = JSON.parse(savedState);
+          // On desktop: use saved session preference
+          // On mobile/tablet: always start closed for better UX
+          setSidebarOpen(isDesktop ? userPreference : false);
+        } else {
+          // No saved session preference: open on desktop, closed on mobile
+          setSidebarOpen(isDesktop);
+        }
+      } catch (error) {
+        // Fallback if sessionStorage is not available
+        console.warn('SessionStorage not available, using default sidebar state');
         setSidebarOpen(isDesktop);
       }
     };
@@ -65,20 +76,38 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     initializeSidebar();
   }, []);
 
+  // Save sidebar state to sessionStorage (persists only for current session)
   useEffect(() => {
-    localStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
+    try {
+      sessionStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
+    } catch (error) {
+      // Silently fail if sessionStorage is not available
+      console.warn('Unable to save sidebar state to sessionStorage');
+    }
   }, [sidebarOpen]);
 
   useEffect(() => {
     const handleResize = () => {
       const isDesktop = window.innerWidth >= 1024;
+      // Only auto-close sidebar when resizing to mobile/tablet
+      // This prevents unwanted state changes during normal usage
       if (!isDesktop && sidebarOpen) {
         setSidebarOpen(false);
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    // Debounce resize events to prevent too many state updates
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const debouncedHandleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleResize, 150);
+    };
+
+    window.addEventListener('resize', debouncedHandleResize);
+    return () => {
+      window.removeEventListener('resize', debouncedHandleResize);
+      clearTimeout(timeoutId);
+    };
   }, [sidebarOpen]);
 
   const value: AppContextType = {

@@ -81,7 +81,7 @@ export const Sidebar: React.FC = () => {
         aria-label={t('ui.navigation')}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
+        <div className="flex items-center justify-between header-border-alignment px-4">
           <h2 className="text-lg font-semibold text-foreground">
             {t('app.title')}
           </h2>
@@ -96,7 +96,7 @@ export const Sidebar: React.FC = () => {
 
 
         {/* Navigation */}
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-2 scrollable-area">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             return (
