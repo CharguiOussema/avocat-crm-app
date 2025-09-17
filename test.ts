@@ -45,7 +45,7 @@ const result = firstFitDecreasing(items, stockLength);
 
 console.log("Cutting Plan (FFD):");
 result.forEach((bin, idx) => {
-  console.log(Bar ${idx + 1}: items = [${bin.items.join(", ")}], remaining = ${bin.remaining});
+  console.log(`Bar ${idx + 1}: items = [${bin.items.join(", ")}], remaining = ${bin.remaining}`);
 });
 
-console.log(Total bars used: ${result.length});
+console.log(`Total bars used: ${result.length}`);

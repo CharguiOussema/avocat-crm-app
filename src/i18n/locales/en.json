@@ -19,7 +19,8 @@
     "language": "Language",
     "theme": "Theme",
     "profile": "Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "actions": "Actions"
   },
   "themes": {
     "light": "Light",
@@ -32,5 +33,78 @@
     "en": "English",
     "fr": "French",
     "ar": "Arabic"
+  },
+  "clients": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "status": "Status",
+    "cases": "Cases",
+    "add": "Add Client"
+  },
+  "cases": {
+    "title": "Title",
+    "client": "Client",
+    "status": "Status",
+    "priority": "Priority",
+    "progress": "Progress",
+    "created": "Created",
+    "add": "Add Case"
+  },
+  "documents": {
+    "name": "Name",
+    "type": "Type",
+    "size": "Size",
+    "case": "Case",
+    "uploadedBy": "Uploaded By",
+    "uploadedAt": "Uploaded At",
+    "upload": "Upload Document"
+  },
+  "calendar": {
+    "addEvent": "Add Event",
+    "todayEvents": "Today's Events",
+    "upcomingEvents": "Upcoming Events",
+    "noEvents": "No events today"
+  },
+  "reports": {
+    "totalCases": "Total Cases",
+    "activeCases": "Active Cases",
+    "closedCases": "Closed Cases",
+    "winRate": "Win Rate",
+    "month": "Month",
+    "cases": "Cases",
+    "revenue": "Revenue",
+    "export": "Export Report",
+    "monthlyPerformance": "Monthly Performance",
+    "quickStats": "Quick Stats",
+    "caseCompletion": "Case Completion",
+    "clientSatisfaction": "Client Satisfaction",
+    "billableHours": "Billable Hours",
+    "caseTypes": "Case Types"
+  },
+  "settings": {
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "security": "Security",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "firm": "Law Firm",
+    "license": "License Number",
+    "firstNameRequired": "First name is required",
+    "lastNameRequired": "Last name is required",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email",
+    "saveProfile": "Save Profile",
+    "notifications": "Notifications",
+    "emailNotifications": "Email Notifications",
+    "autoSave": "Auto Save",
+    "darkMode": "Dark Mode",
+    "savePreferences": "Save Preferences",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "changePassword": "Change Password"
   }
 }

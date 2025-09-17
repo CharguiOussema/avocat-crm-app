@@ -28,14 +28,29 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [language, setLanguage] = useState<Language>(() => {
     return (localStorage.getItem('language') as Language) || 'en';
   });
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    try {
+      const savedState = localStorage.getItem('sidebarOpen');
+      if (savedState !== null) {
+        const userPreference = JSON.parse(savedState);
+        const isDesktop = window.innerWidth >= 1024;
+        // On desktop: use saved preference, on mobile: always start closed
+        return isDesktop ? userPreference : false;
+      }
+      // No saved preference: open on desktop, closed on mobile
+      return window.innerWidth >= 1024;
+    } catch {
+      // Fallback if localStorage is not available
+      return window.innerWidth >= 1024;
+    }
+  });
 
   const isRTL = language === 'ar';
 
   // Set initial theme on mount
   useEffect(() => {
     document.documentElement.className = theme;
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
@@ -49,40 +64,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     document.documentElement.lang = language;
   }, [language, isRTL, i18n]);
 
-  // Initialize sidebar state based on session preference and screen size
-  useEffect(() => {
-    const initializeSidebar = () => {
-      const isDesktop = window.innerWidth >= 1024;
 
-      try {
-        const savedState = sessionStorage.getItem('sidebarOpen');
-
-        if (savedState !== null) {
-          const userPreference = JSON.parse(savedState);
-          // On desktop: use saved session preference
-          // On mobile/tablet: always start closed for better UX
-          setSidebarOpen(isDesktop ? userPreference : false);
-        } else {
-          // No saved session preference: open on desktop, closed on mobile
-          setSidebarOpen(isDesktop);
-        }
-      } catch (error) {
-        // Fallback if sessionStorage is not available
-        console.warn('SessionStorage not available, using default sidebar state');
-        setSidebarOpen(isDesktop);
-      }
-    };
-
-    initializeSidebar();
-  }, []);
-
-  // Save sidebar state to sessionStorage (persists only for current session)
+  // Save sidebar state to localStorage (persists across browser sessions)
   useEffect(() => {
     try {
-      sessionStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
-    } catch (error) {
-      // Silently fail if sessionStorage is not available
-      console.warn('Unable to save sidebar state to sessionStorage');
+      localStorage.setItem('sidebarOpen', JSON.stringify(sidebarOpen));
+    } catch {
+      // Silently fail if localStorage is not available
+      console.warn('Unable to save sidebar state to localStorage');
     }
   }, [sidebarOpen]);
 

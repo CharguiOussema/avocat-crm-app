@@ -1,45 +1,62 @@
-import React from 'react';
-import { useApp } from '../contexts/AppContext';
-import { Sidebar } from './Sidebar';
-import { Navbar } from './Navbar';
-import clsx from 'clsx';
+import React, { useEffect, useState } from "react";
+import { Layout as AntdLayout, Card } from "antd";
+import { useApp } from "../contexts/AppContext";
+import { Sidebar } from "./Sidebar";
+import { Navbar } from "./Navbar";
+
+const { Content } = AntdLayout;
 
 interface LayoutProps {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { isRTL, sidebarOpen } = useApp();
+	const { sidebarOpen } = useApp();
+	const [isMobile, setIsMobile] = useState(false);
 
-  return (
-    <div className={clsx('min-h-screen bg-background', isRTL && 'rtl')}>
-      <div className="flex h-screen">
-        {/* Sidebar */}
-        <Sidebar />
+	useEffect(() => {
+		const checkMobile = () => {
+			setIsMobile(window.innerWidth < 768);
+		};
 
-        {/* Main Content */}
-        <div className={clsx(
-          'flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out',
-          // Desktop margins based on sidebar state
-          'lg:ml-0',
-          {
-            'lg:ml-64': sidebarOpen && !isRTL,
-            'lg:mr-64': sidebarOpen && isRTL,
-            'lg:mr-0': !sidebarOpen && isRTL,
-            'lg:ml-0': !sidebarOpen && !isRTL,
-          }
-        )}>
-          {/* Navbar */}
-          <Navbar />
+		checkMobile();
+		window.addEventListener("resize", checkMobile);
+		return () => window.removeEventListener("resize", checkMobile);
+	}, []);
 
-          {/* Page Content */}
-          <main className="flex-1 overflow-y-auto p-6 scrollable-area">
-            <div className="max-w-7xl mx-auto">
-              {children}
-            </div>
-          </main>
-        </div>
-      </div>
-    </div>
-  );
+	return (
+		<AntdLayout style={{ minHeight: "100vh" }}>
+			<Sidebar />
+			<AntdLayout
+				style={{
+					marginLeft: !isMobile && sidebarOpen ? 200 : 0,
+					transition: "margin-left 0.3s ease",
+				}}
+			>
+				<Navbar />
+				<Content
+					style={{
+						padding: isMobile ? "16px" : "24px",
+						overflow: "auto",
+						background: "transparent",
+					}}
+				>
+					<Card
+						bordered={false}
+						style={{
+							maxWidth: "100%",
+							margin: "0 auto",
+							boxShadow:
+								"0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02)",
+						}}
+						bodyStyle={{
+							padding: isMobile ? "16px" : "24px",
+						}}
+					>
+						{children}
+					</Card>
+				</Content>
+			</AntdLayout>
+		</AntdLayout>
+	);
 };

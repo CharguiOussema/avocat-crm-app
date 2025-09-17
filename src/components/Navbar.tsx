@@ -1,185 +1,161 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Layout, Button, Dropdown, Space, Typography, theme } from 'antd';
+import {
+  MenuOutlined,
+  GlobalOutlined,
+  BgColorsOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  DownOutlined
+} from '@ant-design/icons';
 import { useApp, type Theme, type Language } from '../contexts/AppContext';
-import { 
-  Menu, 
-  Globe, 
-  Palette, 
-  User, 
-  LogOut, 
-  ChevronDown 
-} from 'lucide-react';
-import clsx from 'clsx';
+
+const { Header } = Layout;
+const { Text } = Typography;
 
 export const Navbar: React.FC = () => {
   const { t } = useTranslation();
-  const { 
-    sidebarOpen, 
-    setSidebarOpen, 
-    theme, 
-    setTheme, 
-    language, 
-    setLanguage, 
-    isRTL 
+  const {
+    sidebarOpen,
+    setSidebarOpen,
+    setTheme,
+    setLanguage
   } = useApp();
-  
-  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
-  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
-  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [screenSize, setScreenSize] = useState('lg');
+  const { token } = theme.useToken();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  const themes: { value: Theme; label: string }[] = [
-    { value: 'light', label: t('themes.light') },
-    { value: 'dark', label: t('themes.dark') },
-    { value: 'blue', label: t('themes.blue') },
-    { value: 'green', label: t('themes.green') },
-    { value: 'purple', label: t('themes.purple') },
+  useEffect(() => {
+    const updateScreenSize = () => {
+      const width = window.innerWidth;
+      if (width < 576) setScreenSize('xs');
+      else if (width < 768) setScreenSize('sm');
+      else if (width < 992) setScreenSize('md');
+      else setScreenSize('lg');
+    };
+
+    updateScreenSize();
+    window.addEventListener('resize', updateScreenSize);
+    return () => window.removeEventListener('resize', updateScreenSize);
+  }, []);
+
+  const themes: { value: Theme; label: string; key: string }[] = [
+    { key: 'light', value: 'light', label: t('themes.light') },
+    { key: 'dark', value: 'dark', label: t('themes.dark') },
+    { key: 'blue', value: 'blue', label: t('themes.blue') },
+    { key: 'green', value: 'green', label: t('themes.green') },
+    { key: 'purple', value: 'purple', label: t('themes.purple') },
   ];
 
-  const languages: { value: Language; label: string }[] = [
-    { value: 'en', label: t('languages.en') },
-    { value: 'fr', label: t('languages.fr') },
-    { value: 'ar', label: t('languages.ar') },
+  const languages: { value: Language; label: string; key: string }[] = [
+    { key: 'en', value: 'en', label: t('languages.en') },
+    { key: 'fr', value: 'fr', label: t('languages.fr') },
+    { key: 'ar', value: 'ar', label: t('languages.ar') },
   ];
+
+  const themeDropdownItems = {
+    items: themes.map(theme => ({
+      key: theme.key,
+      label: theme.label,
+      onClick: () => setTheme(theme.value)
+    }))
+  };
+
+  const languageDropdownItems = {
+    items: languages.map(lang => ({
+      key: lang.key,
+      label: lang.label,
+      onClick: () => setLanguage(lang.value)
+    }))
+  };
+
+  const profileDropdownItems = {
+    items: [
+      {
+        key: 'logout',
+        label: (
+          <Space>
+            <LogoutOutlined />
+            {t('ui.logout')}
+          </Space>
+        ),
+        onClick: () => {
+          // Handle logout
+        }
+      }
+    ]
+  };
 
   return (
-    <nav className={clsx(
-      "header-border-alignment flex items-center justify-between px-4 relative z-30",
-      sidebarOpen && "lg:navbar-with-sidebar"
-    )}>
+    <Header style={{
+      padding: '0 24px',
+      background: token.colorBgContainer,
+      borderBottom: `1px solid ${token.colorBorder}`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      height: '64px',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+      zIndex: 999,
+    }}>
       {/* Left Section */}
-      <div className={clsx('flex items-center gap-4', isRTL && 'flex-row-reverse')}>
-        <button
-          type="button"
+      <Space>
+        <Button
+          type="text"
+          icon={<MenuOutlined />}
           onClick={toggleSidebar}
-          className="p-2 rounded-md hover:bg-accent text-foreground"
           aria-label={t('ui.menu')}
-        >
-          <Menu size={20} />
-        </button>
-        
-        <h1 className="text-xl font-semibold text-foreground hidden md:block">
-          {t('app.welcome')}
-        </h1>
-
-      </div>
+        />
+        {screenSize !== 'xs' && screenSize !== 'sm' && (
+          <Text strong style={{ fontSize: '20px' }}>
+            {t('app.welcome')}
+          </Text>
+        )}
+      </Space>
 
       {/* Right Section */}
-      <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
+      <Space>
         {/* Language Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent text-foreground"
-          >
-            <Globe size={18} />
-            <span className="hidden sm:block">{t('ui.language')}</span>
-            <ChevronDown size={16} />
-          </button>
-          
-          {languageDropdownOpen && (
-            <div className={clsx(
-              'absolute top-full mt-1 bg-popover border border-border rounded-md shadow-lg py-1 min-w-[120px] z-50',
-              isRTL ? 'left-0' : 'right-0'
-            )}>
-              {languages.map((lang) => (
-                <button
-                  key={lang.value}
-                  onClick={() => {
-                    setLanguage(lang.value);
-                    setLanguageDropdownOpen(false);
-                  }}
-                  className={clsx(
-                    'w-full px-3 py-2 text-left hover:bg-accent text-popover-foreground',
-                    language === lang.value && 'bg-accent',
-                    isRTL && 'text-right'
-                  )}
-                >
-                  {lang.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <Dropdown menu={languageDropdownItems} trigger={['click']}>
+          <Button type="text">
+            <Space>
+              <GlobalOutlined />
+              {screenSize !== 'xs' && (
+                <span>{t('ui.language')}</span>
+              )}
+              <DownOutlined />
+            </Space>
+          </Button>
+        </Dropdown>
 
         {/* Theme Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent text-foreground"
-          >
-            <Palette size={18} />
-            <span className="hidden sm:block">{t('ui.theme')}</span>
-            <ChevronDown size={16} />
-          </button>
-          
-          {themeDropdownOpen && (
-            <div className={clsx(
-              'absolute top-full mt-1 bg-popover border border-border rounded-md shadow-lg py-1 min-w-[120px] z-50',
-              isRTL ? 'left-0' : 'right-0'
-            )}>
-              {themes.map((themeOption) => (
-                <button
-                  key={themeOption.value}
-                  onClick={() => {
-                    setTheme(themeOption.value);
-                    setThemeDropdownOpen(false);
-                  }}
-                  className={clsx(
-                    'w-full px-3 py-2 text-left hover:bg-accent text-popover-foreground',
-                    theme === themeOption.value && 'bg-accent',
-                    isRTL && 'text-right'
-                  )}
-                >
-                  {themeOption.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <Dropdown menu={themeDropdownItems} trigger={['click']}>
+          <Button type="text">
+            <Space>
+              <BgColorsOutlined />
+              {screenSize !== 'xs' && (
+                <span>{t('ui.theme')}</span>
+              )}
+              <DownOutlined />
+            </Space>
+          </Button>
+        </Dropdown>
 
         {/* Profile Dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent text-foreground"
-          >
-            <User size={18} />
-            <span className="hidden sm:block">{t('ui.profile')}</span>
-            <ChevronDown size={16} />
-          </button>
-          
-          {profileDropdownOpen && (
-            <div className={clsx(
-              'absolute top-full mt-1 bg-popover border border-border rounded-md shadow-lg py-1 min-w-[120px] z-50',
-              isRTL ? 'left-0' : 'right-0'
-            )}>
-              <button
-                className={clsx(
-                  'w-full px-3 py-2 text-left hover:bg-accent text-popover-foreground flex items-center gap-2',
-                  isRTL && 'text-right flex-row-reverse'
-                )}
-              >
-                <LogOut size={16} />
-                {t('ui.logout')}
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Click outside to close dropdowns */}
-      {(themeDropdownOpen || languageDropdownOpen || profileDropdownOpen) && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => {
-            setThemeDropdownOpen(false);
-            setLanguageDropdownOpen(false);
-            setProfileDropdownOpen(false);
-          }}
-        />
-      )}
-    </nav>
+        <Dropdown menu={profileDropdownItems} trigger={['click']}>
+          <Button type="text">
+            <Space>
+              <UserOutlined />
+              {screenSize !== 'xs' && (
+                <span>{t('ui.profile')}</span>
+              )}
+              <DownOutlined />
+            </Space>
+          </Button>
+        </Dropdown>
+      </Space>
+    </Header>
   );
 };
