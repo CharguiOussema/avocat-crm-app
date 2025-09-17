@@ -25,21 +25,33 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 	}, []);
 
 	return (
-		<AntdLayout style={{ minHeight: "100vh" }}>
+		<AntdLayout style={{ minHeight: "100vh", overflow: "hidden" }}>
 			<Sidebar />
 			<AntdLayout
 				style={{
 					marginLeft: !isMobile && sidebarOpen ? 200 : 0,
 					transition: "margin-left 0.3s ease",
+					display: "flex",
+					flexDirection: "column",
+					height: "100vh",
 				}}
 			>
-				<Navbar />
+				{/* Fixed Navbar */}
+				<div style={{ position: "fixed", top: 0, right: 0, left: !isMobile && sidebarOpen ? 200 : 0, zIndex: 998, transition: "left 0.3s ease" }}>
+					<Navbar />
+				</div>
+
+				{/* Scrollable Content Area */}
 				<Content
 					style={{
+						marginTop: "64px", // Account for fixed navbar height
 						padding: isMobile ? "16px" : "24px",
 						overflow: "auto",
 						background: "transparent",
+						height: "calc(100vh - 64px)",
+						flex: 1,
 					}}
+					className="custom-scrollbar"
 				>
 					<Card
 						bordered={false}

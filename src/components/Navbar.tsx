@@ -98,7 +98,7 @@ export const Navbar: React.FC = () => {
       justifyContent: 'space-between',
       height: '64px',
       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-      zIndex: 999,
+      width: '100%',
     }}>
       {/* Left Section */}
       <Space>

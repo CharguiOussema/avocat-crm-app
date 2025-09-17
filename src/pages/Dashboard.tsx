@@ -78,7 +78,7 @@ export const Dashboard: React.FC = () => {
 			</Row>
 
 			{/* Content Area */}
-			<Row gutter={[16, 16]}>
+			<Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
 				<Col xs={24} lg={12}>
 					<Card title="Recent Activity" style={{ height: '400px' }}>
 						<List
@@ -122,6 +122,26 @@ export const Dashboard: React.FC = () => {
 								</List.Item>
 							)}
 						/>
+					</Card>
+				</Col>
+			</Row>
+
+			{/* Additional Content to Test Scrolling */}
+			<Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+				<Col xs={24}>
+					<Card title="Additional Content for Scroll Testing">
+						<Paragraph>
+							This is additional content to demonstrate the fixed navbar functionality.
+							When you scroll down this page, the navbar should remain fixed at the top
+							while only the content area scrolls.
+						</Paragraph>
+						{[...Array(20)].map((_, index) => (
+							<Paragraph key={index}>
+								Sample paragraph {index + 1}: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+								Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+								quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+							</Paragraph>
+						))}
 					</Card>
 				</Col>
 			</Row>
