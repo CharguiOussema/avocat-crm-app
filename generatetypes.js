@@ -1,6 +1,13 @@
 import fs from "fs";
 import axios from "axios";
 import { exec } from "child_process";
+import { config } from "process";
+
+// Configuration
+const DEV_CONFIG = {
+	API_URL: "http://localhost:3001",
+	CRM_URL: "http://localhost:5173",
+};
 
 async function generateModelTypes() {
 	try {
@@ -25,10 +32,8 @@ async function generateModelTypes() {
 			});
 		};
 		const response = (
-			await axios.get("http://localhost:3001/api/development/types")
+			await axios.get(`${DEV_CONFIG.API_URL}/api/development/types`)
 		).data;
-		// const response = (await axios.get('http://192.168.1.23:3005/development/types')).data;
-		console.log("*******response *****");
 
 		generateFiles(response);
 		exec(`npx prettier ${folderSource} --write`, (err) => {

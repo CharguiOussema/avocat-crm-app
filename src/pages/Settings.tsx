@@ -1,8 +1,9 @@
 import React from 'react';
-import { Typography, Card, Form, Input, Select, Switch, Button, Divider, Row, Col } from 'antd';
-import { SaveOutlined, UserOutlined, SettingOutlined } from '@ant-design/icons';
+import { Typography, Card, Form, Input, Select, Switch, Button, Divider, Row, Col, Alert, Space } from 'antd';
+import { SaveOutlined, UserOutlined, SettingOutlined, ApiOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '../contexts/AppContext';
+import { API_URL, CRM_URL, CONFIG, isDevelopment } from '../constants';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -203,6 +204,48 @@ export const Settings: React.FC = () => {
               </Form.Item>
             </Form>
           </Card>
+
+          {/* System Configuration Card */}
+          {isDevelopment && (
+            <Card
+              title={<><ApiOutlined /> System Configuration</>}
+              style={{ marginTop: '16px' }}
+            >
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Alert
+                  message="Development Mode"
+                  description="This section is only visible in development mode."
+                  type="info"
+                  showIcon
+                />
+
+                <div>
+                  <strong>API URL:</strong> <code>{API_URL}</code>
+                </div>
+
+                <div>
+                  <strong>CRM URL:</strong> <code>{CRM_URL}</code>
+                </div>
+
+                <div>
+                  <strong>Environment:</strong> <code>{import.meta.env.MODE}</code>
+                </div>
+
+                <div>
+                  <strong>Configuration:</strong>
+                  <pre style={{
+                    background: '#f5f5f5',
+                    padding: '8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    marginTop: '8px'
+                  }}>
+                    {JSON.stringify(CONFIG, null, 2)}
+                  </pre>
+                </div>
+              </Space>
+            </Card>
+          )}
         </Col>
       </Row>
     </div>

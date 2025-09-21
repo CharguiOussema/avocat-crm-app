@@ -13,3 +13,4 @@ export type UserItemResponseType = Pick<
   | "updatedAt"
   | "createdBy"
 >;
+export type UserLoginResponseType = { accessToken: string };

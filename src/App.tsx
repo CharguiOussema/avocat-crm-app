@@ -1,7 +1,11 @@
 import { ConfigProvider, App as AntdApp, theme as antdTheme } from 'antd';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { AppProvider } from './contexts/AppContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { Layout } from './components/Layout';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { Clients } from './pages/Clients';
 import { Cases } from './pages/Cases';
@@ -10,6 +14,17 @@ import { Calendar } from './pages/Calendar';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
 import { useApp } from './contexts/AppContext';
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const AppContent = () => {
   const { theme, language, isRTL } = useApp();
@@ -48,17 +63,37 @@ const AppContent = () => {
     >
       <AntdApp>
         <Router>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/clients" element={<Clients />} />
-              <Route path="/cases" element={<Cases />} />
-              <Route path="/documents" element={<Documents />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/settings" element={<Settings />} />
-            </Routes>
-          </Layout>
+          <Routes>
+            {/* Public route - login page */}
+            <Route
+              path="/login"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <Login />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected routes - require authentication */}
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/clients" element={<Clients />} />
+                      <Route path="/cases" element={<Cases />} />
+                      <Route path="/documents" element={<Documents />} />
+                      <Route path="/calendar" element={<Calendar />} />
+                      <Route path="/reports" element={<Reports />} />
+                      <Route path="/settings" element={<Settings />} />
+                    </Routes>
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
         </Router>
       </AntdApp>
     </ConfigProvider>
@@ -67,9 +102,13 @@ const AppContent = () => {
 
 function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </AppProvider>
+    </QueryClientProvider>
   );
 }
 

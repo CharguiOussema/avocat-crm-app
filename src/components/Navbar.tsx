@@ -10,12 +10,14 @@ import {
   DownOutlined
 } from '@ant-design/icons';
 import { useApp, type Theme, type Language } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const { Header } = Layout;
 const { Text } = Typography;
 
 export const Navbar: React.FC = () => {
   const { t } = useTranslation();
+  const { user, company, logout } = useAuth();
   const {
     sidebarOpen,
     setSidebarOpen,
@@ -74,6 +76,21 @@ export const Navbar: React.FC = () => {
   const profileDropdownItems = {
     items: [
       {
+        key: 'profile',
+        label: (
+          <Space>
+            <UserOutlined />
+            {t('ui.profile')}
+          </Space>
+        ),
+        onClick: () => {
+          // Navigate to profile or settings
+        }
+      },
+      {
+        type: 'divider' as const
+      },
+      {
         key: 'logout',
         label: (
           <Space>
@@ -82,7 +99,7 @@ export const Navbar: React.FC = () => {
           </Space>
         ),
         onClick: () => {
-          // Handle logout
+          logout();
         }
       }
     ]
@@ -109,9 +126,16 @@ export const Navbar: React.FC = () => {
           aria-label={t('ui.menu')}
         />
         {screenSize !== 'xs' && screenSize !== 'sm' && (
-          <Text strong style={{ fontSize: '20px' }}>
-            {t('app.welcome')}
-          </Text>
+          <Space direction="vertical" size={0}>
+            <Text strong style={{ fontSize: '18px' }}>
+              {company?.name || t('app.title')}
+            </Text>
+            {user && (
+              <Text type="secondary" style={{ fontSize: '12px' }}>
+                {t('app.welcome')} {user.name}
+              </Text>
+            )}
+          </Space>
         )}
       </Space>
 
@@ -148,7 +172,10 @@ export const Navbar: React.FC = () => {
           <Button type="text">
             <Space>
               <UserOutlined />
-              {screenSize !== 'xs' && (
+              {screenSize !== 'xs' && user && (
+                <span>{user.name}</span>
+              )}
+              {screenSize === 'xs' && (
                 <span>{t('ui.profile')}</span>
               )}
               <DownOutlined />
