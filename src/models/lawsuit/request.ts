@@ -6,4 +6,15 @@
 
 import { LawsuitModelType } from "./model";
 
-export type CreateLawsuitBodyRequest = Pick<LawsuitModelType, "_id">;
+export type CreateLawsuitBodyRequest = Pick<
+  LawsuitModelType,
+  "lawsuitCode" | "clients" | "lawsuitStage" | "lawsuitType" | "status"
+>;
+export type UpdateLawsuitBodyRequest = Pick<LawsuitModelType, "_id"> &
+  CreateLawsuitBodyRequest;
+export type GetAllLawsuitQueryRequest = {
+  search?: string;
+  limit: number;
+  page: number;
+};
+export type LawsuitByIdRequest = Pick<LawsuitModelType, "_id">;

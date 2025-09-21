@@ -2,8 +2,8 @@ import React from 'react';
 import { Typography, Card, Table, Button, Space, Tag, Alert, Spin } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useClients, useCreateClient, useUpdateClient, useDeleteClient } from '../hooks/useFetch';
-import { useAuth } from '../contexts/AuthContext';
+import { useFetchClients } from '../hooks/useFetchClients';
+// import { useAuth } from '../contexts/AuthContext';
 
 const { Title } = Typography;
 
@@ -18,17 +18,15 @@ interface Client {
 
 export const Clients: React.FC = () => {
   const { t } = useTranslation();
-  const { user, company } = useAuth();
+  // Authentication context available if needed
+  // const { user } = useAuth();
 
-  // Fetch clients data
-  const { data: clients = [], isLoading, error, refetch } = useClients({
-    company: company?.id
-  });
+  // !example of fetch list of data
+  const { response } = useFetchClients();
+  const { data: paginatedClients, isLoading, error } = response;
 
-  // Mutations for CRUD operations
-  const createClientMutation = useCreateClient();
-  const updateClientMutation = useUpdateClient();
-  const deleteClientMutation = useDeleteClient();
+  // Extract clients from paginated response
+  const clients = paginatedClients?.docs || [];
 
   // Mock data as fallback when API is not available
   const mockClients: Client[] = [
@@ -74,7 +72,7 @@ export const Clients: React.FC = () => {
     {
       title: t('ui.actions'),
       key: 'actions',
-      render: (_: any, record: Client) => (
+      render: (_: unknown, record: Client) => (
         <Space>
           <Button
             icon={<EditOutlined />}
@@ -88,25 +86,25 @@ export const Clients: React.FC = () => {
             icon={<DeleteOutlined />}
             size="small"
             danger
-            loading={deleteClientMutation.isPending}
-            onClick={() => handleDeleteClient(record.id)}
+            onClick={() => {
+              // Handle delete functionality
+              console.log('Delete client:', record.id);
+            }}
           />
         </Space>
       ),
     },
   ];
 
-  // Handle delete client
-  const handleDeleteClient = async (clientId: string) => {
-    try {
-      await deleteClientMutation.mutateAsync({
-        url: `/api/clients/${clientId}`
-      });
-      refetch(); // Refresh data after deletion
-    } catch (error) {
-      console.error('Failed to delete client:', error);
-    }
-  };
+  // Handle delete client - TODO: Implement proper deletion
+  // const handleDeleteClient = async (clientId: string) => {
+  //   try {
+  //     await clientService.delete(clientId);
+  //     // Refresh data after deletion
+  //   } catch (error) {
+  //     console.error('Failed to delete client:', error);
+  //   }
+  // };
 
   if (isLoading) {
     return (

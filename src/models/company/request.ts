@@ -6,4 +6,15 @@
 
 import { CompanyModelType } from "./model";
 
-export type CreateCompanyBodyRequest = Pick<CompanyModelType, "_id">;
+export type CreateCompanyBodyRequest = Pick<
+  CompanyModelType,
+  "name" | "webSite" | "logo" | "email" | "phoneNumber"
+>;
+export type UpdateCompanyBodyRequest = Pick<CompanyModelType, "_id"> &
+  CreateCompanyBodyRequest;
+export type GetAllCompanyQueryRequest = {
+  search?: string;
+  limit: number;
+  page: number;
+};
+export type CompanyByIdRequest = Pick<CompanyModelType, "_id">;

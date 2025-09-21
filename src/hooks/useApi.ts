@@ -1,5 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiService, getApiErrorMessage } from '../services/api';
+import {
+  CreateClientBodyRequest,
+  UpdateClientBodyRequest
+} from '../models/client';
+import {
+  CreateLawsuitBodyRequest,
+  UpdateLawsuitBodyRequest
+} from '../models/lawsuit';
 
 // Generic API hook for basic REST operations
 export interface UseApiState<T> {
@@ -16,7 +24,7 @@ export interface UseApiActions {
 export type UseApiResult<T> = UseApiState<T> & UseApiActions;
 
 // Hook for GET requests
-export function useApiGet<T = any>(url: string, immediate: boolean = true): UseApiResult<T> {
+export function useApiGet<T = unknown>(url: string, immediate: boolean = true): UseApiResult<T> {
   const [state, setState] = useState<UseApiState<T>>({
     data: null,
     loading: false,
@@ -66,7 +74,7 @@ export interface UseMutationActions<TData, TVariables> {
 
 export type UseMutationResult<TData, TVariables> = UseMutationState<TData> & UseMutationActions<TData, TVariables>;
 
-export function useApiMutation<TData = any, TVariables = any>(
+export function useApiMutation<TData = unknown, TVariables = unknown>(
   mutationFn: (variables: TVariables) => Promise<TData>
 ): UseMutationResult<TData, TVariables> {
   const [state, setState] = useState<UseMutationState<TData>>({
@@ -116,13 +124,13 @@ export const useClient = (clientId: string, companyId: string) => {
 };
 
 export const useCreateClient = () => {
-  return useApiMutation((clientData: any) =>
+  return useApiMutation((clientData: CreateClientBodyRequest) =>
     apiService.post('/api/clients', clientData)
   );
 };
 
 export const useUpdateClient = () => {
-  return useApiMutation(({ id, ...clientData }: any) =>
+  return useApiMutation(({ id, ...clientData }: { id: string } & UpdateClientBodyRequest) =>
     apiService.put(`/api/clients/${id}`, clientData)
   );
 };
@@ -143,13 +151,13 @@ export const useCase = (caseId: string, companyId: string) => {
 };
 
 export const useCreateCase = () => {
-  return useApiMutation((caseData: any) =>
+  return useApiMutation((caseData: CreateLawsuitBodyRequest) =>
     apiService.post('/api/cases', caseData)
   );
 };
 
 export const useUpdateCase = () => {
-  return useApiMutation(({ id, ...caseData }: any) =>
+  return useApiMutation(({ id, ...caseData }: { id: string } & UpdateLawsuitBodyRequest) =>
     apiService.put(`/api/cases/${id}`, caseData)
   );
 };
@@ -170,13 +178,13 @@ export const useDocument = (documentId: string, companyId: string) => {
 };
 
 export const useCreateDocument = () => {
-  return useApiMutation((documentData: any) =>
+  return useApiMutation((documentData: Record<string, unknown>) =>
     apiService.post('/api/documents', documentData)
   );
 };
 
 export const useUpdateDocument = () => {
-  return useApiMutation(({ id, ...documentData }: any) =>
+  return useApiMutation(({ id, ...documentData }: { id: string } & Record<string, unknown>) =>
     apiService.put(`/api/documents/${id}`, documentData)
   );
 };

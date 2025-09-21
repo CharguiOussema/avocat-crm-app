@@ -2,12 +2,13 @@ import React from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Button, Card, Typography, Alert, Space } from "antd";
 import { useAuth } from "../contexts/AuthContext";
-import { useLogin } from "../hooks/useFetch";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useMutation } from "react-query";
 import EmailForm from "../components/forms/EmailForm";
 import PasswordForm from "../components/forms/PasswordForm";
-import { LoginBodyType, UserLoginResponseType } from "../models/user";
+import { userService } from "../services/UserService";
+import { LoginBodyRequest } from "../models";
 
 const { Title, Text } = Typography;
 
@@ -16,41 +17,28 @@ export const Login: React.FC = () => {
 	const navigate = useNavigate();
 	const { login } = useAuth();
 
-	const methods = useForm<LoginBodyType>();
+	const methods = useForm<LoginBodyRequest>();
 	const {
 		handleSubmit,
 		formState: { errors },
 		setError,
 	} = methods;
 
-	const loginMutation = useLogin();
-
-	const onSubmit = (data: LoginBodyType) => {
-		loginMutation.mutate({
-			url: "/api/users/login",
-			data,
-		}, {
-			onSuccess: (responseData: UserLoginResponseType) => {
-				login(responseData.accessToken);
-				navigate("/");
-			},
-			onError: (error: unknown) => {
-				if (error && typeof error === "object" && "response" in error) {
-					const axiosError = error as { response?: { status?: number } };
-					if (axiosError.response?.status === 401) {
-						setError("root", {
-							type: "manual",
-							message: t("login.invalidCredentials", "Invalid email or password"),
-						});
-					} else {
-						setError("root", {
-							type: "manual",
-							message: t(
-								"login.errorGeneric",
-								"An error occurred. Please try again."
-							),
-						});
-					}
+	// !example of post or update mutation
+	const loginMutation = useMutation({
+		mutationFn: (data: LoginBodyRequest) => userService.login(data),
+		onSuccess: (response) => {
+			login(response.data.accessToken);
+			navigate("/");
+		},
+		onError: (error: unknown) => {
+			if (error && typeof error === "object" && "response" in error) {
+				const axiosError = error as { response?: { status?: number } };
+				if (axiosError.response?.status === 401) {
+					setError("root", {
+						type: "manual",
+						message: t("login.invalidCredentials", "Invalid email or password"),
+					});
 				} else {
 					setError("root", {
 						type: "manual",
@@ -60,8 +48,20 @@ export const Login: React.FC = () => {
 						),
 					});
 				}
+			} else {
+				setError("root", {
+					type: "manual",
+					message: t(
+						"login.errorGeneric",
+						"An error occurred. Please try again."
+					),
+				});
 			}
-		});
+		},
+	});
+
+	const onSubmit = (data: LoginBodyRequest) => {
+		loginMutation.mutate(data);
 	};
 
 	return (

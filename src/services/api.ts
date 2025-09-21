@@ -15,12 +15,12 @@ export interface ApiRequestConfig extends AxiosRequestConfig {
 
 export interface CompanyAwareData {
   company: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   message?: string;
   success?: boolean;

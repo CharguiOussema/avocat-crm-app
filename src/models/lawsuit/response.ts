@@ -4,6 +4,6 @@
  * Date: 5/18/2025
  */
 
-export type lawsuitResponseType = {
+export type LawsuitItemResponseType = {
   name: string;
 };
