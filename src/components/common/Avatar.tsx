@@ -30,6 +30,33 @@ export const Avatar: React.FC<AvatarProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isPreloading, setIsPreloading] = useState(false);
+
+  // Reset states when entity changes and preload image
+  React.useEffect(() => {
+    setImageError(false);
+    setImageLoaded(false);
+    setIsPreloading(false);
+
+    // Preload image to reduce layout shift
+    if (avatarService.hasAvatar(entity)) {
+      const avatarUrl = entity.avatar!.startsWith('blob:') || entity.avatar!.startsWith('http')
+        ? entity.avatar!
+        : avatarService.getAvatarUrl(entity.avatar!);
+
+      setIsPreloading(true);
+      const img = new Image();
+      img.onload = () => {
+        setIsPreloading(false);
+        setImageLoaded(true);
+      };
+      img.onerror = () => {
+        setIsPreloading(false);
+        setImageError(true);
+      };
+      img.src = avatarUrl;
+    }
+  }, [entity.avatar, entity]);
 
   const hasAvatar = avatarService.hasAvatar(entity) && !imageError;
   const isClickable = Boolean(onClick);
@@ -59,13 +86,18 @@ export const Avatar: React.FC<AvatarProps> = ({
   };
 
   const handleImageLoad = () => {
-    setImageLoaded(true);
+    // Image loaded through preloading, this is just fallback
+    if (!imageLoaded) {
+      setImageLoaded(true);
+    }
   };
 
   const handleImageError = () => {
     console.warn(`Failed to load avatar for ${entity.fullName}:`, entity.avatar);
-    setImageError(true);
-    setImageLoaded(false);
+    if (!imageError) {
+      setImageError(true);
+      setImageLoaded(false);
+    }
   };
 
   const handleClick = () => {
@@ -81,18 +113,33 @@ export const Avatar: React.FC<AvatarProps> = ({
       ? entity.avatar!
       : avatarService.getAvatarUrl(entity.avatar!);
 
+    // Ensure consistent container styles with position relative for overlay
+    const containerClasses = useTailwind
+      ? `relative ${sizeClasses} rounded-full overflow-hidden border-2 border-gray-300 ${className}`
+      : className;
+
+    const containerStyles = useTailwind
+      ? {
+          cursor: isClickable ? 'pointer' : 'default',
+          position: 'relative' as const
+        }
+      : {
+          ...baseStyles,
+          position: 'relative' as const
+        };
 
     return (
       <div
-        className={useTailwind ? `${sizeClasses} rounded-full overflow-hidden border-2 border-gray-300 ${className}` : className}
-        style={useTailwind ? { cursor: isClickable ? 'pointer' : 'default' } : baseStyles}
+        className={containerClasses}
+        style={containerStyles}
         onClick={handleClick}
         title={entity.fullName}
       >
-        {/* Loading overlay */}
-        {!imageLoaded && !imageError && (
+        {/* Loading placeholder with exact same size - prevents layout shift */}
+        {(isPreloading || (!imageLoaded && !imageError)) && (
           <div
-            style={{
+            className={useTailwind ? 'absolute inset-0 bg-gray-200 rounded-full flex items-center justify-center animate-pulse' : ''}
+            style={useTailwind ? {} : {
               position: 'absolute',
               top: 0,
               left: 0,
@@ -102,17 +149,44 @@ export const Avatar: React.FC<AvatarProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              borderRadius: '50%'
+              borderRadius: '50%',
+              animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
             }}
           >
-            <div style={{ fontSize: '12px', color: '#6b7280' }}>...</div>
+            <span
+              className={useTailwind ? 'text-xs text-gray-400 select-none' : ''}
+              style={useTailwind ? {} : {
+                fontSize: size === 'small' ? '8px' : size === 'medium' ? '10px' : '12px',
+                color: '#9ca3af',
+                userSelect: 'none'
+              }}
+            >
+              ●●●
+            </span>
           </div>
         )}
 
         <img
           src={avatarUrl}
           alt={`${entity.fullName} avatar`}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          className={useTailwind ? 'w-full h-full object-cover transition-opacity duration-200' : ''}
+          style={useTailwind ? {
+            opacity: imageLoaded ? 1 : 0,
+            position: 'absolute',
+            top: 0,
+            left: 0
+          } : {
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: imageLoaded ? 1 : 0,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            transition: 'opacity 200ms ease-in-out'
+          }}
+          loading="lazy"
+          decoding="async"
           onLoad={handleImageLoad}
           onError={handleImageError}
         />
@@ -125,18 +199,38 @@ export const Avatar: React.FC<AvatarProps> = ({
   if (showFallback) {
     const fallbackIcon = avatarService.getFallbackIcon(entityType);
 
+    // Consistent fallback sizing
+    const fallbackClasses = useTailwind
+      ? `${sizeClasses} rounded-full bg-gray-100 border-2 border-gray-300 flex items-center justify-center ${className}`
+      : className;
+
+    const fallbackStyles = useTailwind
+      ? { cursor: isClickable ? 'pointer' : 'default' }
+      : baseStyles;
+
+    // Responsive icon sizing based on avatar size
+    const iconSizes = {
+      small: useTailwind ? 'text-sm' : '14px',
+      medium: useTailwind ? 'text-base' : '16px',
+      large: useTailwind ? 'text-2xl' : '24px'
+    };
+
+    const iconStyle = useTailwind ? {} : {
+      fontSize: iconSizes[size],
+      color: '#9ca3af',
+      lineHeight: '1'
+    };
+
     return (
       <div
-        className={useTailwind ? `${sizeClasses} rounded-full bg-gray-100 border-2 border-gray-300 flex items-center justify-center ${className}` : className}
-        style={useTailwind ? { cursor: isClickable ? 'pointer' : 'default' } : baseStyles}
+        className={fallbackClasses}
+        style={fallbackStyles}
         onClick={handleClick}
         title={`${entity.fullName} - No avatar`}
       >
         <span
-          style={{
-            fontSize: size === 'small' ? '16px' : size === 'medium' ? '20px' : '32px',
-            color: '#9ca3af'
-          }}
+          className={useTailwind ? `${iconSizes[size]} text-gray-400` : ''}
+          style={iconStyle}
         >
           {fallbackIcon}
         </span>
