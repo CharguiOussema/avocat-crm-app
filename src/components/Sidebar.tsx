@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layout, Menu, Button, theme } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useApp } from '../contexts/AppContext';
+import { useApp } from '../hooks';
 import {
   HomeOutlined,
   UserOutlined,

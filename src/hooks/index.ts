@@ -1,6 +1,9 @@
 // Export all hooks from a single entry point
-export * from './useApi';
-export * from './useFetch';
+export * from './useAuth';
+export * from './useApp';
+
+// Export generic hooks
+export { useFetch, usePost, usePut, useDelete, useLogin } from './useFetch';
 
 // Export custom fetch hooks
 export { useFetchClients } from './useFetchClients';

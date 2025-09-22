@@ -11,6 +11,7 @@ interface IPaginationParams {
 	search?: string;
 	client?: string;
 	status?: string;
+	[key: string]: unknown;
 }
 
 export function useFetchLawsuits() {

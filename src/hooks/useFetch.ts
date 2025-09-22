@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient, UseQueryOptions, UseMutationOptions } from 'react-query';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_URL } from '../constants';
-import { LoginBodyType, UserLoginResponseType } from '../models/user';
+import { LoginBodyRequest, UserLoginResponseType } from '../models/user';
 
 // Generic fetch function
 const fetchData = async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
@@ -178,7 +178,7 @@ export const useDeleteDocument = () => {
 
 // Authentication
 export const useLogin = () => {
-  return usePost<UserLoginResponseType, LoginBodyType>({
+  return usePost<UserLoginResponseType, LoginBodyRequest>({
     onSuccess: () => {
       // Login successful - Auth context will handle token setting
     },

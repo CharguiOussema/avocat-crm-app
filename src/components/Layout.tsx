@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Layout as AntdLayout, Card } from "antd";
-import { useApp } from "../contexts/AppContext";
+import { useApp } from "../hooks";
 import { Sidebar } from "./Sidebar";
 import { Navbar } from "./Navbar";
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Button, Card, Typography, Alert, Space } from "antd";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";

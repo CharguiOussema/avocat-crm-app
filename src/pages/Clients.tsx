@@ -1,20 +1,13 @@
 import React from 'react';
-import { Typography, Card, Table, Button, Space, Tag, Alert, Spin } from 'antd';
+import { Typography, Card, Table, Button, Space, Alert, Spin } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useFetchClients } from '../hooks/useFetchClients';
+import { ClientItemResponseType } from '../models/client';
+import { USER_ROLES } from '../models/consts';
 // import { useAuth } from '../contexts/AuthContext';
 
 const { Title } = Typography;
-
-interface Client {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  status: 'active' | 'inactive';
-  cases: number;
-}
 
 export const Clients: React.FC = () => {
   const { t } = useTranslation();
@@ -26,13 +19,56 @@ export const Clients: React.FC = () => {
   const { data: paginatedClients, isLoading, error } = response;
 
   // Extract clients from paginated response
-  const clients = paginatedClients?.docs || [];
+  const clients = paginatedClients?.data?.docs || [];
 
   // Mock data as fallback when API is not available
-  const mockClients: Client[] = [
-    { id: '1', name: 'John Doe', email: 'john@example.com', phone: '+1234567890', status: 'active', cases: 3 },
-    { id: '2', name: 'Jane Smith', email: 'jane@example.com', phone: '+1234567891', status: 'active', cases: 1 },
-    { id: '3', name: 'Bob Johnson', email: 'bob@example.com', phone: '+1234567892', status: 'inactive', cases: 0 },
+  const mockClients: ClientItemResponseType[] = [
+    {
+      _id: '1',
+      fullName: 'John Doe',
+      email: 'john@example.com',
+      phoneNumber: '+1234567890',
+      cin: '12345678',
+      avatar: '',
+      location: 'Tunis',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: {
+        _id: '1',
+        fullName: 'Admin',
+        email: 'admin@example.com',
+        avatar: '',
+        phoneNumber: '',
+        cin: '',
+        roles: [USER_ROLES.USER_ADMIN],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: ''
+      }
+    },
+    {
+      _id: '2',
+      fullName: 'Jane Smith',
+      email: 'jane@example.com',
+      phoneNumber: '+1234567891',
+      cin: '12345679',
+      avatar: '',
+      location: 'Sfax',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: {
+        _id: '1',
+        fullName: 'Admin',
+        email: 'admin@example.com',
+        avatar: '',
+        phoneNumber: '',
+        cin: '',
+        roles: [USER_ROLES.USER_ADMIN],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: ''
+      }
+    }
   ];
 
   // Use API data if available, otherwise use mock data
@@ -41,8 +77,8 @@ export const Clients: React.FC = () => {
   const columns = [
     {
       title: t('clients.name'),
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'fullName',
+      key: 'fullName',
     },
     {
       title: t('clients.email'),
@@ -51,35 +87,25 @@ export const Clients: React.FC = () => {
     },
     {
       title: t('clients.phone'),
-      dataIndex: 'phone',
-      key: 'phone',
+      dataIndex: 'phoneNumber',
+      key: 'phoneNumber',
     },
     {
-      title: t('clients.status'),
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: string) => (
-        <Tag color={status === 'active' ? 'green' : 'red'}>
-          {status.toUpperCase()}
-        </Tag>
-      ),
-    },
-    {
-      title: t('clients.cases'),
-      dataIndex: 'cases',
-      key: 'cases',
+      title: t('clients.location'),
+      dataIndex: 'location',
+      key: 'location',
     },
     {
       title: t('ui.actions'),
       key: 'actions',
-      render: (_: unknown, record: Client) => (
+      render: (_: unknown, record: ClientItemResponseType) => (
         <Space>
           <Button
             icon={<EditOutlined />}
             size="small"
             onClick={() => {
               // Handle edit functionality
-              console.log('Edit client:', record.id);
+              console.log('Edit client:', record._id);
             }}
           />
           <Button
@@ -88,7 +114,7 @@ export const Clients: React.FC = () => {
             danger
             onClick={() => {
               // Handle delete functionality
-              console.log('Delete client:', record.id);
+              console.log('Delete client:', record._id);
             }}
           />
         </Space>
@@ -125,10 +151,10 @@ export const Clients: React.FC = () => {
         </Button>
       </div>
 
-      {error && (
+      {!!error && (
         <Alert
           message={t('error.fetchFailed', 'Failed to fetch data')}
-          description={error.message}
+          description={(error as Error)?.message || 'Unknown error occurred'}
           type="error"
           closable
           style={{ marginBottom: '16px' }}
@@ -139,7 +165,7 @@ export const Clients: React.FC = () => {
         <Table
           dataSource={clientsData}
           columns={columns}
-          rowKey="id"
+          rowKey="_id"
           loading={isLoading}
           pagination={{
             total: clientsData.length,

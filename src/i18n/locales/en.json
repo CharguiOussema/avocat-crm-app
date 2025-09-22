@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "Avocat CRM",
-    "welcome": "Welcome to Avocat CRM"
+    "welcome": "Welcome"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -11,6 +11,9 @@
     "calendar": "Calendar",
     "reports": "Reports",
     "settings": "Settings"
+  },
+  "dashboard": {
+    "overview": "Overview of your practice management"
   },
   "ui": {
     "menu": "Menu",

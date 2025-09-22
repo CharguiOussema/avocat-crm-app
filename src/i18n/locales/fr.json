@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "CRM Avocat",
-    "welcome": "Bienvenue dans CRM Avocat"
+    "welcome": "Bienvenue"
   },
   "navigation": {
     "dashboard": "Tableau de bord",
@@ -11,6 +11,9 @@
     "calendar": "Calendrier",
     "reports": "Rapports",
     "settings": "Paramètres"
+  },
+  "dashboard": {
+    "overview": "Aperçu de la gestion de votre cabinet"
   },
   "ui": {
     "menu": "Menu",

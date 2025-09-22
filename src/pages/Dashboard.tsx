@@ -57,7 +57,7 @@ export const Dashboard: React.FC = () => {
 					{t("navigation.dashboard")}
 				</Title>
 				<Paragraph style={{ margin: '8px 0 0', color: '#666' }}>
-					{t("app.welcome")}
+					{t("dashboard.overview")}
 				</Paragraph>
 			</div>
 

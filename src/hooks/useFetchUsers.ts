@@ -10,6 +10,7 @@ interface IPaginationParams {
   limit?: number;
   search?: string;
   roles?: string;
+  [key: string]: unknown;
 }
 
 export function useFetchUsers() {

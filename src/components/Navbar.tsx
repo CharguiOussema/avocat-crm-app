@@ -9,8 +9,8 @@ import {
   LogoutOutlined,
   DownOutlined
 } from '@ant-design/icons';
-import { useApp, type Theme, type Language } from '../contexts/AppContext';
-import { useAuth } from '../contexts/AuthContext';
+import { useApp, useAuth } from '../hooks';
+import { type Theme, type Language } from '../contexts/AppContext';
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -117,30 +117,39 @@ export const Navbar: React.FC = () => {
       boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
       width: '100%',
     }}>
-      {/* Left Section */}
-      <Space>
+      {/* Left Section - Menu + Brand */}
+      <Space size={screenSize === 'xs' ? 'small' : 'large'}>
         <Button
           type="text"
           icon={<MenuOutlined />}
           onClick={toggleSidebar}
           aria-label={t('ui.menu')}
         />
-        {screenSize !== 'xs' && screenSize !== 'sm' && (
-          <Space direction="vertical" size={0}>
-            <Text strong style={{ fontSize: '18px' }}>
-              {company?.name || t('app.title')}
-            </Text>
-            {user && (
-              <Text type="secondary" style={{ fontSize: '12px' }}>
-                {t('app.welcome')} {user.name}
-              </Text>
-            )}
-          </Space>
+        {screenSize !== 'xs' && (
+          <Text strong style={{
+            fontSize: screenSize === 'sm' ? '18px' : '20px',
+            color: token.colorPrimary,
+            fontWeight: 600,
+            letterSpacing: '-0.5px'
+          }}>
+            {company?.name || t('app.title')}
+          </Text>
         )}
       </Space>
 
+      {/* Center Section - Welcome Message (only on larger screens) */}
+      {screenSize === 'lg' && user && (
+        <Text style={{
+          fontSize: '14px',
+          color: token.colorTextSecondary,
+          fontWeight: 500
+        }}>
+          {t('app.welcome')}, {user.fullName}
+        </Text>
+      )}
+
       {/* Right Section */}
-      <Space>
+      <Space size={screenSize === 'xs' ? 'small' : 'middle'}>
         {/* Language Dropdown */}
         <Dropdown menu={languageDropdownItems} trigger={['click']}>
           <Button type="text">
@@ -169,16 +178,26 @@ export const Navbar: React.FC = () => {
 
         {/* Profile Dropdown */}
         <Dropdown menu={profileDropdownItems} trigger={['click']}>
-          <Button type="text">
+          <Button type="text" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '4px 12px',
+            borderRadius: '6px'
+          }}>
             <Space>
-              <UserOutlined />
-              {screenSize !== 'xs' && user && (
-                <span>{user.name}</span>
+              <UserOutlined style={{ fontSize: '16px' }} />
+              {screenSize !== 'xs' && screenSize !== 'sm' && user && (
+                <Text strong style={{ fontSize: '14px' }}>
+                  {user.fullName}
+                </Text>
               )}
-              {screenSize === 'xs' && (
-                <span>{t('ui.profile')}</span>
+              {(screenSize === 'xs' || screenSize === 'sm') && (
+                <Text style={{ fontSize: '14px' }}>
+                  {t('ui.profile')}
+                </Text>
               )}
-              <DownOutlined />
+              <DownOutlined style={{ fontSize: '12px', opacity: 0.6 }} />
             </Space>
           </Button>
         </Dropdown>

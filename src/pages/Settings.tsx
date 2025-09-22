@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, Card, Form, Input, Select, Switch, Button, Divider, Row, Col, Alert, Space } from 'antd';
 import { SaveOutlined, UserOutlined, SettingOutlined, ApiOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useApp } from '../contexts/AppContext';
+import { useApp } from '../hooks';
 import { API_URL, CRM_URL, CONFIG, isDevelopment } from '../constants';
 
 const { Title } = Typography;
