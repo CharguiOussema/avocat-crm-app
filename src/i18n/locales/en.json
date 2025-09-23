@@ -23,7 +23,9 @@
     "theme": "Theme",
     "profile": "Profile",
     "logout": "Logout",
-    "actions": "Actions"
+    "actions": "Actions",
+    "cancel": "Cancel",
+    "noData": "No data"
   },
   "themes": {
     "light": "Light",
@@ -41,9 +43,26 @@
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
+    "location": "Location",
     "status": "Status",
     "cases": "Cases",
-    "add": "Add Client"
+    "add": "Add Client",
+    "edit": "Edit Client",
+    "search": "Search clients...",
+    "delete": {
+      "title": "Delete Client",
+      "content": "Are you sure you want to delete {{name}}?",
+      "confirm": "Yes, Delete",
+      "success": "{{name}} has been deleted successfully",
+      "error": "Failed to delete client"
+    },
+    "modal": {
+      "addTitle": "Add New Client",
+      "updateTitle": "Update Client"
+    },
+    "pagination": {
+      "showTotal": "{{start}}-{{end}} of {{total}} clients"
+    }
   },
   "cases": {
     "title": "Title",
@@ -109,5 +128,8 @@
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
     "changePassword": "Change Password"
+  },
+  "error": {
+    "fetchFailed": "Failed to fetch data"
   }
 }

@@ -22,7 +22,10 @@
     "language": "Langue",
     "theme": "Thème",
     "profile": "Profil",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "actions": "Actions",
+    "cancel": "Annuler",
+    "noData": "Aucune donnée"
   },
   "themes": {
     "light": "Clair",
@@ -35,5 +38,33 @@
     "en": "Anglais",
     "fr": "Français",
     "ar": "Arabe"
+  },
+  "clients": {
+    "name": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "location": "Localisation",
+    "status": "Statut",
+    "cases": "Dossiers",
+    "add": "Ajouter un Client",
+    "edit": "Modifier le Client",
+    "search": "Rechercher des clients...",
+    "delete": {
+      "title": "Supprimer le Client",
+      "content": "Êtes-vous sûr de vouloir supprimer {{name}} ?",
+      "confirm": "Oui, Supprimer",
+      "success": "{{name}} a été supprimé avec succès",
+      "error": "Échec de la suppression du client"
+    },
+    "modal": {
+      "addTitle": "Ajouter un Nouveau Client",
+      "updateTitle": "Modifier le Client"
+    },
+    "pagination": {
+      "showTotal": "{{start}}-{{end}} sur {{total}} clients"
+    }
+  },
+  "error": {
+    "fetchFailed": "Échec de la récupération des données"
   }
 }

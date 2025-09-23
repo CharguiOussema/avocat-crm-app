@@ -51,6 +51,15 @@ class QueryBuilderSearchParams {
     return this;
   }
 
+  setSearch(search: string | undefined): this {
+    if (search !== undefined && search !== '') {
+      this.params.set('search', search);
+    } else {
+      this.params.delete('search');
+    }
+    return this;
+  }
+
   setQueryParam(key: string, value: string | number | boolean | null | undefined): this {
     if (value === null || value === undefined || value === '') {
       this.params.delete(key);
