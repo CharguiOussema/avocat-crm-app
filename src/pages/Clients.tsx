@@ -13,6 +13,7 @@ import {
 	Row,
 	Col,
 } from "antd";
+import { CustomModal } from "../components/common";
 import type { ColumnsType } from "antd/es/table";
 import {
 	PlusOutlined,
@@ -316,6 +317,11 @@ export const Clients: React.FC = () => {
 					rowKey='_id'
 					loading={isLoading}
 					data-testid={testIds.clientsTable}
+					onRow={(record) => ({
+						onClick: () => handleEditClient(record),
+						style: { cursor: "pointer" },
+						title: t("clients.clickToEdit"),
+					})}
 					pagination={{
 						total: paginatedClients?.data?.totalDocs || 0,
 						current: paginatedClients?.data?.page || 1,
@@ -337,17 +343,19 @@ export const Clients: React.FC = () => {
 			</Card>
 
 			{/* Client Form Modal */}
-			<Modal
+			<CustomModal
+				className=''
 				title={
 					modalState.mode === "create"
 						? t("clients.modal.addTitle")
 						: t("clients.modal.updateTitle")
 				}
-				open={modalState.isOpen}
-				onCancel={handleModalClose}
-				footer={null}
-				width={600}
-				destroyOnClose
+				borderB={false}
+				isOpen={modalState.isOpen}
+				close={handleModalClose}
+				width='700px'
+				height='500px'
+				maskClosable={false}
 				data-testid={testIds.clientModal}
 			>
 				<ClientFormSimple
@@ -356,7 +364,7 @@ export const Clients: React.FC = () => {
 					onSuccess={handleFormSuccess}
 					onCancel={handleModalClose}
 				/>
-			</Modal>
+			</CustomModal>
 		</div>
 	);
 };

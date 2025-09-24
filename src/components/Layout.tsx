@@ -9,7 +9,6 @@ const { Content } = AntdLayout;
 interface LayoutProps {
 	children: React.ReactNode;
 }
-
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
 	const { sidebarOpen } = useApp();
 	const [isMobile, setIsMobile] = useState(false);
@@ -37,7 +36,16 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 				}}
 			>
 				{/* Fixed Navbar */}
-				<div style={{ position: "fixed", top: 0, right: 0, left: !isMobile && sidebarOpen ? 200 : 0, zIndex: 998, transition: "left 0.3s ease" }}>
+				<div
+					style={{
+						position: "fixed",
+						top: 0,
+						right: 0,
+						left: !isMobile && sidebarOpen ? 200 : 0,
+						zIndex: 998,
+						transition: "left 0.3s ease",
+					}}
+				>
 					<Navbar />
 				</div>
 
@@ -51,7 +59,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 						height: "calc(100vh - 64px)",
 						flex: 1,
 					}}
-					className="custom-scrollbar"
+					className='custom-scrollbar'
 				>
 					<Card
 						bordered={false}

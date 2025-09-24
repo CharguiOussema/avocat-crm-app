@@ -25,6 +25,7 @@
     "logout": "Logout",
     "actions": "Actions",
     "cancel": "Cancel",
+    "save": "Save",
     "noData": "No data"
   },
   "themes": {
@@ -49,6 +50,7 @@
     "add": "Add Client",
     "edit": "Edit Client",
     "search": "Search clients...",
+    "clickToEdit": "Click to edit client",
     "delete": {
       "title": "Delete Client",
       "content": "Are you sure you want to delete {{name}}?",
@@ -59,6 +61,29 @@
     "modal": {
       "addTitle": "Add New Client",
       "updateTitle": "Update Client"
+    },
+    "form": {
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter client's full name",
+      "fullNameRequired": "Please enter the full name",
+      "fullNameMinLength": "Full name must be at least 2 characters",
+      "emailAddress": "Email Address",
+      "emailPlaceholder": "client@example.com",
+      "emailInvalid": "Please enter a valid email address",
+      "phoneNumber": "Phone Number",
+      "phonePlaceholder": "+1234567890",
+      "cin": "CIN (National ID)",
+      "cinPlaceholder": "12345678",
+      "cinInvalid": "CIN must be exactly 8 digits",
+      "locationLabel": "Location",
+      "locationPlaceholder": "City, Country",
+      "profilePicture": "Profile Picture",
+      "createClient": "Create Client",
+      "updateClient": "Update Client",
+      "createSuccess": "{{name}} has been created successfully",
+      "updateSuccess": "{{name}} has been updated successfully",
+      "createError": "Failed to create client",
+      "updateError": "Failed to update client"
     },
     "pagination": {
       "showTotal": "{{start}}-{{end}} of {{total}} clients"
@@ -131,5 +156,23 @@
   },
   "error": {
     "fetchFailed": "Failed to fetch data"
+  },
+  "avatar": {
+    "modal": {
+      "viewImage": "View Avatar",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "download": "Download image",
+      "loading": "Loading image...",
+      "error": {
+        "title": "Failed to load image",
+        "description": "The image could not be displayed."
+      },
+      "instructions": {
+        "esc": "Press ESC to close",
+        "zoom": "Use zoom controls to resize",
+        "click": "Click outside to close"
+      }
+    }
   }
 }
