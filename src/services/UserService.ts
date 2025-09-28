@@ -43,15 +43,23 @@ class UserService {
 		this.instance.get<UserItemResponseType>(`/api/users/${id}`);
 
 	// !example of create
-	create = (body: CreateUserBodyRequest) =>
-		this.instance.post<UserItemResponseType>("/api/users", body);
+	create = (body: CreateUserBodyRequest) => {
+		return this.instance.post<UserItemResponseType>("/api/users", body);
+	};
 
 	// !example of update
-	update = (body: UpdateUserBodyRequest) =>
-		this.instance.put<UserItemResponseType>("/api/users", body);
+	update = (body: UpdateUserBodyRequest) => {
+		return this.instance.put<UserItemResponseType>("/api/users", body);
+	};
 
 	// !example of delete
-	delete = (id: string) => this.instance.delete(`/api/users/${id}`);
+	delete = (id: string) => this.instance.delete<{ message: string }>(`/api/users/${id}`);
+
+	// Bulk delete users
+	bulkDelete = (ids: string[]) =>
+		this.instance.post<{ message: string; deletedCount: number }>("/api/users/bulk-delete", {
+			ids
+		});
 
 	// !example of filter endpoint
 	filter = () =>

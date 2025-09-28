@@ -6,6 +6,7 @@
   "navigation": {
     "dashboard": "Dashboard",
     "clients": "Clients",
+    "users": "Users",
     "cases": "Cases",
     "documents": "Documents",
     "calendar": "Calendar",
@@ -26,6 +27,9 @@
     "actions": "Actions",
     "cancel": "Cancel",
     "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
     "noData": "No data"
   },
   "themes": {
@@ -87,6 +91,134 @@
     },
     "pagination": {
       "showTotal": "{{start}}-{{end}} of {{total}} clients"
+    }
+  },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Manage your team members and their access",
+    "add": {
+      "button": "Add User",
+      "title": "Add New User",
+      "subtitle": "Create a new user account for your team"
+    },
+    "edit": {
+      "title": "Edit User: {{name}}",
+      "subtitle": "Update user information and permissions"
+    },
+    "table": {
+      "avatar": "Avatar",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "roles": "Roles",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "search": {
+      "placeholder": "Search users by name, email..."
+    },
+    "filter": {
+      "roles": {
+        "placeholder": "Filter by role"
+      },
+      "apply": "Apply Filters",
+      "clear": "Clear Filters"
+    },
+    "delete": {
+      "title": "Delete User",
+      "confirm": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+      "success": "{{name}} has been deleted successfully",
+      "error": "Failed to delete user"
+    },
+    "bulk": {
+      "noSelection": "Please select users to delete",
+      "delete": {
+        "title": "Delete Multiple Users",
+        "button": "Delete {{count}} Users",
+        "confirm": "Are you sure you want to delete {{count}} users? This action cannot be undone.",
+        "success": "{{count}} users have been deleted successfully",
+        "error": "Failed to delete selected users"
+      }
+    },
+    "error": {
+      "title": "Failed to Load Users",
+      "fetchFailed": "Could not fetch user data"
+    },
+    "create": {
+      "success": "{{name}} has been created successfully",
+      "error": "Failed to create user",
+      "passwordRequired": "Password is required for new users"
+    },
+    "update": {
+      "success": "{{name}} has been updated successfully",
+      "error": "Failed to update user"
+    },
+    "form": {
+      "avatar": {
+        "title": "Profile Picture",
+        "subtitle": "Upload a profile picture for this user"
+      },
+      "personalInfo": {
+        "title": "Personal Information"
+      },
+      "security": {
+        "title": "Security & Access"
+      },
+      "fullName": {
+        "label": "Full Name",
+        "placeholder": "Enter full name",
+        "required": "Full name is required",
+        "minLength": "Full name must be at least 2 characters"
+      },
+      "email": {
+        "label": "Email Address",
+        "placeholder": "user@example.com",
+        "required": "Email address is required",
+        "invalid": "Please enter a valid email address"
+      },
+      "phoneNumber": {
+        "label": "Phone Number",
+        "placeholder": "+1 (555) 123-4567",
+        "invalid": "Please enter a valid phone number"
+      },
+      "cin": {
+        "label": "National ID (CIN)",
+        "placeholder": "12345678",
+        "invalid": "National ID must be exactly 8 digits"
+      },
+      "roles": {
+        "label": "User Roles",
+        "placeholder": "Select user roles",
+        "required": "Please select at least one role"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter password",
+        "placeholderEdit": "Leave blank to keep current password",
+        "required": "Password is required",
+        "minLength": "Password must be at least 6 characters",
+        "editNote": "Leave password field blank to keep the current password"
+      },
+      "confirmPassword": {
+        "label": "Confirm Password",
+        "placeholder": "Confirm password",
+        "required": "Please confirm the password",
+        "mismatch": "Passwords do not match"
+      },
+      "create": "Create User",
+      "update": "Update User"
+    },
+    "roles": {
+      "superAdmin": "Super Admin",
+      "admin": "Administrator",
+      "agent": "Agent"
+    }
+  },
+  "common": {
+    "error": "Error",
+    "notProvided": "Not provided",
+    "pagination": {
+      "total": "{{start}}-{{end}} of {{total}} items"
     }
   },
   "cases": {

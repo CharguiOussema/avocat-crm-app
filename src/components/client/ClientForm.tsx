@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from "react";
 import { ClientAvatarUpload } from "./ClientAvatarUpload";
 import { clientService } from "../../services/ClientService";
+import { documentService } from "../../services/DocumentService";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
 import {
@@ -152,6 +153,17 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 
 		try {
 			let response: { data: ClientItemResponseType };
+			let avatarDocumentId: string | null = null;
+
+			// Upload avatar first if provided
+			if (avatarFile) {
+				const uploadResponse = await documentService.uploadDocument(avatarFile, {
+					documentType: 'avatar',
+					associatedEntityType: 'client',
+					isPublic: true
+				});
+				avatarDocumentId = uploadResponse.data._id;
+			}
 
 			if (mode === "create") {
 				const createData: CreateClientBodyRequest = {
@@ -160,13 +172,10 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 					phoneNumber: formData.phoneNumber.trim() || null,
 					cin: formData.cin.trim() || null,
 					location: formData.location.trim() || null,
-					avatar: null, // Will be handled by the service
+					avatar: avatarDocumentId,
 				};
 
-				response = await clientService.createWithAvatar(
-					createData,
-					avatarFile || undefined
-				);
+				response = await clientService.create(createData);
 			} else {
 				if (!client) {
 					throw new Error("Client data is required for update mode");
@@ -179,13 +188,10 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 					phoneNumber: formData.phoneNumber.trim() || null,
 					cin: formData.cin.trim() || null,
 					location: formData.location.trim() || null,
-					avatar: client.avatar,
+					avatar: avatarDocumentId || client.avatar, // Use new avatar ID or keep existing
 				};
 
-				response = await clientService.updateWithAvatar(
-					updateData,
-					avatarFile || undefined
-				);
+				response = await clientService.update(updateData);
 			}
 
 			onSuccess?.(response.data);

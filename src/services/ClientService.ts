@@ -31,58 +31,13 @@ class ClientService {
 		this.instance.get<ClientItemResponseType>(`/api/clients/${id}`);
 
 	// !example of create
-	create = (body: CreateClientBodyRequest) =>
-		this.instance.post<ClientItemResponseType>("/api/clients", body);
-
-	// Create client with avatar
-	createWithAvatar = (body: CreateClientBodyRequest, avatarFile?: File) => {
-		const formData = new FormData();
-
-		// Add form fields
-		formData.append('fullName', body.fullName);
-		if (body.email) formData.append('email', body.email);
-		if (body.phoneNumber) formData.append('phoneNumber', body.phoneNumber);
-		if (body.cin) formData.append('cin', body.cin);
-		if (body.location) formData.append('location', body.location);
-
-		// Add avatar file if provided
-		if (avatarFile) {
-			formData.append('avatar', avatarFile);
-		}
-
-		return this.instance.post<ClientItemResponseType>("/api/clients", formData, {
-			headers: {
-				'Content-Type': 'multipart/form-data',
-			},
-		});
+	create = (body: CreateClientBodyRequest) => {
+		return this.instance.post<ClientItemResponseType>("/api/clients", body);
 	};
 
 	// !example of update
-	update = (body: UpdateClientBodyRequest) =>
-		this.instance.put<ClientItemResponseType>("/api/clients", body);
-
-	// Update client with avatar
-	updateWithAvatar = (body: UpdateClientBodyRequest, avatarFile?: File) => {
-		const formData = new FormData();
-
-		// Add form fields
-		formData.append('_id', body._id);
-		formData.append('fullName', body.fullName);
-		if (body.email) formData.append('email', body.email);
-		if (body.phoneNumber) formData.append('phoneNumber', body.phoneNumber);
-		if (body.cin) formData.append('cin', body.cin);
-		if (body.location) formData.append('location', body.location);
-
-		// Add avatar file if provided
-		if (avatarFile) {
-			formData.append('avatar', avatarFile);
-		}
-
-		return this.instance.put<ClientItemResponseType>("/api/clients", formData, {
-			headers: {
-				'Content-Type': 'multipart/form-data',
-			},
-		});
+	update = (body: UpdateClientBodyRequest) => {
+		return this.instance.put<ClientItemResponseType>("/api/clients", body);
 	};
 
 	// !example of delete

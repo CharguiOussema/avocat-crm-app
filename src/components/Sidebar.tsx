@@ -6,6 +6,7 @@ import { useApp } from '../hooks';
 import {
   HomeOutlined,
   UserOutlined,
+  TeamOutlined,
   FileTextOutlined,
   FolderOpenOutlined,
   CalendarOutlined,
@@ -19,6 +20,7 @@ const { Sider } = Layout;
 const navigationItems = [
   { key: 'dashboard', icon: HomeOutlined, href: '/', label: 'navigation.dashboard' },
   { key: 'clients', icon: UserOutlined, href: '/clients', label: 'navigation.clients' },
+  { key: 'users', icon: TeamOutlined, href: '/users', label: 'navigation.users' },
   { key: 'cases', icon: FileTextOutlined, href: '/cases', label: 'navigation.cases' },
   { key: 'documents', icon: FolderOpenOutlined, href: '/documents', label: 'navigation.documents' },
   { key: 'calendar', icon: CalendarOutlined, href: '/calendar', label: 'navigation.calendar' },
@@ -72,6 +74,10 @@ export const Sidebar: React.FC = () => {
   // Get current selected key based on location
   const getCurrentKey = () => {
     const path = location.pathname;
+    // Handle nested routes (like /users/add or /users/:id/edit)
+    if (path.startsWith('/users')) {
+      return ['users'];
+    }
     const currentItem = navigationItems.find(item => item.href === path);
     return currentItem ? [currentItem.key] : ['dashboard'];
   };

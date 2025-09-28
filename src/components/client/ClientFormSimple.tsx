@@ -9,6 +9,7 @@ import { Form, Input, Button, Space, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { ClientAvatarUpload } from "./ClientAvatarUpload";
 import { clientService } from "../../services/ClientService";
+import { documentService } from "../../services/DocumentService";
 import { useApp } from "../../hooks";
 import {
 	CreateClientBodyRequest,
@@ -79,6 +80,17 @@ export const ClientFormSimple: React.FC<ClientFormSimpleProps> = ({
 
 		try {
 			let response: { data: ClientItemResponseType };
+			let avatarDocumentId: string | null = null;
+
+			// Upload avatar first if provided
+			if (avatarFile) {
+				const uploadResponse = await documentService.uploadDocument(avatarFile, {
+					documentType: 'avatar',
+					associatedEntityType: 'client',
+					isPublic: true
+				});
+				avatarDocumentId = uploadResponse.data._id;
+			}
 
 			if (mode === "create") {
 				const createData: CreateClientBodyRequest = {
@@ -87,13 +99,10 @@ export const ClientFormSimple: React.FC<ClientFormSimpleProps> = ({
 					phoneNumber: values.phoneNumber?.trim() || null,
 					cin: values.cin?.trim() || null,
 					location: values.location?.trim() || null,
-					avatar: null,
+					avatar: avatarDocumentId,
 				};
 
-				response = await clientService.createWithAvatar(
-					createData,
-					avatarFile || undefined
-				);
+				response = await clientService.create(createData);
 				message.success(
 					t("clients.form.createSuccess", { name: values.fullName })
 				);
@@ -109,13 +118,10 @@ export const ClientFormSimple: React.FC<ClientFormSimpleProps> = ({
 					phoneNumber: values.phoneNumber?.trim() || null,
 					cin: values.cin?.trim() || null,
 					location: values.location?.trim() || null,
-					avatar: client.avatar,
+					avatar: avatarDocumentId || client.avatar, // Use new avatar ID or keep existing
 				};
 
-				response = await clientService.updateWithAvatar(
-					updateData,
-					avatarFile || undefined
-				);
+				response = await clientService.update(updateData);
 				message.success(
 					t("clients.form.updateSuccess", { name: values.fullName })
 				);

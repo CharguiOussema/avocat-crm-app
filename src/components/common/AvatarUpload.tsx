@@ -110,9 +110,9 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 	const containerStyles: React.CSSProperties = useTailwind
 		? {}
 		: {
-				display: "inline-block",
-				position: "relative",
-		  };
+			display: "inline-block",
+			position: "relative",
+		};
 
 	const containerClasses = useTailwind
 		? "avatar-upload-container relative inline-block"
@@ -136,12 +136,12 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 				fontSize: "12px",
 				cursor: disabled ? "not-allowed" : "pointer",
 				opacity: disabled ? 0.5 : 1,
-		  };
+		};
 
 	const buttonClasses = useTailwind
 		? `absolute bottom-0 right-0 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-blue-600 ${
 				disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-		  }`
+		}`
 		: "";
 	const actionButtonStyles: React.CSSProperties = useTailwind
 		? {}
@@ -153,7 +153,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 				fontSize: "14px",
 				cursor: disabled ? "not-allowed" : "pointer",
 				opacity: disabled ? 0.5 : 1,
-		  };
+		};
 
 	return (
 		<div className={`avatar-upload ${className}`}>
@@ -204,7 +204,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 										...actionButtonStyles,
 										backgroundColor: "#3b82f6",
 										color: "white",
-								  }
+								}
 						}
 					>
 						{selectedFile || displayEntity.avatar ? "Change" : "Upload"}
@@ -226,7 +226,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 											...actionButtonStyles,
 											backgroundColor: "#ef4444",
 											color: "white",
-									  }
+									}
 							}
 						>
 							Clear

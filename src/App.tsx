@@ -8,6 +8,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
 import { Clients } from "./pages/Clients";
+import { Users, AddEditUser } from "./pages/users";
 import { Cases } from "./pages/Cases";
 import { Documents } from "./pages/Documents";
 import { Calendar } from "./pages/Calendar";
@@ -88,6 +89,9 @@ const AppContent = () => {
 										<Routes>
 											<Route path='/' element={<Dashboard />} />
 											<Route path='/clients' element={<Clients />} />
+											<Route path='/users' element={<Users />} />
+											<Route path='/users/add' element={<AddEditUser />} />
+											<Route path='/users/:id/edit' element={<AddEditUser />} />
 											<Route path='/cases' element={<Cases />} />
 											<Route path='/documents' element={<Documents />} />
 											<Route path='/calendar' element={<Calendar />} />

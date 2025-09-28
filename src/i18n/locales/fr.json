@@ -6,6 +6,7 @@
   "navigation": {
     "dashboard": "Tableau de bord",
     "clients": "Clients",
+    "users": "Utilisateurs",
     "cases": "Dossiers",
     "documents": "Documents",
     "calendar": "Calendrier",
@@ -25,6 +26,10 @@
     "logout": "Déconnexion",
     "actions": "Actions",
     "cancel": "Annuler",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "back": "Retour",
     "noData": "Aucune donnée"
   },
   "themes": {
@@ -64,7 +69,218 @@
       "showTotal": "{{start}}-{{end}} sur {{total}} clients"
     }
   },
+  "users": {
+    "title": "Gestion des Utilisateurs",
+    "subtitle": "Gérez les membres de votre équipe et leurs accès",
+    "add": {
+      "button": "Ajouter un Utilisateur",
+      "title": "Ajouter un Nouvel Utilisateur",
+      "subtitle": "Créer un nouveau compte utilisateur pour votre équipe"
+    },
+    "edit": {
+      "title": "Modifier l'Utilisateur : {{name}}",
+      "subtitle": "Mettre à jour les informations et permissions de l'utilisateur"
+    },
+    "table": {
+      "avatar": "Avatar",
+      "fullName": "Nom Complet",
+      "email": "Email",
+      "phoneNumber": "Numéro de Téléphone",
+      "roles": "Rôles",
+      "createdAt": "Créé le",
+      "actions": "Actions"
+    },
+    "search": {
+      "placeholder": "Rechercher par nom, email..."
+    },
+    "filter": {
+      "roles": {
+        "placeholder": "Filtrer par rôle"
+      },
+      "apply": "Appliquer les Filtres",
+      "clear": "Effacer les Filtres"
+    },
+    "delete": {
+      "title": "Supprimer l'Utilisateur",
+      "confirm": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée.",
+      "success": "{{name}} a été supprimé avec succès",
+      "error": "Échec de la suppression de l'utilisateur"
+    },
+    "bulk": {
+      "noSelection": "Veuillez sélectionner des utilisateurs à supprimer",
+      "delete": {
+        "title": "Supprimer Plusieurs Utilisateurs",
+        "button": "Supprimer {{count}} Utilisateurs",
+        "confirm": "Êtes-vous sûr de vouloir supprimer {{count}} utilisateurs ? Cette action ne peut pas être annulée.",
+        "success": "{{count}} utilisateurs ont été supprimés avec succès",
+        "error": "Échec de la suppression des utilisateurs sélectionnés"
+      }
+    },
+    "error": {
+      "title": "Échec du Chargement des Utilisateurs",
+      "fetchFailed": "Impossible de récupérer les données utilisateur"
+    },
+    "create": {
+      "success": "{{name}} a été créé avec succès",
+      "error": "Échec de la création de l'utilisateur",
+      "passwordRequired": "Le mot de passe est requis pour les nouveaux utilisateurs"
+    },
+    "update": {
+      "success": "{{name}} a été mis à jour avec succès",
+      "error": "Échec de la mise à jour de l'utilisateur"
+    },
+    "form": {
+      "avatar": {
+        "title": "Photo de Profil",
+        "subtitle": "Télécharger une photo de profil pour cet utilisateur"
+      },
+      "personalInfo": {
+        "title": "Informations Personnelles"
+      },
+      "security": {
+        "title": "Sécurité et Accès"
+      },
+      "fullName": {
+        "label": "Nom Complet",
+        "placeholder": "Entrer le nom complet",
+        "required": "Le nom complet est requis",
+        "minLength": "Le nom complet doit contenir au moins 2 caractères"
+      },
+      "email": {
+        "label": "Adresse Email",
+        "placeholder": "utilisateur@exemple.com",
+        "required": "L'adresse email est requise",
+        "invalid": "Veuillez entrer une adresse email valide"
+      },
+      "phoneNumber": {
+        "label": "Numéro de Téléphone",
+        "placeholder": "+33 1 23 45 67 89",
+        "invalid": "Veuillez entrer un numéro de téléphone valide"
+      },
+      "cin": {
+        "label": "CIN (Numéro National)",
+        "placeholder": "12345678",
+        "invalid": "Le CIN doit contenir exactement 8 chiffres"
+      },
+      "roles": {
+        "label": "Rôles de l'Utilisateur",
+        "placeholder": "Sélectionner les rôles utilisateur",
+        "required": "Veuillez sélectionner au moins un rôle"
+      },
+      "password": {
+        "label": "Mot de Passe",
+        "placeholder": "Entrer le mot de passe",
+        "placeholderEdit": "Laisser vide pour conserver le mot de passe actuel",
+        "required": "Le mot de passe est requis",
+        "minLength": "Le mot de passe doit contenir au moins 6 caractères",
+        "editNote": "Laisser le champ mot de passe vide pour conserver le mot de passe actuel"
+      },
+      "confirmPassword": {
+        "label": "Confirmer le Mot de Passe",
+        "placeholder": "Confirmer le mot de passe",
+        "required": "Veuillez confirmer le mot de passe",
+        "mismatch": "Les mots de passe ne correspondent pas"
+      },
+      "create": "Créer l'Utilisateur",
+      "update": "Mettre à Jour l'Utilisateur"
+    },
+    "roles": {
+      "superAdmin": "Super Administrateur",
+      "admin": "Administrateur",
+      "agent": "Agent"
+    }
+  },
+  "common": {
+    "error": "Erreur",
+    "notProvided": "Non fourni",
+    "pagination": {
+      "total": "{{start}}-{{end}} sur {{total}} éléments"
+    }
+  },
+  "cases": {
+    "title": "Titre",
+    "client": "Client",
+    "status": "Statut",
+    "priority": "Priorité",
+    "progress": "Progrès",
+    "created": "Créé",
+    "add": "Ajouter un Dossier"
+  },
+  "documents": {
+    "name": "Nom",
+    "type": "Type",
+    "size": "Taille",
+    "case": "Dossier",
+    "uploadedBy": "Téléchargé par",
+    "uploadedAt": "Téléchargé le",
+    "upload": "Télécharger un Document"
+  },
+  "calendar": {
+    "addEvent": "Ajouter un Événement",
+    "todayEvents": "Événements d'Aujourd'hui",
+    "upcomingEvents": "Événements à Venir",
+    "noEvents": "Aucun événement aujourd'hui"
+  },
+  "reports": {
+    "totalCases": "Dossiers Totaux",
+    "activeCases": "Dossiers Actifs",
+    "closedCases": "Dossiers Fermés",
+    "winRate": "Taux de Victoire",
+    "month": "Mois",
+    "cases": "Dossiers",
+    "revenue": "Revenus",
+    "export": "Exporter le Rapport",
+    "monthlyPerformance": "Performance Mensuelle",
+    "quickStats": "Statistiques Rapides",
+    "caseCompletion": "Achèvement des Dossiers",
+    "clientSatisfaction": "Satisfaction Client",
+    "billableHours": "Heures Facturables",
+    "caseTypes": "Types de Dossiers"
+  },
+  "settings": {
+    "profile": "Profil",
+    "preferences": "Préférences",
+    "security": "Sécurité",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "firm": "Cabinet d'Avocat",
+    "license": "Numéro de Licence",
+    "firstNameRequired": "Le prénom est requis",
+    "lastNameRequired": "Le nom est requis",
+    "emailRequired": "L'email est requis",
+    "emailInvalid": "Veuillez entrer un email valide",
+    "saveProfile": "Enregistrer le Profil",
+    "notifications": "Notifications",
+    "emailNotifications": "Notifications par Email",
+    "autoSave": "Sauvegarde Automatique",
+    "darkMode": "Mode Sombre",
+    "savePreferences": "Enregistrer les Préférences",
+    "currentPassword": "Mot de Passe Actuel",
+    "newPassword": "Nouveau Mot de Passe",
+    "confirmPassword": "Confirmer le Mot de Passe",
+    "changePassword": "Changer le Mot de Passe"
+  },
   "error": {
     "fetchFailed": "Échec de la récupération des données"
+  },
+  "avatar": {
+    "modal": {
+      "viewImage": "Voir l'Avatar",
+      "zoomIn": "Zoomer",
+      "zoomOut": "Dézoomer",
+      "download": "Télécharger l'image",
+      "loading": "Chargement de l'image...",
+      "error": {
+        "title": "Échec du chargement de l'image",
+        "description": "L'image n'a pas pu être affichée."
+      },
+      "instructions": {
+        "esc": "Appuyez sur ESC pour fermer",
+        "zoom": "Utilisez les contrôles de zoom pour redimensionner",
+        "click": "Cliquez à l'extérieur pour fermer"
+      }
+    }
   }
 }

@@ -6,6 +6,7 @@
   "navigation": {
     "dashboard": "لوحة التحكم",
     "clients": "العملاء",
+    "users": "المستخدمون",
     "cases": "القضايا",
     "documents": "الوثائق",
     "calendar": "التقويم",
@@ -25,6 +26,10 @@
     "logout": "تسجيل الخروج",
     "actions": "الإجراءات",
     "cancel": "إلغاء",
+    "save": "حفظ",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "back": "رجوع",
     "noData": "لا توجد بيانات"
   },
   "themes": {
@@ -64,7 +69,218 @@
       "showTotal": "{{start}}-{{end}} من {{total}} عميل"
     }
   },
+  "users": {
+    "title": "إدارة المستخدمين",
+    "subtitle": "إدارة أعضاء الفريق وصلاحياتهم",
+    "add": {
+      "button": "إضافة مستخدم",
+      "title": "إضافة مستخدم جديد",
+      "subtitle": "إنشاء حساب مستخدم جديد للفريق"
+    },
+    "edit": {
+      "title": "تعديل المستخدم: {{name}}",
+      "subtitle": "تحديث معلومات وصلاحيات المستخدم"
+    },
+    "table": {
+      "avatar": "الصورة الشخصية",
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phoneNumber": "رقم الهاتف",
+      "roles": "الأدوار",
+      "createdAt": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
+    },
+    "search": {
+      "placeholder": "البحث بالاسم أو البريد الإلكتروني..."
+    },
+    "filter": {
+      "roles": {
+        "placeholder": "تصفية حسب الدور"
+      },
+      "apply": "تطبيق المرشحات",
+      "clear": "مسح المرشحات"
+    },
+    "delete": {
+      "title": "حذف المستخدم",
+      "confirm": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
+      "success": "تم حذف {{name}} بنجاح",
+      "error": "فشل في حذف المستخدم"
+    },
+    "bulk": {
+      "noSelection": "يرجى اختيار مستخدمين للحذف",
+      "delete": {
+        "title": "حذف عدة مستخدمين",
+        "button": "حذف {{count}} مستخدمين",
+        "confirm": "هل أنت متأكد من حذف {{count}} مستخدمين؟ لا يمكن التراجع عن هذا الإجراء.",
+        "success": "تم حذف {{count}} مستخدمين بنجاح",
+        "error": "فشل في حذف المستخدمين المحددين"
+      }
+    },
+    "error": {
+      "title": "فشل في تحميل المستخدمين",
+      "fetchFailed": "تعذر جلب بيانات المستخدمين"
+    },
+    "create": {
+      "success": "تم إنشاء {{name}} بنجاح",
+      "error": "فشل في إنشاء المستخدم",
+      "passwordRequired": "كلمة المرور مطلوبة للمستخدمين الجدد"
+    },
+    "update": {
+      "success": "تم تحديث {{name}} بنجاح",
+      "error": "فشل في تحديث المستخدم"
+    },
+    "form": {
+      "avatar": {
+        "title": "الصورة الشخصية",
+        "subtitle": "رفع صورة شخصية لهذا المستخدم"
+      },
+      "personalInfo": {
+        "title": "المعلومات الشخصية"
+      },
+      "security": {
+        "title": "الأمان والوصول"
+      },
+      "fullName": {
+        "label": "الاسم الكامل",
+        "placeholder": "أدخل الاسم الكامل",
+        "required": "الاسم الكامل مطلوب",
+        "minLength": "يجب أن يحتوي الاسم الكامل على حرفين على الأقل"
+      },
+      "email": {
+        "label": "عنوان البريد الإلكتروني",
+        "placeholder": "user@example.com",
+        "required": "عنوان البريد الإلكتروني مطلوب",
+        "invalid": "يرجى إدخال عنوان بريد إلكتروني صالح"
+      },
+      "phoneNumber": {
+        "label": "رقم الهاتف",
+        "placeholder": "+966 50 123 4567",
+        "invalid": "يرجى إدخال رقم هاتف صالح"
+      },
+      "cin": {
+        "label": "رقم الهوية الوطنية",
+        "placeholder": "12345678",
+        "invalid": "يجب أن يحتوي رقم الهوية على 8 أرقام بالضبط"
+      },
+      "roles": {
+        "label": "أدوار المستخدم",
+        "placeholder": "اختر أدوار المستخدم",
+        "required": "يرجى اختيار دور واحد على الأقل"
+      },
+      "password": {
+        "label": "كلمة المرور",
+        "placeholder": "أدخل كلمة المرور",
+        "placeholderEdit": "اتركه فارغاً للاحتفاظ بكلمة المرور الحالية",
+        "required": "كلمة المرور مطلوبة",
+        "minLength": "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل",
+        "editNote": "اترك حقل كلمة المرور فارغاً للاحتفاظ بكلمة المرور الحالية"
+      },
+      "confirmPassword": {
+        "label": "تأكيد كلمة المرور",
+        "placeholder": "أكد كلمة المرور",
+        "required": "يرجى تأكيد كلمة المرور",
+        "mismatch": "كلمات المرور غير متطابقة"
+      },
+      "create": "إنشاء المستخدم",
+      "update": "تحديث المستخدم"
+    },
+    "roles": {
+      "superAdmin": "مدير عام",
+      "admin": "مدير",
+      "agent": "وكيل"
+    }
+  },
+  "common": {
+    "error": "خطأ",
+    "notProvided": "غير مقدم",
+    "pagination": {
+      "total": "{{start}}-{{end}} من {{total}} عنصر"
+    }
+  },
+  "cases": {
+    "title": "العنوان",
+    "client": "العميل",
+    "status": "الحالة",
+    "priority": "الأولوية",
+    "progress": "التقدم",
+    "created": "تاريخ الإنشاء",
+    "add": "إضافة قضية"
+  },
+  "documents": {
+    "name": "الاسم",
+    "type": "النوع",
+    "size": "الحجم",
+    "case": "القضية",
+    "uploadedBy": "رفع بواسطة",
+    "uploadedAt": "تاريخ الرفع",
+    "upload": "رفع وثيقة"
+  },
+  "calendar": {
+    "addEvent": "إضافة حدث",
+    "todayEvents": "أحداث اليوم",
+    "upcomingEvents": "الأحداث القادمة",
+    "noEvents": "لا توجد أحداث اليوم"
+  },
+  "reports": {
+    "totalCases": "إجمالي القضايا",
+    "activeCases": "القضايا النشطة",
+    "closedCases": "القضايا المغلقة",
+    "winRate": "معدل الفوز",
+    "month": "الشهر",
+    "cases": "القضايا",
+    "revenue": "الإيرادات",
+    "export": "تصدير التقرير",
+    "monthlyPerformance": "الأداء الشهري",
+    "quickStats": "الإحصائيات السريعة",
+    "caseCompletion": "إنجاز القضايا",
+    "clientSatisfaction": "رضا العملاء",
+    "billableHours": "الساعات القابلة للفوترة",
+    "caseTypes": "أنواع القضايا"
+  },
+  "settings": {
+    "profile": "الملف الشخصي",
+    "preferences": "التفضيلات",
+    "security": "الأمان",
+    "firstName": "الاسم الأول",
+    "lastName": "الاسم الأخير",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "firm": "مكتب المحاماة",
+    "license": "رقم الترخيص",
+    "firstNameRequired": "الاسم الأول مطلوب",
+    "lastNameRequired": "الاسم الأخير مطلوب",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "emailInvalid": "يرجى إدخال بريد إلكتروني صالح",
+    "saveProfile": "حفظ الملف الشخصي",
+    "notifications": "الإشعارات",
+    "emailNotifications": "إشعارات البريد الإلكتروني",
+    "autoSave": "الحفظ التلقائي",
+    "darkMode": "الوضع الداكن",
+    "savePreferences": "حفظ التفضيلات",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "changePassword": "تغيير كلمة المرور"
+  },
   "error": {
     "fetchFailed": "فشل في جلب البيانات"
+  },
+  "avatar": {
+    "modal": {
+      "viewImage": "عرض الصورة الشخصية",
+      "zoomIn": "تكبير",
+      "zoomOut": "تصغير",
+      "download": "تحميل الصورة",
+      "loading": "جاري تحميل الصورة...",
+      "error": {
+        "title": "فشل في تحميل الصورة",
+        "description": "تعذر عرض الصورة."
+      },
+      "instructions": {
+        "esc": "اضغط ESC للإغلاق",
+        "zoom": "استخدم أدوات التحكم في التكبير لتغيير الحجم",
+        "click": "انقر خارجاً للإغلاق"
+      }
+    }
   }
 }
