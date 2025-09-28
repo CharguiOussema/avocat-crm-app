@@ -13,7 +13,14 @@ import { Cases } from "./pages/Cases";
 import { Documents } from "./pages/Documents";
 import { Calendar } from "./pages/Calendar";
 import { Reports } from "./pages/Reports";
-import { Settings } from "./pages/Settings";
+import {
+	Settings,
+	MonProfil,
+	Entreprise,
+	Court,
+	LawsuitStage,
+	TypeLawsuit,
+} from "./pages/settings";
 import { useApp } from "./hooks";
 
 // Create a client
@@ -96,7 +103,14 @@ const AppContent = () => {
 											<Route path='/documents' element={<Documents />} />
 											<Route path='/calendar' element={<Calendar />} />
 											<Route path='/reports' element={<Reports />} />
-											<Route path='/settings' element={<Settings />} />
+											<Route path='/settings' element={<Settings />}>
+												<Route index element={<MonProfil />} />
+												<Route path='mon-profil' element={<MonProfil />} />
+												<Route path='entreprise' element={<Entreprise />} />
+												<Route path='court' element={<Court />} />
+												<Route path='lawsuit-stage' element={<LawsuitStage />} />
+												<Route path='type-lawsuit' element={<TypeLawsuit />} />
+											</Route>
 										</Routes>
 									</Layout>
 								</ProtectedRoute>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Layout, Button, Dropdown, Space, Typography, theme } from 'antd';
 import {
   MenuOutlined,
@@ -17,6 +18,7 @@ const { Text } = Typography;
 
 export const Navbar: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user, company, logout } = useAuth();
   const {
     sidebarOpen,
@@ -84,7 +86,7 @@ export const Navbar: React.FC = () => {
           </Space>
         ),
         onClick: () => {
-          // Navigate to profile or settings
+          navigate('/settings/mon-profil');
         }
       },
       {

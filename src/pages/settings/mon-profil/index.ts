@@ -1,0 +1,1 @@
+export { MonProfil } from './MonProfil';
