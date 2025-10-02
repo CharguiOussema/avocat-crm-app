@@ -4,7 +4,7 @@
  * Date: 24/9/2024
  */
 
-import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
 	Typography,
 	Card,
@@ -15,37 +15,28 @@ import {
 	Spin,
 	Modal,
 	message,
-	Input,
 	Row,
 	Col,
-	Tag,
-	Tooltip,
-	Checkbox,
-	Popover,
 } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import {
 	PlusOutlined,
-	EditOutlined,
 	DeleteOutlined,
-	SearchOutlined,
 	ExclamationCircleOutlined,
-	FilterOutlined,
-	DownOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
 import { useFetchUsers } from "../../hooks/useFetchUsers";
-import { UserItemResponseType } from "../../models/user";
 import { userService } from "../../services/UserService";
 import { queryKeys } from "../../services/QueryClientManager";
 import { QueryBuilder } from "../../services/QueryBuilder";
 import { useNavigate } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 import { USER_ROLES } from "../../models/consts";
-import { AvatarWithModal } from "../../components/common/AvatarWithModal";
 import { useApp, useAuth } from "../../hooks";
 import { cn } from "../../utils/cn";
+import { useUserTableColumns } from "../../components/users/UserTableColumns";
+import { SearchInput } from "../../components/common/SearchInput";
+import { RoleFilter } from "../../components/users/RoleFilter";
 
 const { Title } = Typography;
 const { confirm } = Modal;
@@ -70,22 +61,6 @@ const getErrorMessage = (error: unknown): string => {
 	}
 	return "An unexpected error occurred";
 };
-
-// Role color mapping
-const getRoleColor = (role: USER_ROLES): string => {
-	switch (role) {
-		case USER_ROLES.SUPER_ADMIN:
-			return "red";
-		case USER_ROLES.USER_ADMIN:
-			return "blue";
-		case USER_ROLES.USER_AGENT:
-			return "green";
-		default:
-			return "default";
-	}
-};
-
-// Role display names - will be moved inside component to access t function
 
 export const Users: React.FC = () => {
 	const { t } = useTranslation();
@@ -130,9 +105,7 @@ export const Users: React.FC = () => {
 	}, [currentUser]);
 
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-	const [localSearch, setLocalSearch] = useState(search);
 	const [selectedRoles, setSelectedRoles] = useState<USER_ROLES[]>([]);
-	const searchTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
 	// Parse roles from URL parameter
 	const parseRolesFromUrl = useCallback((rolesParam?: string | string[]): USER_ROLES[] => {
@@ -156,42 +129,25 @@ export const Users: React.FC = () => {
 	const { response } = useFetchUsers();
 	const { data, error, isLoading, isFetching } = response;
 
-	// Update local search when URL search changes
-	useEffect(() => {
-		setLocalSearch(search);
-	}, [search]);
-
 	// Update selected roles when URL roles parameter changes
 	useEffect(() => {
 		const parsedRoles = parseRolesFromUrl(roles);
 		setSelectedRoles(parsedRoles);
 	}, [roles, parseRolesFromUrl]);
 
-	// Debounced search function
-	const debouncedSearch = useCallback((searchValue: string) => {
-		if (searchTimeoutRef.current) {
-			clearTimeout(searchTimeoutRef.current);
-		}
-
-		searchTimeoutRef.current = setTimeout(() => {
-			const rolesParam = Array.isArray(roles) ? roles.join(',') : roles;
-			const searchParams = QueryBuilder.generateSearchParams()
-				.setPage(1) // Reset to first page when searching
-				.setLimit(limit)
-				.setQueryParam("search", searchValue || undefined)
-				.setQueryParam("roles", rolesParam || undefined).search;
-
-			navigate({
-				search: searchParams,
-			});
-		}, 500); // 500ms debounce
-	}, [limit, roles, navigate]);
-
-	// Handle search input change with debounce
+	// Handle search input change
 	const handleSearchChange = useCallback((value: string) => {
-		setLocalSearch(value);
-		debouncedSearch(value);
-	}, [debouncedSearch]);
+		const rolesParam = Array.isArray(roles) ? roles.join(',') : roles;
+		const searchParams = QueryBuilder.generateSearchParams()
+			.setPage(1)
+			.setLimit(limit)
+			.setQueryParam("search", value || undefined)
+			.setQueryParam("roles", rolesParam || undefined).search;
+
+		navigate({
+			search: searchParams,
+		});
+	}, [limit, roles, navigate]);
 
 	// Handle role filter change (immediate)
 	const handleRoleFilterChange = useCallback((checkedRoles: USER_ROLES[]) => {
@@ -206,51 +162,8 @@ export const Users: React.FC = () => {
 		});
 	}, [search, limit, navigate, rolesToUrlParam]);
 
-	// Handle individual role checkbox change
-	const handleRoleCheckboxChange = useCallback((role: USER_ROLES, checked: boolean) => {
-		let newSelectedRoles: USER_ROLES[];
-		if (checked) {
-			newSelectedRoles = [...selectedRoles, role];
-		} else {
-			newSelectedRoles = selectedRoles.filter(r => r !== role);
-		}
-		handleRoleFilterChange(newSelectedRoles);
-	}, [selectedRoles, handleRoleFilterChange]);
-
-	// Render role filter content
-	const renderRoleFilterContent = useCallback(() => {
-		const availableRoles = getAvailableRoles();
-		return (
-			<div className="space-y-2 p-2 min-w-[200px]">
-				{availableRoles.map(role => (
-					<div key={role} className="flex items-center">
-						<Checkbox
-							checked={selectedRoles.includes(role)}
-							onChange={(e) => handleRoleCheckboxChange(role, e.target.checked)}
-						>
-							{getRoleDisplayName(role)}
-						</Checkbox>
-					</div>
-				))}
-				{selectedRoles.length > 0 && (
-					<div className="pt-2 border-t border-gray-200">
-						<Button
-							type="link"
-							size="small"
-							onClick={() => handleRoleFilterChange([])}
-							className="text-red-500 p-0 h-auto"
-						>
-							{t("users.filter.clear")}
-						</Button>
-					</div>
-				)}
-			</div>
-		);
-	}, [getAvailableRoles, selectedRoles, handleRoleCheckboxChange, getRoleDisplayName, handleRoleFilterChange, t]);
-
 	// Clear all filters
 	const clearFilters = useCallback(() => {
-		setLocalSearch("");
 		const searchParams = QueryBuilder.generateSearchParams()
 			.setPage(1)
 			.setLimit(limit).search;
@@ -259,15 +172,6 @@ export const Users: React.FC = () => {
 			search: searchParams,
 		});
 	}, [limit, navigate]);
-
-	// Cleanup timeout on unmount
-	useEffect(() => {
-		return () => {
-			if (searchTimeoutRef.current) {
-				clearTimeout(searchTimeoutRef.current);
-			}
-		};
-	}, []);
 
 	// Handle table pagination change
 	const handleTableChange = useCallback(
@@ -358,108 +262,13 @@ export const Users: React.FC = () => {
 		[navigate]
 	);
 
-	// Table columns configuration
-	const columns: ColumnsType<UserItemResponseType> = useMemo(
-		() => [
-			{
-				title: t("users.table.avatar"),
-				dataIndex: "avatar",
-				key: "avatar",
-				width: 80,
-				render: (avatar: string | null, record: UserItemResponseType) => (
-					<AvatarWithModal
-						entity={{
-							_id: record._id,
-							avatar,
-							fullName: record.fullName,
-						}}
-						entityType='user'
-						size='small'
-						showModal={!!avatar}
-					/>
-				),
-			},
-			{
-				title: t("users.table.fullName"),
-				dataIndex: "fullName",
-				key: "fullName",
-				sorter: true,
-				render: (text: string) => (
-					<span className='font-medium text-card-foreground'>{text}</span>
-				),
-			},
-			{
-				title: t("users.table.email"),
-				dataIndex: "email",
-				key: "email",
-				render: (email: string) => (
-					<span className='text-muted-foreground'>{email}</span>
-				),
-			},
-			{
-				title: t("users.table.roles"),
-				dataIndex: "roles",
-				key: "roles",
-				render: (roles: USER_ROLES[]) => (
-					<Space wrap>
-						{roles.map((role) => (
-							<Tag key={role} color={getRoleColor(role)}>
-								{getRoleDisplayName(role)}
-							</Tag>
-						))}
-					</Space>
-				),
-			},
-			{
-				title: t("users.table.phoneNumber"),
-				dataIndex: "phoneNumber",
-				key: "phoneNumber",
-				render: (phone: string | null) => (
-					<span className='text-muted-foreground'>
-						{phone || t("common.notProvided")}
-					</span>
-				),
-			},
-			{
-				title: t("users.table.createdAt"),
-				dataIndex: "createdAt",
-				key: "createdAt",
-				sorter: true,
-				render: (date: string) => (
-					<span className='text-muted-foreground'>
-						{new Date(date).toLocaleDateString()}
-					</span>
-				),
-			},
-			{
-				title: t("users.table.actions"),
-				key: "actions",
-				width: 120,
-				render: (_: unknown, record: UserItemResponseType) => (
-					<Space size='small'>
-						<Tooltip title={t("ui.edit")}>
-							<Button
-								type='text'
-								icon={<EditOutlined />}
-								onClick={() => handleEditUser(record._id)}
-								className='text-primary hover:bg-primary/10'
-							/>
-						</Tooltip>
-						<Tooltip title={t("ui.delete")}>
-							<Button
-								type='text'
-								danger
-								icon={<DeleteOutlined />}
-								onClick={() => handleDelete(record._id, record.fullName)}
-								className='text-destructive hover:bg-destructive/10'
-							/>
-						</Tooltip>
-					</Space>
-				),
-			},
-		],
-		[t, handleDelete, handleEditUser, getRoleDisplayName]
-	);
+	// Table columns configuration using custom hook
+	const columns = useUserTableColumns({
+		t,
+		getRoleDisplayName,
+		onEdit: handleEditUser,
+		onDelete: handleDelete,
+	});
 
 	// Row selection configuration
 	const rowSelection = {
@@ -529,44 +338,20 @@ export const Users: React.FC = () => {
 			<Card className='border-border'>
 				<Row gutter={16} align='middle'>
 					<Col xs={24} sm={12} lg={8}>
-						<Input
+						<SearchInput
+							value={search}
+							onChange={handleSearchChange}
 							placeholder={t("users.search.placeholder")}
-							prefix={<SearchOutlined />}
-							value={localSearch}
-							onChange={(e) => handleSearchChange(e.target.value)}
-							className='w-full'
 						/>
 					</Col>
 					<Col xs={24} sm={12} lg={6}>
-						<Popover
-							content={renderRoleFilterContent()}
-							title={t("users.filter.roles.title")}
-							trigger="click"
-							placement="bottomLeft"
-						>
-							<Button
-								className='w-full text-left'
-								style={{
-									height: '32px',
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'space-between',
-									borderColor: selectedRoles.length > 0 ? '#1890ff' : undefined,
-									color: selectedRoles.length > 0 ? '#1890ff' : undefined
-								}}
-							>
-								<span>
-									{selectedRoles.length > 0
-										? `${selectedRoles.length} ${t("users.filter.roles.selected")}`
-										: t("users.filter.roles.placeholder")
-									}
-								</span>
-								<Space>
-									<FilterOutlined />
-									<DownOutlined style={{ fontSize: '12px' }} />
-								</Space>
-							</Button>
-						</Popover>
+						<RoleFilter
+							selectedRoles={selectedRoles}
+							availableRoles={getAvailableRoles()}
+							onChange={handleRoleFilterChange}
+							getRoleDisplayName={getRoleDisplayName}
+							t={t}
+						/>
 					</Col>
 					<Col xs={24} sm={24} lg={10}>
 						<Space className='w-full justify-end'>

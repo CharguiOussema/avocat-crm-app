@@ -18,7 +18,11 @@ import {
 	Spin,
 	Alert,
 } from "antd";
-import { ArrowLeftOutlined, SaveOutlined, UserOutlined } from "@ant-design/icons";
+import {
+	ArrowLeftOutlined,
+	SaveOutlined,
+	UserOutlined,
+} from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueryClient } from "react-query";
@@ -79,7 +83,6 @@ export const AddEditUser: React.FC = () => {
 	const [error, setError] = useState<string | null>(null);
 
 	const isEditMode = !!id;
-
 	// Get available roles based on current user
 	const getAvailableRoles = () => {
 		const roles = [USER_ROLES.USER_ADMIN, USER_ROLES.USER_AGENT];
@@ -150,11 +153,14 @@ export const AddEditUser: React.FC = () => {
 
 			// Upload avatar first if provided
 			if (avatarFile) {
-				const uploadResponse = await documentService.uploadDocument(avatarFile, {
-					documentType: 'avatar',
-					associatedEntityType: 'user',
-					isPublic: true
-				});
+				const uploadResponse = await documentService.uploadDocument(
+					avatarFile,
+					{
+						documentType: "avatar",
+						associatedEntityType: "user",
+						isPublic: true,
+					}
+				);
 				avatarDocumentId = uploadResponse.data._id;
 			}
 
@@ -200,7 +206,10 @@ export const AddEditUser: React.FC = () => {
 			// Navigate back to users list
 			navigate("/users");
 		} catch (error) {
-			console.error(`Error ${isEditMode ? "updating" : "creating"} user:`, error);
+			console.error(
+				`Error ${isEditMode ? "updating" : "creating"} user:`,
+				error
+			);
 			const errorMessage = getErrorMessage(error);
 			setError(errorMessage);
 			message.error(
@@ -231,10 +240,14 @@ export const AddEditUser: React.FC = () => {
 	const validateConfirmPassword = (_: unknown, value: string) => {
 		const password = form.getFieldValue("password");
 		if (password && !value) {
-			return Promise.reject(new Error(t("users.form.confirmPassword.required")));
+			return Promise.reject(
+				new Error(t("users.form.confirmPassword.required"))
+			);
 		}
 		if (password && value !== password) {
-			return Promise.reject(new Error(t("users.form.confirmPassword.mismatch")));
+			return Promise.reject(
+				new Error(t("users.form.confirmPassword.mismatch"))
+			);
 		}
 		return Promise.resolve();
 	};
@@ -242,8 +255,8 @@ export const AddEditUser: React.FC = () => {
 	// Loading state for fetching user
 	if (fetchingUser) {
 		return (
-			<div className="flex justify-center items-center min-h-[400px]">
-				<Spin size="large" />
+			<div className='flex justify-center items-center min-h-[400px]'>
+				<Spin size='large' />
 			</div>
 		);
 	}
@@ -251,18 +264,18 @@ export const AddEditUser: React.FC = () => {
 	// Error state for fetching user
 	if (error && isEditMode) {
 		return (
-			<div className="space-y-6">
+			<div className='space-y-6'>
 				<Button
 					icon={<ArrowLeftOutlined />}
 					onClick={handleBack}
-					className="mb-4"
+					className='mb-4'
 				>
 					{t("ui.back")}
 				</Button>
 				<Alert
 					message={t("users.error.fetchFailed")}
 					description={error}
-					type="error"
+					type='error'
 					showIcon
 				/>
 			</div>
@@ -270,117 +283,128 @@ export const AddEditUser: React.FC = () => {
 	}
 
 	return (
-		<div className="space-y-6">
+		<div className='space-y-6'>
 			{/* Header */}
-			<div className={cn(
-				"flex items-center gap-4",
-				isRTL ? "flex-row-reverse" : "flex-row"
-			)}>
-				<Button
-					icon={<ArrowLeftOutlined />}
-					onClick={handleBack}
-					size="large"
-				>
+			<div
+				className={cn(
+					"flex items-center gap-4",
+					isRTL ? "flex-row-reverse" : "flex-row"
+				)}
+			>
+				<Button icon={<ArrowLeftOutlined />} onClick={handleBack} size='large'>
 					{t("ui.back")}
 				</Button>
 				<div>
-					<Title level={2} className="!mb-1 text-card-foreground">
+					<Title level={2} className='!mb-1 text-card-foreground'>
 						{isEditMode
 							? t("users.edit.title", { name: userData?.fullName })
 							: t("users.add.title")}
 					</Title>
-					<p className="text-muted-foreground">
+					<p className='text-muted-foreground'>
 						{isEditMode ? t("users.edit.subtitle") : t("users.add.subtitle")}
 					</p>
 				</div>
 			</div>
 
 			{/* Form */}
-			<Card className="border-border">
+			<Card className='border-border'>
 				{error && (
 					<Alert
 						message={t("common.error")}
 						description={error}
-						type="error"
+						type='error'
 						showIcon
-						className="mb-6"
+						className='mb-6'
 					/>
 				)}
 
 				<Form
 					form={form}
-					layout="vertical"
+					layout='vertical'
 					onFinish={handleSubmit}
 					disabled={loading}
-					className="space-y-6"
+					className='space-y-6'
 				>
 					{/* Avatar and Basic Info Layout */}
-					<div className={cn(
-						"flex gap-8",
-						isRTL ? "flex-row-reverse" : "flex-row",
-						"flex-col lg:flex-row"
-					)}>
+					<div
+						className={cn(
+							"flex gap-8",
+							isRTL ? "flex-row-reverse" : "flex-row",
+							"flex-col lg:flex-row"
+						)}
+					>
 						{/* Avatar Section */}
-						<div className={cn(
-							"flex flex-col gap-4",
-							isRTL ? "lg:items-end" : "lg:items-start",
-							"items-center lg:w-auto w-full"
-						)}>
-							<div className="text-center lg:text-left">
-								<h3 className="text-lg font-semibold text-card-foreground mb-2">
+						<div
+							className={cn(
+								"flex flex-col gap-4",
+								isRTL ? "lg:items-end" : "lg:items-start",
+								"items-center lg:w-auto w-full"
+							)}
+						>
+							<div className='text-center lg:text-left'>
+								<h3 className='text-lg font-semibold text-card-foreground mb-2'>
 									{t("users.form.avatar.title")}
 								</h3>
-								<p className="text-sm text-muted-foreground">
+								<p className='text-sm text-muted-foreground'>
 									{t("users.form.avatar.subtitle")}
 								</p>
 							</div>
 							<AvatarUpload
 								entity={getAvatarEntity()}
-								entityType="user"
+								entityType='user'
 								onAvatarSelected={handleAvatarSelected}
 								disabled={loading}
-								size="large"
+								size='large'
 								useTailwind={true}
 							/>
 						</div>
 
 						{/* Form Fields */}
-						<div className="flex-1 space-y-6">
+						<div className='flex-1 space-y-6'>
 							{/* Personal Information */}
 							<div>
-								<h3 className="text-lg font-semibold text-card-foreground mb-4">
+								<h3 className='text-lg font-semibold text-card-foreground mb-4'>
 									{t("users.form.personalInfo.title")}
 								</h3>
 								<Row gutter={16}>
 									<Col xs={24} lg={12}>
 										<Form.Item
-											name="fullName"
+											name='fullName'
 											label={t("users.form.fullName.label")}
 											rules={[
-												{ required: true, message: t("users.form.fullName.required") },
+												{
+													required: true,
+													message: t("users.form.fullName.required"),
+												},
 												{ min: 2, message: t("users.form.fullName.minLength") },
 											]}
 										>
 											<Input
 												prefix={<UserOutlined />}
 												placeholder={t("users.form.fullName.placeholder")}
-												size="large"
+												size='large'
 											/>
 										</Form.Item>
 									</Col>
 									<Col xs={24} lg={12}>
 										<Form.Item
-											name="email"
+											name='email'
 											label={t("users.form.email.label")}
 											rules={[
-												{ required: true, message: t("users.form.email.required") },
-												{ type: "email", message: t("users.form.email.invalid") },
+												{
+													required: true,
+													message: t("users.form.email.required"),
+												},
+												{
+													type: "email",
+													message: t("users.form.email.invalid"),
+												},
 											]}
 										>
 											<Input
-												type="email"
+												type='email'
 												placeholder={t("users.form.email.placeholder")}
-												size="large"
+												size='large'
 											/>
 										</Form.Item>
 									</Col>
@@ -389,7 +413,7 @@ export const AddEditUser: React.FC = () => {
 								<Row gutter={16}>
 									<Col xs={24} lg={12}>
 										<Form.Item
-											name="phoneNumber"
+											name='phoneNumber'
 											label={t("users.form.phoneNumber.label")}
 											rules={[
 												{
@@ -400,13 +424,13 @@ export const AddEditUser: React.FC = () => {
 										>
 											<Input
 												placeholder={t("users.form.phoneNumber.placeholder")}
-												size="large"
+												size='large'
 											/>
 										</Form.Item>
 									</Col>
 									<Col xs={24} lg={12}>
 										<Form.Item
-											name="cin"
+											name='cin'
 											label={t("users.form.cin.label")}
 											rules={[
 												{
@@ -418,7 +442,7 @@ export const AddEditUser: React.FC = () => {
 											<Input
 												placeholder={t("users.form.cin.placeholder")}
 												maxLength={8}
-												size="large"
+												size='large'
 											/>
 										</Form.Item>
 									</Col>
@@ -427,20 +451,31 @@ export const AddEditUser: React.FC = () => {
 								<Row gutter={16}>
 									<Col xs={24} lg={12}>
 										<Form.Item
-											name="roles"
+											name='roles'
 											label={t("users.form.roles.label")}
 											rules={[
-												{ required: true, message: t("users.form.roles.required") },
+												{
+													required: true,
+													message: t("users.form.roles.required"),
+												},
 											]}
 										>
 											<Select
-												mode="multiple"
+												mode='multiple'
 												placeholder={t("users.form.roles.placeholder")}
-												size="large"
+												size='large'
 											>
-												{getAvailableRoles().map(role => (
+												{getAvailableRoles().map((role) => (
 													<Option key={role} value={role}>
-														{t(`users.roles.${role === USER_ROLES.SUPER_ADMIN ? 'superAdmin' : role === USER_ROLES.USER_ADMIN ? 'admin' : 'agent'}`)}
+														{t(
+															`users.roles.${
+																role === USER_ROLES.SUPER_ADMIN
+																	? "superAdmin"
+																	: role === USER_ROLES.USER_ADMIN
+																	? "admin"
+																	: "agent"
+															}`
+														)}
 													</Option>
 												))}
 											</Select>
@@ -451,13 +486,13 @@ export const AddEditUser: React.FC = () => {
 
 							{/* Security Information */}
 							<div>
-								<h3 className="text-lg font-semibold text-card-foreground mb-4">
+								<h3 className='text-lg font-semibold text-card-foreground mb-4'>
 									{t("users.form.security.title")}
 								</h3>
 								<Row gutter={16}>
 									<Col xs={24} lg={12}>
 										<Form.Item
-											name="password"
+											name='password'
 											label={t("users.form.password.label")}
 											rules={[{ validator: validatePassword }]}
 										>
@@ -467,26 +502,28 @@ export const AddEditUser: React.FC = () => {
 														? t("users.form.password.placeholderEdit")
 														: t("users.form.password.placeholder")
 												}
-												size="large"
+												size='large'
 											/>
 										</Form.Item>
 									</Col>
 									<Col xs={24} lg={12}>
 										<Form.Item
-											name="confirmPassword"
+											name='confirmPassword'
 											label={t("users.form.confirmPassword.label")}
 											dependencies={["password"]}
 											rules={[{ validator: validateConfirmPassword }]}
 										>
 											<Input.Password
-												placeholder={t("users.form.confirmPassword.placeholder")}
-												size="large"
+												placeholder={t(
+													"users.form.confirmPassword.placeholder"
+												)}
+												size='large'
 											/>
 										</Form.Item>
 									</Col>
 								</Row>
 								{isEditMode && (
-									<p className="text-sm text-muted-foreground">
+									<p className='text-sm text-muted-foreground'>
 										{t("users.form.password.editNote")}
 									</p>
 								)}
@@ -495,17 +532,19 @@ export const AddEditUser: React.FC = () => {
 					</div>
 
 					{/* Action Buttons */}
-					<div className={cn(
-						"flex gap-4 pt-6 border-t border-border",
-						isRTL ? "flex-row-reverse justify-end" : "flex-row justify-end"
-					)}>
-						<Button size="large" onClick={handleBack} disabled={loading}>
+					<div
+						className={cn(
+							"flex gap-4 pt-6 border-t border-border",
+							isRTL ? "flex-row-reverse justify-end" : "flex-row justify-end"
+						)}
+					>
+						<Button size='large' onClick={handleBack} disabled={loading}>
 							{t("ui.cancel")}
 						</Button>
 						<Button
-							type="primary"
-							htmlType="submit"
-							size="large"
+							type='primary'
+							htmlType='submit'
+							size='large'
 							loading={loading}
 							icon={<SaveOutlined />}
 						>

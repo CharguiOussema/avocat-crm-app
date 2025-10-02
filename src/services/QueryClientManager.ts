@@ -14,6 +14,7 @@ export const queryKeys = {
   // Company-related queries
   COMPANIES: 'companies',
   COMPANY_DETAILS: 'company-details',
+  CURRENT_COMPANY: 'currentCompany',
 
   // Court-related queries
   COURTS: 'courts',

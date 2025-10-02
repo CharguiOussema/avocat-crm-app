@@ -30,6 +30,10 @@ class CompanyService {
 	getById = (id: string) =>
 		this.instance.get<CompanyItemResponseType>(`/api/companys/${id}`);
 
+	// Get current user's company
+	getCurrentCompany = () =>
+		this.instance.get<CompanyItemResponseType>("/api/companys/currentCompany");
+
 	// !example of create
 	create = (body: CreateCompanyBodyRequest) =>
 		this.instance.post<CompanyItemResponseType>("/api/companys", body);

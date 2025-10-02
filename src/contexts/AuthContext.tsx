@@ -9,6 +9,7 @@ import axios from "axios";
 import { UserItemResponseType } from "../models/user";
 import { CompanyItemResponseType } from "../models/company";
 import { userService } from "../services/UserService";
+import { companyService } from "../services/CompanyService";
 import { queryKeys } from "../services/QueryClientManager";
 
 type User = UserItemResponseType;
@@ -68,27 +69,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		staleTime: 1000 * 60 * 5, // 5 minutes
 	});
 
-	// TODO: Company fetching disabled - user response no longer includes company field
-	// const {
-	//   data: company,
-	//   isLoading: companyLoading,
-	//   refetch: refetchCompany,
-	//   error: companyError
-	// } = useQuery({
-	//   queryKey: ['currentCompany'],
-	//   queryFn: async (): Promise<Company> => {
-	//     const response = await axios.get(`${API_URL}/api/companies/current`);
-	//     return response.data;
-	//   },
-	//   enabled: isAuthenticated,
-	//   retry: false,
-	//   staleTime: 1000 * 60 * 10, // 10 minutes
-	// });
-
-	// Temporary: No company data available
-	const company = null;
-	const refetchCompany = () => Promise.resolve();
-	const companyError = null;
+	// Fetch current company
+	const {
+		data: company,
+		isLoading: companyLoading,
+		refetch: refetchCompany,
+		error: companyError
+	} = useQuery({
+		queryKey: [queryKeys.CURRENT_COMPANY],
+		queryFn: async (): Promise<Company> => {
+			const response = await companyService.getCurrentCompany();
+			return response.data;
+		},
+		enabled: isAuthenticated,
+		retry: false,
+		staleTime: 1000 * 60 * 10, // 10 minutes
+	});
 
 	// Handle authentication errors
 	useEffect(() => {
@@ -112,7 +108,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		delete axios.defaults.headers.common["Authorization"];
 	};
 
-	const isLoading = userLoading; // companyLoading removed since company fetching is disabled
+	const isLoading = userLoading || companyLoading;
 
 	const value: AuthContextType = {
 		isAuthenticated,

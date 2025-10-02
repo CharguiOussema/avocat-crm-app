@@ -24,7 +24,7 @@ import { documentService } from '../../../services/DocumentService';
 import { queryKeys } from '../../../services/QueryClientManager';
 import { useApp, useAuth } from '../../../hooks';
 import { USER_ROLES } from '../../../models/consts';
-import { UpdateCompanyBodyRequest, CompanyItemResponseType } from '../../../models/company';
+import { UpdateCompanyBodyRequest } from '../../../models/company';
 import { cn } from '../../../utils/cn';
 import type { AvatarEntity } from '../../../services/AvatarService';
 
@@ -40,45 +40,27 @@ interface CompanyFormValues {
 export const Entreprise: React.FC = () => {
   const { t } = useTranslation();
   const { isRTL } = useApp();
-  const { user: currentUser, company } = useAuth();
+  const { user: currentUser, company, isLoading: authLoading, refetchCompany } = useAuth();
   const queryClient = useQueryClient();
   const [form] = Form.useForm<CompanyFormValues>();
 
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [fetchingCompany, setFetchingCompany] = useState(false);
-  const [companyData, setCompanyData] = useState<CompanyItemResponseType | null>(null);
 
   // Check if user has admin role
   const isAdmin = currentUser?.roles.includes(USER_ROLES.USER_ADMIN);
 
-  // Fetch current company data
+  // Pre-fill form with company data from useAuth
   useEffect(() => {
-    if (company?._id && isAdmin) {
-      setFetchingCompany(true);
-      companyService
-        .getById(company._id)
-        .then((response) => {
-          const company = response.data;
-          setCompanyData(company);
-
-          // Pre-fill form with company data
-          form.setFieldsValue({
-            name: company.name,
-            email: company.email,
-            phoneNumber: company.phoneNumber,
-            webSite: company.webSite || '',
-          });
-        })
-        .catch((error) => {
-          console.error('Error fetching company:', error);
-          message.error(t('settings.company.fetchError'));
-        })
-        .finally(() => {
-          setFetchingCompany(false);
-        });
+    if (company && isAdmin) {
+      form.setFieldsValue({
+        name: company.name,
+        email: company.email,
+        phoneNumber: company.phoneNumber,
+        webSite: company.webSite || '',
+      });
     }
-  }, [company, isAdmin, form, t]);
+  }, [company, isAdmin, form]);
 
   // Handle avatar selection
   const handleAvatarSelected = (file: File | null) => {
@@ -87,11 +69,11 @@ export const Entreprise: React.FC = () => {
 
   // Get avatar entity for display
   const getAvatarEntity = (): AvatarEntity | undefined => {
-    if (companyData) {
+    if (company) {
       return {
-        _id: companyData._id,
-        avatar: companyData.logo,
-        fullName: companyData.name,
+        _id: company._id,
+        avatar: company.logo,
+        fullName: company.name,
       };
     }
     return undefined;
@@ -99,7 +81,7 @@ export const Entreprise: React.FC = () => {
 
   // Handle company update
   const handleSubmit = async (values: CompanyFormValues) => {
-    if (!companyData || !isAdmin) return;
+    if (!company || !isAdmin) return;
 
     setLoading(true);
 
@@ -117,21 +99,20 @@ export const Entreprise: React.FC = () => {
       }
 
       const updateData: UpdateCompanyBodyRequest = {
-        _id: companyData._id,
+        _id: company._id,
         name: values.name.trim(),
         email: values.email.trim(),
         phoneNumber: values.phoneNumber.trim(),
         webSite: values.webSite?.trim() || null,
-        logo: logoDocumentId || companyData.logo,
+        logo: logoDocumentId || company.logo,
       };
 
-      const response = await companyService.update(updateData);
+      await companyService.update(updateData);
 
-      // Update local state
-      setCompanyData(response.data);
-
-      // Invalidate company cache
+      // Invalidate company caches and refetch current company
       queryClient.invalidateQueries(queryKeys.COMPANIES);
+      queryClient.invalidateQueries(queryKeys.CURRENT_COMPANY);
+      await refetchCompany();
 
       message.success(t('settings.company.updateSuccess'));
 
@@ -173,7 +154,7 @@ export const Entreprise: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="border-border" loading={fetchingCompany}>
+      <Card className="border-border" loading={authLoading}>
         <div className="mb-6">
           <Title level={4} className="!mb-2 text-card-foreground">
             {t('settings.company.title')}
