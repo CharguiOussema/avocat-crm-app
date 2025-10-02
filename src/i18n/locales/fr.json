@@ -95,7 +95,9 @@
     },
     "filter": {
       "roles": {
-        "placeholder": "Filtrer par rôle"
+        "placeholder": "Filtrer par rôle",
+        "title": "Sélectionner les Rôles",
+        "selected": "rôles sélectionnés"
       },
       "apply": "Appliquer les Filtres",
       "clear": "Effacer les Filtres"
@@ -185,9 +187,9 @@
       "update": "Mettre à Jour l'Utilisateur"
     },
     "roles": {
-      "superAdmin": "Super Administrateur",
-      "admin": "Administrateur",
-      "agent": "Agent"
+      "superAdmin": "Développeur",
+      "admin": "Avocat",
+      "agent": "Secrétaire"
     }
   },
   "common": {

@@ -4,7 +4,7 @@
  * Date: 24/9/2024
  */
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import {
 	Typography,
 	Card,
@@ -18,9 +18,10 @@ import {
 	Input,
 	Row,
 	Col,
-	Select,
 	Tag,
 	Tooltip,
+	Checkbox,
+	Popover,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -29,6 +30,8 @@ import {
 	DeleteOutlined,
 	SearchOutlined,
 	ExclamationCircleOutlined,
+	FilterOutlined,
+	DownOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
@@ -41,7 +44,7 @@ import { useNavigate } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 import { USER_ROLES } from "../../models/consts";
 import { AvatarWithModal } from "../../components/common/AvatarWithModal";
-import { useApp } from "../../hooks";
+import { useApp, useAuth } from "../../hooks";
 import { cn } from "../../utils/cn";
 
 const { Title } = Typography;
@@ -49,7 +52,7 @@ const { confirm } = Modal;
 
 interface QueryParams extends Record<string, unknown> {
 	search?: string;
-	roles?: string;
+	roles?: string | string[];
 	page?: number;
 	limit?: number;
 }
@@ -87,6 +90,7 @@ const getRoleColor = (role: USER_ROLES): string => {
 export const Users: React.FC = () => {
 	const { t } = useTranslation();
 	const { isRTL } = useApp();
+	const { user: currentUser } = useAuth();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const {
@@ -113,41 +117,140 @@ export const Users: React.FC = () => {
 		[t]
 	);
 
-	// Local search state for immediate UI feedback
-	const [localSearch, setLocalSearch] = useState(search);
-	const [localRoles, setLocalRoles] = useState(roles);
+	// Get available roles for filtering based on current user
+	const getAvailableRoles = useCallback(() => {
+		const roles = [USER_ROLES.USER_ADMIN, USER_ROLES.USER_AGENT];
+
+		// Only superAdmin can see and filter by superAdmin role
+		if (currentUser?.roles.includes(USER_ROLES.SUPER_ADMIN)) {
+			roles.unshift(USER_ROLES.SUPER_ADMIN);
+		}
+
+		return roles;
+	}, [currentUser]);
+
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+	const [localSearch, setLocalSearch] = useState(search);
+	const [selectedRoles, setSelectedRoles] = useState<USER_ROLES[]>([]);
+	const searchTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+	// Parse roles from URL parameter
+	const parseRolesFromUrl = useCallback((rolesParam?: string | string[]): USER_ROLES[] => {
+		if (!rolesParam) return [];
+		if (Array.isArray(rolesParam)) {
+			return rolesParam.filter((role): role is USER_ROLES =>
+				Object.values(USER_ROLES).includes(role as USER_ROLES)
+			);
+		}
+		// Handle comma-separated string
+		return rolesParam.split(',').filter((role): role is USER_ROLES =>
+			Object.values(USER_ROLES).includes(role as USER_ROLES)
+		);
+	}, []);
+
+	// Convert roles array to URL parameter
+	const rolesToUrlParam = useCallback((rolesList: USER_ROLES[]): string | undefined => {
+		return rolesList.length > 0 ? rolesList.join(',') : undefined;
+	}, []);
 
 	const { response } = useFetchUsers();
 	const { data, error, isLoading, isFetching } = response;
 
-	// Handle search input change
+	// Update local search when URL search changes
+	useEffect(() => {
+		setLocalSearch(search);
+	}, [search]);
+
+	// Update selected roles when URL roles parameter changes
+	useEffect(() => {
+		const parsedRoles = parseRolesFromUrl(roles);
+		setSelectedRoles(parsedRoles);
+	}, [roles, parseRolesFromUrl]);
+
+	// Debounced search function
+	const debouncedSearch = useCallback((searchValue: string) => {
+		if (searchTimeoutRef.current) {
+			clearTimeout(searchTimeoutRef.current);
+		}
+
+		searchTimeoutRef.current = setTimeout(() => {
+			const rolesParam = Array.isArray(roles) ? roles.join(',') : roles;
+			const searchParams = QueryBuilder.generateSearchParams()
+				.setPage(1) // Reset to first page when searching
+				.setLimit(limit)
+				.setQueryParam("search", searchValue || undefined)
+				.setQueryParam("roles", rolesParam || undefined).search;
+
+			navigate({
+				search: searchParams,
+			});
+		}, 500); // 500ms debounce
+	}, [limit, roles, navigate]);
+
+	// Handle search input change with debounce
 	const handleSearchChange = useCallback((value: string) => {
 		setLocalSearch(value);
-	}, []);
+		debouncedSearch(value);
+	}, [debouncedSearch]);
 
-	// Handle role filter change
-	const handleRoleFilterChange = useCallback((value: string) => {
-		setLocalRoles(value);
-	}, []);
-
-	// Apply filters to URL
-	const applyFilters = useCallback(() => {
+	// Handle role filter change (immediate)
+	const handleRoleFilterChange = useCallback((checkedRoles: USER_ROLES[]) => {
 		const searchParams = QueryBuilder.generateSearchParams()
-			.setPage(1) // Reset to first page when searching
+			.setPage(1) // Reset to first page when filtering
 			.setLimit(limit)
-			.setQueryParam("search", localSearch || undefined)
-			.setQueryParam("roles", localRoles || undefined).search;
+			.setQueryParam("search", search || undefined)
+			.setQueryParam("roles", rolesToUrlParam(checkedRoles)).search;
 
 		navigate({
 			search: searchParams,
 		});
-	}, [localSearch, localRoles, limit, navigate]);
+	}, [search, limit, navigate, rolesToUrlParam]);
+
+	// Handle individual role checkbox change
+	const handleRoleCheckboxChange = useCallback((role: USER_ROLES, checked: boolean) => {
+		let newSelectedRoles: USER_ROLES[];
+		if (checked) {
+			newSelectedRoles = [...selectedRoles, role];
+		} else {
+			newSelectedRoles = selectedRoles.filter(r => r !== role);
+		}
+		handleRoleFilterChange(newSelectedRoles);
+	}, [selectedRoles, handleRoleFilterChange]);
+
+	// Render role filter content
+	const renderRoleFilterContent = useCallback(() => {
+		const availableRoles = getAvailableRoles();
+		return (
+			<div className="space-y-2 p-2 min-w-[200px]">
+				{availableRoles.map(role => (
+					<div key={role} className="flex items-center">
+						<Checkbox
+							checked={selectedRoles.includes(role)}
+							onChange={(e) => handleRoleCheckboxChange(role, e.target.checked)}
+						>
+							{getRoleDisplayName(role)}
+						</Checkbox>
+					</div>
+				))}
+				{selectedRoles.length > 0 && (
+					<div className="pt-2 border-t border-gray-200">
+						<Button
+							type="link"
+							size="small"
+							onClick={() => handleRoleFilterChange([])}
+							className="text-red-500 p-0 h-auto"
+						>
+							{t("users.filter.clear")}
+						</Button>
+					</div>
+				)}
+			</div>
+		);
+	}, [getAvailableRoles, selectedRoles, handleRoleCheckboxChange, getRoleDisplayName, handleRoleFilterChange, t]);
 
 	// Clear all filters
 	const clearFilters = useCallback(() => {
 		setLocalSearch("");
-		setLocalRoles("");
 		const searchParams = QueryBuilder.generateSearchParams()
 			.setPage(1)
 			.setLimit(limit).search;
@@ -157,14 +260,24 @@ export const Users: React.FC = () => {
 		});
 	}, [limit, navigate]);
 
+	// Cleanup timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (searchTimeoutRef.current) {
+				clearTimeout(searchTimeoutRef.current);
+			}
+		};
+	}, []);
+
 	// Handle table pagination change
 	const handleTableChange = useCallback(
 		(pagination: { pageSize?: number; current?: number }) => {
+			const rolesParam = Array.isArray(roles) ? roles.join(',') : roles;
 			const searchParams = QueryBuilder.generateSearchParams()
 				.setLimit(pagination.pageSize || limit)
 				.setPage(pagination.current || page)
 				.setQueryParam("search", search || undefined)
-				.setQueryParam("roles", roles || undefined).search;
+				.setQueryParam("roles", rolesParam || undefined).search;
 
 			navigate({
 				search: searchParams,
@@ -421,34 +534,42 @@ export const Users: React.FC = () => {
 							prefix={<SearchOutlined />}
 							value={localSearch}
 							onChange={(e) => handleSearchChange(e.target.value)}
-							onPressEnter={applyFilters}
 							className='w-full'
 						/>
 					</Col>
 					<Col xs={24} sm={12} lg={6}>
-						<Select
-							placeholder={t("users.filter.roles.placeholder")}
-							value={localRoles || undefined}
-							onChange={handleRoleFilterChange}
-							allowClear
-							className='w-full'
+						<Popover
+							content={renderRoleFilterContent()}
+							title={t("users.filter.roles.title")}
+							trigger="click"
+							placement="bottomLeft"
 						>
-							<Select.Option value={USER_ROLES.SUPER_ADMIN}>
-								{t("users.roles.superAdmin")}
-							</Select.Option>
-							<Select.Option value={USER_ROLES.USER_ADMIN}>
-								{t("users.roles.admin")}
-							</Select.Option>
-							<Select.Option value={USER_ROLES.USER_AGENT}>
-								{t("users.roles.agent")}
-							</Select.Option>
-						</Select>
+							<Button
+								className='w-full text-left'
+								style={{
+									height: '32px',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'space-between',
+									borderColor: selectedRoles.length > 0 ? '#1890ff' : undefined,
+									color: selectedRoles.length > 0 ? '#1890ff' : undefined
+								}}
+							>
+								<span>
+									{selectedRoles.length > 0
+										? `${selectedRoles.length} ${t("users.filter.roles.selected")}`
+										: t("users.filter.roles.placeholder")
+									}
+								</span>
+								<Space>
+									<FilterOutlined />
+									<DownOutlined style={{ fontSize: '12px' }} />
+								</Space>
+							</Button>
+						</Popover>
 					</Col>
 					<Col xs={24} sm={24} lg={10}>
 						<Space className='w-full justify-end'>
-							<Button onClick={applyFilters} type='primary'>
-								{t("users.filter.apply")}
-							</Button>
 							<Button onClick={clearFilters}>{t("users.filter.clear")}</Button>
 						</Space>
 					</Col>

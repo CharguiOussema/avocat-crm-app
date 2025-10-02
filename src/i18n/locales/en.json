@@ -123,7 +123,9 @@
     },
     "filter": {
       "roles": {
-        "placeholder": "Filter by role"
+        "placeholder": "Filter by role",
+        "title": "Select Roles",
+        "selected": "roles selected"
       },
       "apply": "Apply Filters",
       "clear": "Clear Filters"
@@ -213,9 +215,9 @@
       "update": "Update User"
     },
     "roles": {
-      "superAdmin": "Super Admin",
-      "admin": "Administrator",
-      "agent": "Agent"
+      "superAdmin": "Developer",
+      "admin": "Avocat",
+      "agent": "Secretary"
     }
   },
   "common": {

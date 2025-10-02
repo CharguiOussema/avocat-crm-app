@@ -95,7 +95,9 @@
     },
     "filter": {
       "roles": {
-        "placeholder": "تصفية حسب الدور"
+        "placeholder": "تصفية حسب الدور",
+        "title": "اختر الأدوار",
+        "selected": "أدوار مختارة"
       },
       "apply": "تطبيق المرشحات",
       "clear": "مسح المرشحات"
@@ -185,9 +187,9 @@
       "update": "تحديث المستخدم"
     },
     "roles": {
-      "superAdmin": "مدير عام",
-      "admin": "مدير",
-      "agent": "وكيل"
+      "superAdmin": "مطور",
+      "admin": "محامي",
+      "agent": "سكرتير"
     }
   },
   "common": {

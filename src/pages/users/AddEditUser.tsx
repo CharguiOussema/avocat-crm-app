@@ -32,7 +32,7 @@ import {
 	UserItemResponseType,
 } from "../../models/user";
 import { USER_ROLES } from "../../models/consts";
-import { useApp } from "../../hooks";
+import { useApp, useAuth } from "../../hooks";
 import { cn } from "../../utils/cn";
 import type { AvatarEntity } from "../../services/AvatarService";
 
@@ -66,6 +66,7 @@ const getErrorMessage = (error: unknown): string => {
 export const AddEditUser: React.FC = () => {
 	const { t } = useTranslation();
 	const { isRTL } = useApp();
+	const { user: currentUser } = useAuth();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const { id } = useParams<{ id: string }>();
@@ -78,6 +79,18 @@ export const AddEditUser: React.FC = () => {
 	const [error, setError] = useState<string | null>(null);
 
 	const isEditMode = !!id;
+
+	// Get available roles based on current user
+	const getAvailableRoles = () => {
+		const roles = [USER_ROLES.USER_ADMIN, USER_ROLES.USER_AGENT];
+
+		// Only superAdmin can assign superAdmin role
+		if (currentUser?.roles.includes(USER_ROLES.SUPER_ADMIN)) {
+			roles.unshift(USER_ROLES.SUPER_ADMIN);
+		}
+
+		return roles;
+	};
 
 	// Fetch user data for edit mode
 	useEffect(() => {
@@ -425,15 +438,11 @@ export const AddEditUser: React.FC = () => {
 												placeholder={t("users.form.roles.placeholder")}
 												size="large"
 											>
-												<Option value={USER_ROLES.SUPER_ADMIN}>
-													{t("users.roles.superAdmin")}
-												</Option>
-												<Option value={USER_ROLES.USER_ADMIN}>
-													{t("users.roles.admin")}
-												</Option>
-												<Option value={USER_ROLES.USER_AGENT}>
-													{t("users.roles.agent")}
-												</Option>
+												{getAvailableRoles().map(role => (
+													<Option key={role} value={role}>
+														{t(`users.roles.${role === USER_ROLES.SUPER_ADMIN ? 'superAdmin' : role === USER_ROLES.USER_ADMIN ? 'admin' : 'agent'}`)}
+													</Option>
+												))}
 											</Select>
 										</Form.Item>
 									</Col>
