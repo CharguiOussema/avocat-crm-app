@@ -49,49 +49,91 @@
     "ar": "Arabic"
   },
   "clients": {
+    "title": "Client Management",
+    "subtitle": "Manage your clients and their information",
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
     "location": "Location",
     "status": "Status",
     "cases": "Cases",
-    "add": "Add Client",
-    "edit": "Edit Client",
-    "search": "Search clients...",
-    "clickToEdit": "Click to edit client",
+    "add": {
+      "button": "Add Client",
+      "title": "Add New Client",
+      "subtitle": "Create a new client profile"
+    },
+    "edit": {
+      "title": "Edit Client",
+      "subtitle": "Update client information"
+    },
+    "table": {
+      "avatar": "Avatar",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "cin": "National ID",
+      "location": "Location",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "search": {
+      "placeholder": "Search clients by name, email, phone..."
+    },
+    "filter": {
+      "apply": "Apply Filters",
+      "clear": "Clear Filters"
+    },
     "delete": {
       "title": "Delete Client",
-      "content": "Are you sure you want to delete {{name}}?",
-      "confirm": "Yes, Delete",
+      "confirm": "Are you sure you want to delete {{name}}? This action cannot be undone.",
       "success": "{{name}} has been deleted successfully",
       "error": "Failed to delete client"
     },
-    "modal": {
-      "addTitle": "Add New Client",
-      "updateTitle": "Update Client"
+    "bulk": {
+      "noSelection": "Please select clients to delete",
+      "delete": {
+        "title": "Delete Multiple Clients",
+        "button": "Delete {{count}} Clients",
+        "confirm": "Are you sure you want to delete {{count}} clients? This action cannot be undone.",
+        "success": "{{count}} clients have been deleted successfully",
+        "error": "Failed to delete selected clients"
+      }
+    },
+    "error": {
+      "title": "Failed to Load Clients",
+      "fetchTitle": "Failed to Load Client",
+      "fetchFailed": "Could not fetch client data"
+    },
+    "create": {
+      "success": "{{name}} has been created successfully",
+      "error": "Failed to create client"
+    },
+    "update": {
+      "success": "{{name}} has been updated successfully",
+      "error": "Failed to update client"
     },
     "form": {
+      "avatar": "Profile Picture",
+      "avatarSubtitle": "Upload a profile picture for this client",
       "fullName": "Full Name",
       "fullNamePlaceholder": "Enter client's full name",
-      "fullNameRequired": "Please enter the full name",
+      "fullNameRequired": "Full name is required",
       "fullNameMinLength": "Full name must be at least 2 characters",
-      "emailAddress": "Email Address",
+      "email": "Email Address",
       "emailPlaceholder": "client@example.com",
+      "emailRequired": "Email address is required",
       "emailInvalid": "Please enter a valid email address",
       "phoneNumber": "Phone Number",
-      "phonePlaceholder": "+1234567890",
-      "cin": "CIN (National ID)",
+      "phoneNumberPlaceholder": "+1 (555) 123-4567",
+      "phoneNumberInvalid": "Please enter a valid phone number",
+      "cin": "National ID (CIN)",
       "cinPlaceholder": "12345678",
-      "cinInvalid": "CIN must be exactly 8 digits",
-      "locationLabel": "Location",
-      "locationPlaceholder": "City, Country",
-      "profilePicture": "Profile Picture",
-      "createClient": "Create Client",
-      "updateClient": "Update Client",
-      "createSuccess": "{{name}} has been created successfully",
-      "updateSuccess": "{{name}} has been updated successfully",
-      "createError": "Failed to create client",
-      "updateError": "Failed to update client"
+      "cinMinLength": "National ID must be at least 3 characters",
+      "cinInvalid": "Please enter a valid National ID",
+      "location": "Location",
+      "locationPlaceholder": "Enter city, address or country",
+      "create": "Create Client",
+      "update": "Update Client"
     },
     "pagination": {
       "showTotal": "{{start}}-{{end}} of {{total}} clients"

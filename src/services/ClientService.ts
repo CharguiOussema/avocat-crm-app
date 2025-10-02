@@ -41,7 +41,13 @@ class ClientService {
 	};
 
 	// !example of delete
-	delete = (id: string) => this.instance.delete(`/api/clients/${id}`);
+	delete = (id: string) => this.instance.delete<{ message: string }>(`/api/clients/${id}`);
+
+	// Bulk delete clients
+	bulkDelete = (ids: string[]) =>
+		this.instance.post<{ message: string; deletedCount: number }>("/api/clients/bulk-delete", {
+			ids
+		});
 
 	// !example of filter endpoint
 	filter = () =>

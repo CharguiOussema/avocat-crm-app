@@ -7,7 +7,7 @@ import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Login } from "./pages/Login";
 import { Dashboard } from "./pages/Dashboard";
-import { Clients } from "./pages/Clients";
+import { Clients, AddEditClient } from "./pages/clients";
 import { Users, AddEditUser } from "./pages/users";
 import { Cases } from "./pages/Cases";
 import { Documents } from "./pages/Documents";
@@ -96,6 +96,8 @@ const AppContent = () => {
 										<Routes>
 											<Route path='/' element={<Dashboard />} />
 											<Route path='/clients' element={<Clients />} />
+											<Route path='/clients/add' element={<AddEditClient />} />
+											<Route path='/clients/:id/edit' element={<AddEditClient />} />
 											<Route path='/users' element={<Users />} />
 											<Route path='/users/add' element={<AddEditUser />} />
 											<Route path='/users/:id/edit' element={<AddEditUser />} />
