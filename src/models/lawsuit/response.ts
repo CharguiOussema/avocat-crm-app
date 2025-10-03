@@ -1,9 +1,21 @@
 /*
- * Developer: Oussema Chargui
+ * Developer: Claude Code
  * Company: Avocat Project
- * Date: 5/18/2025
+ * Date: 3/10/2025
  */
 
-export type LawsuitItemResponseType = {
-  name: string;
+import { UserItemResponseType } from "../user";
+import { ClientItemResponseType } from "../client";
+import { LawsuitStageResponseType } from "../lawsuitStage";
+import { TypeLawsuitResponseType } from "../typeLawsuit";
+import { LawsuitModelType } from "./model";
+
+export type LawsuitItemResponseType = Pick<
+  LawsuitModelType,
+  "_id" | "lawsuitCode" | "status" | "createdAt" | "updatedAt"
+> & {
+  clients: ClientItemResponseType[];
+  lawsuitStage: LawsuitStageResponseType;
+  lawsuitType: TypeLawsuitResponseType;
+  createdBy: UserItemResponseType;
 };

@@ -13,6 +13,8 @@ interface GetAllLawsuitsParams {
 	search?: string;
 	client?: string;
 	status?: string;
+	lawsuitStage?: string;
+	lawsuitType?: string;
 }
 
 class LawsuitService {
@@ -26,6 +28,8 @@ class LawsuitService {
 			.setQueryParam("search", params?.search)
 			.setQueryParam("client", params?.client)
 			.setQueryParam("status", params?.status)
+			.setQueryParam("lawsuitStage", params?.lawsuitStage)
+			.setQueryParam("lawsuitType", params?.lawsuitType)
 			.build();
 		return this.instance.get<PaginationResponse<LawsuitItemResponseType>>(url);
 	};

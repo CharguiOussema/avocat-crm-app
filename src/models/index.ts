@@ -7,4 +7,5 @@ export * from "./lawsuit";
 export * from "./typeLawsuit";
 export * from "./lawsuitStage";
 export * from "./court";
+export * from "./file";
 export * from "./consts";

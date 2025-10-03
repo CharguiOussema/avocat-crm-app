@@ -30,6 +30,7 @@ export const queryKeys = {
 
   // Type Lawsuit-related queries
   TYPE_LAWSUITS: 'typeLawsuits',
+  LAWSUIT_TYPES: 'typeLawsuits',
   TYPE_LAWSUIT_DETAILS: 'typeLawsuit-details',
 
   // Filter queries

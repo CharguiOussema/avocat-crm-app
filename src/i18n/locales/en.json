@@ -7,6 +7,7 @@
     "dashboard": "Dashboard",
     "clients": "Clients",
     "users": "Users",
+    "lawsuits": "Lawsuits",
     "cases": "Cases",
     "documents": "Documents",
     "calendar": "Calendar",
@@ -267,6 +268,93 @@
     "notProvided": "Not provided",
     "pagination": {
       "total": "{{start}}-{{end}} of {{total}} items"
+    }
+  },
+  "lawsuits": {
+    "title": "Lawsuit Management",
+    "subtitle": "Manage your lawsuits and track their progress",
+    "add": {
+      "button": "Add Lawsuit",
+      "title": "Add New Lawsuit",
+      "subtitle": "Create a new lawsuit case"
+    },
+    "edit": {
+      "title": "Edit Lawsuit",
+      "subtitle": "Update lawsuit information"
+    },
+    "table": {
+      "lawsuitCode": "Lawsuit Code",
+      "clients": "Clients",
+      "lawsuitType": "Type",
+      "lawsuitStage": "Stage",
+      "status": "Status",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "search": {
+      "placeholder": "Search lawsuits by code..."
+    },
+    "filter": {
+      "apply": "Apply Filters",
+      "clear": "Clear Filters"
+    },
+    "status": {
+      "done": "Done",
+      "inprogress": "In Progress",
+      "scheduled": "Scheduled",
+      "cancelled": "Cancelled"
+    },
+    "delete": {
+      "title": "Delete Lawsuit",
+      "confirm": "Are you sure you want to delete lawsuit {{code}}? This action cannot be undone.",
+      "success": "Lawsuit {{code}} has been deleted successfully",
+      "error": "Failed to delete lawsuit"
+    },
+    "bulk": {
+      "noSelection": "Please select lawsuits to delete",
+      "delete": {
+        "title": "Delete Multiple Lawsuits",
+        "button": "Delete {{count}} Lawsuits",
+        "confirm": "Are you sure you want to delete {{count}} lawsuits? This action cannot be undone.",
+        "success": "{{count}} lawsuits have been deleted successfully",
+        "error": "Failed to delete selected lawsuits"
+      }
+    },
+    "error": {
+      "title": "Failed to Load Lawsuits",
+      "fetchTitle": "Failed to Load Lawsuit",
+      "fetchFailed": "Could not fetch lawsuit data"
+    },
+    "create": {
+      "success": "Lawsuit {{code}} has been created successfully",
+      "error": "Failed to create lawsuit"
+    },
+    "update": {
+      "success": "Lawsuit {{code}} has been updated successfully",
+      "error": "Failed to update lawsuit"
+    },
+    "form": {
+      "lawsuitCode": "Lawsuit Code",
+      "lawsuitCodePlaceholder": "Enter lawsuit code",
+      "lawsuitCodeRequired": "Lawsuit code is required",
+      "lawsuitCodeMinLength": "Lawsuit code must be at least 2 characters",
+      "clients": "Clients",
+      "clientsPlaceholder": "Select clients",
+      "clientsRequired": "Please select at least one client",
+      "lawsuitStage": "Lawsuit Stage",
+      "lawsuitStagePlaceholder": "Select lawsuit stage",
+      "lawsuitStageRequired": "Lawsuit stage is required",
+      "lawsuitType": "Lawsuit Type",
+      "lawsuitTypePlaceholder": "Select lawsuit type",
+      "lawsuitTypeRequired": "Lawsuit type is required",
+      "status": "Status",
+      "statusPlaceholder": "Select status",
+      "statusRequired": "Status is required",
+      "create": "Create Lawsuit",
+      "update": "Update Lawsuit"
+    },
+    "pagination": {
+      "showTotal": "{{start}}-{{end}} of {{total}} lawsuits"
     }
   },
   "cases": {

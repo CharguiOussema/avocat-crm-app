@@ -12,7 +12,8 @@ import {
   CalendarOutlined,
   BarChartOutlined,
   SettingOutlined,
-  CloseOutlined
+  CloseOutlined,
+  AuditOutlined
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -21,6 +22,7 @@ const navigationItems = [
   { key: 'dashboard', icon: HomeOutlined, href: '/', label: 'navigation.dashboard' },
   { key: 'clients', icon: UserOutlined, href: '/clients', label: 'navigation.clients' },
   { key: 'users', icon: TeamOutlined, href: '/users', label: 'navigation.users' },
+  { key: 'lawsuits', icon: AuditOutlined, href: '/lawsuits', label: 'navigation.lawsuits' },
   { key: 'cases', icon: FileTextOutlined, href: '/cases', label: 'navigation.cases' },
   { key: 'documents', icon: FolderOpenOutlined, href: '/documents', label: 'navigation.documents' },
   { key: 'calendar', icon: CalendarOutlined, href: '/calendar', label: 'navigation.calendar' },
@@ -77,6 +79,9 @@ export const Sidebar: React.FC = () => {
     // Handle nested routes (like /users/add or /users/:id/edit)
     if (path.startsWith('/users')) {
       return ['users'];
+    }
+    if (path.startsWith('/lawsuits')) {
+      return ['lawsuits'];
     }
     const currentItem = navigationItems.find(item => item.href === path);
     return currentItem ? [currentItem.key] : ['dashboard'];

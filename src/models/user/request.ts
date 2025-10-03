@@ -2,7 +2,7 @@ import { UserModelType } from "./model";
 
 export type CreateUserBodyRequest = Pick<
   UserModelType,
-  "avatar" | "cin" | "email" | "fullName" | "password" | "roles" | "phoneNumber"
+  "avatar" | "cin" | "email" | "fullName" | "password" | "roles"
 >;
 export type UpdateUserBodyRequest = Pick<UserModelType, "_id"> &
   CreateUserBodyRequest;
