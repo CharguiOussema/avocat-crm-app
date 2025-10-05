@@ -35,9 +35,9 @@ import useQueryParams from "../../hooks/useQueryParams";
 import { LAWSUIT_STATUS } from "../../models/consts";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
-import { useLawsuitTableColumns } from "../../components/lawsuits/LawsuitTableColumns";
-import { LawsuitFilters } from "../../components/lawsuits/LawsuitFilters";
-import { LawsuitTable } from "../../components/lawsuits/LawsuitTable";
+import { useLawsuitTableColumns } from "./LawsuitTableColumns";
+import { LawsuitFilters } from "./LawsuitFilters";
+import { LawsuitTable } from "./LawsuitTable";
 
 const { Title } = Typography;
 const { confirm } = Modal;

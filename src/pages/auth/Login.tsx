@@ -1,14 +1,14 @@
 import React from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Button, Card, Typography, Alert, Space } from "antd";
-import { useAuth } from "../hooks";
+import { useAuth } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useMutation } from "react-query";
-import EmailForm from "../components/forms/EmailForm";
-import PasswordForm from "../components/forms/PasswordForm";
-import { userService } from "../services/UserService";
-import { LoginBodyRequest } from "../models";
+import EmailForm from "../../components/common/EmailForm";
+import PasswordForm from "../../components/common/PasswordForm";
+import { userService } from "../../services/UserService";
+import { LoginBodyRequest } from "../../models";
 
 const { Title, Text } = Typography;
 

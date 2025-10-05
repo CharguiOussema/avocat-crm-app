@@ -6,15 +6,15 @@
 
 import React, { useState, useEffect } from "react";
 import { ClientAvatarUpload } from "./ClientAvatarUpload";
-import { clientService } from "../../services/ClientService";
-import { documentService } from "../../services/DocumentService";
-import { useApp } from "../../hooks";
-import { cn } from "../../utils/cn";
+import { clientService } from "../../../services/ClientService";
+import { documentService } from "../../../services/DocumentService";
+import { useApp } from "../../../hooks";
+import { cn } from "../../../utils/cn";
 import {
 	CreateClientBodyRequest,
 	UpdateClientBodyRequest,
 	ClientItemResponseType,
-} from "../../models/client";
+} from "../../../models/client";
 
 interface ClientFormProps {
 	mode: "create" | "update";

@@ -8,14 +8,14 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Space, message } from "antd";
 import { useTranslation } from "react-i18next";
 import { ClientAvatarUpload } from "./ClientAvatarUpload";
-import { clientService } from "../../services/ClientService";
-import { documentService } from "../../services/DocumentService";
-import { useApp } from "../../hooks";
+import { clientService } from "../../../services/ClientService";
+import { documentService } from "../../../services/DocumentService";
+import { useApp } from "../../../hooks";
 import {
 	CreateClientBodyRequest,
 	UpdateClientBodyRequest,
 	ClientItemResponseType,
-} from "../../models/client";
+} from "../../../models/client";
 
 interface ClientFormSimpleProps {
 	mode: "create" | "update";

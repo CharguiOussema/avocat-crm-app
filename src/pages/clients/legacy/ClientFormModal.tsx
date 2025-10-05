@@ -7,7 +7,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import { ClientForm } from "./ClientForm";
-import { ClientItemResponseType } from "../../models/client";
+import { ClientItemResponseType } from "../../../models/client";
 
 interface ClientFormModalProps {
 	isOpen: boolean;

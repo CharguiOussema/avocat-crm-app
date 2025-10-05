@@ -33,7 +33,7 @@ import { useNavigate } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
-import { useClientTableColumns } from "../../components/clients/ClientTableColumns";
+import { useClientTableColumns } from "./ClientTableColumns";
 import { SearchInput } from "../../components/common/SearchInput";
 
 const { Title } = Typography;

@@ -5,15 +5,15 @@ import { AppProvider } from "./contexts/AppContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { Login } from "./pages/Login";
-import { Dashboard } from "./pages/Dashboard";
+import { Login } from "./pages/auth";
+import { Dashboard } from "./pages/dashboard";
 import { Clients, AddEditClient } from "./pages/clients";
 import { Users, AddEditUser } from "./pages/users";
 import { Lawsuits, AddEditLawsuit } from "./pages/lawsuits";
-import { Cases } from "./pages/Cases";
-import { Documents } from "./pages/Documents";
-import { Calendar } from "./pages/Calendar";
-import { Reports } from "./pages/Reports";
+import { Cases } from "./pages/cases";
+import { Documents } from "./pages/documents";
+import { Calendar } from "./pages/calendar";
+import { Reports } from "./pages/reports";
 import {
 	Settings,
 	MonProfil,

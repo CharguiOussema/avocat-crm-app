@@ -7,7 +7,7 @@
 import React from "react";
 import { Row, Col, Select, Card, Space, Button } from "antd";
 import { useTranslation } from "react-i18next";
-import { SearchInput } from "../common/SearchInput";
+import { SearchInput } from "../../components/common/SearchInput";
 import { LAWSUIT_STATUS } from "../../models/consts";
 
 interface FilterOption {

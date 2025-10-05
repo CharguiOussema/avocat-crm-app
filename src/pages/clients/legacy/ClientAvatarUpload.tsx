@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import { AvatarUpload } from '../common/AvatarUpload';
-import type { AvatarEntity } from '../../services/AvatarService';
+import { AvatarUpload } from '../../../components/common/AvatarUpload';
+import type { AvatarEntity } from '../../../services/AvatarService';
 
 interface ClientAvatarUploadProps {
   onAvatarSelected?: (file: File | null) => void;

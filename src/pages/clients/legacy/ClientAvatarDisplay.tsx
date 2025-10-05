@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import { Avatar } from '../common/Avatar';
-import type { AvatarSize } from '../../services/AvatarService';
+import { Avatar } from '../../../components/common/Avatar';
+import type { AvatarSize } from '../../../services/AvatarService';
 
 interface ClientAvatarDisplayProps {
   client: {

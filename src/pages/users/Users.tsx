@@ -34,9 +34,9 @@ import useQueryParams from "../../hooks/useQueryParams";
 import { USER_ROLES } from "../../models/consts";
 import { useApp, useAuth } from "../../hooks";
 import { cn } from "../../utils/cn";
-import { useUserTableColumns } from "../../components/users/UserTableColumns";
+import { useUserTableColumns } from "./UserTableColumns";
 import { SearchInput } from "../../components/common/SearchInput";
-import { RoleFilter } from "../../components/users/RoleFilter";
+import { RoleFilter } from "./RoleFilter";
 
 const { Title } = Typography;
 const { confirm } = Modal;

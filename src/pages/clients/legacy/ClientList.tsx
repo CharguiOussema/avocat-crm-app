@@ -18,8 +18,8 @@ import {
 } from "lucide-react";
 import { ClientAvatarDisplay } from "./ClientAvatarDisplay";
 import { ClientFormModal } from "./ClientFormModal";
-import { clientService } from "../../services/ClientService";
-import { ClientItemResponseType } from "../../models/client";
+import { clientService } from "../../../services/ClientService";
+import { ClientItemResponseType } from "../../../models/client";
 
 interface ClientListProps {
 	className?: string;

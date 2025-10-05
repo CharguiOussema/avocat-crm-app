@@ -1,48 +1,64 @@
 /*
  * Developer: Claude Code
  * Company: Avocat Project
- * Date: 3/10/2025
+ * Date: 2/10/2025
  */
 
-import { Space, Tooltip, Button } from "antd";
+import { Space, Tag, Tooltip, Button } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { ClientItemResponseType } from "../../models/client";
-import { AvatarWithModal } from "../common/AvatarWithModal";
+import { UserItemResponseType } from "../../models/user";
+import { USER_ROLES } from "../../models/consts";
+import { AvatarWithModal } from "../../components/common/AvatarWithModal";
 
-interface ClientTableColumnsProps {
+// Role color mapping
+const getRoleColor = (role: USER_ROLES): string => {
+	switch (role) {
+		case USER_ROLES.SUPER_ADMIN:
+			return "red";
+		case USER_ROLES.USER_ADMIN:
+			return "blue";
+		case USER_ROLES.USER_AGENT:
+			return "green";
+		default:
+			return "default";
+	}
+};
+
+interface UserTableColumnsProps {
 	t: (key: string, options?: Record<string, unknown>) => string;
-	onEdit: (clientId: string) => void;
-	onDelete: (clientId: string, clientName: string) => void;
+	getRoleDisplayName: (role: USER_ROLES) => string;
+	onEdit: (userId: string) => void;
+	onDelete: (userId: string, userName: string) => void;
 }
 
-export const useClientTableColumns = ({
+export const useUserTableColumns = ({
 	t,
+	getRoleDisplayName,
 	onEdit,
 	onDelete,
-}: ClientTableColumnsProps): ColumnsType<ClientItemResponseType> => {
-	const columns: ColumnsType<ClientItemResponseType> = [
+}: UserTableColumnsProps): ColumnsType<UserItemResponseType> => {
+	return [
 		{
-			title: t("clients.table.avatar"),
+			title: t("users.table.avatar"),
 			dataIndex: "avatar",
 			key: "avatar",
 			width: 80,
-			responsive: ["sm"],
-			render: (avatar: string | null, record: ClientItemResponseType) => (
+			render: (avatar: string | null, record: UserItemResponseType) => (
 				<AvatarWithModal
 					entity={{
 						_id: record._id,
 						avatar,
 						fullName: record.fullName,
 					}}
-					entityType='client'
+					entityType='user'
 					size='small'
 					showModal={!!avatar}
 				/>
 			),
 		},
 		{
-			title: t("clients.table.fullName"),
+			title: t("users.table.fullName"),
 			dataIndex: "fullName",
 			key: "fullName",
 			sorter: true,
@@ -51,21 +67,31 @@ export const useClientTableColumns = ({
 			),
 		},
 		{
-			title: t("clients.table.email"),
+			title: t("users.table.email"),
 			dataIndex: "email",
 			key: "email",
-			responsive: ["md"],
-			render: (email: string | null) => (
-				<span className='text-muted-foreground'>
-					{email || t("common.notProvided")}
-				</span>
+			render: (email: string) => (
+				<span className='text-muted-foreground'>{email}</span>
 			),
 		},
 		{
-			title: t("clients.table.phoneNumber"),
+			title: t("users.table.roles"),
+			dataIndex: "roles",
+			key: "roles",
+			render: (roles: USER_ROLES[]) => (
+				<Space wrap>
+					{roles.map((role) => (
+						<Tag key={role} color={getRoleColor(role)}>
+							{getRoleDisplayName(role)}
+						</Tag>
+					))}
+				</Space>
+			),
+		},
+		{
+			title: t("users.table.phoneNumber"),
 			dataIndex: "phoneNumber",
 			key: "phoneNumber",
-			responsive: ["lg"],
 			render: (phone: string | null) => (
 				<span className='text-muted-foreground'>
 					{phone || t("common.notProvided")}
@@ -73,33 +99,10 @@ export const useClientTableColumns = ({
 			),
 		},
 		{
-			title: t("clients.table.cin"),
-			dataIndex: "cin",
-			key: "cin",
-			responsive: ["xl"],
-			render: (cin: string | null) => (
-				<span className='text-muted-foreground'>
-					{cin || t("common.notProvided")}
-				</span>
-			),
-		},
-		{
-			title: t("clients.table.location"),
-			dataIndex: "location",
-			key: "location",
-			responsive: ["xl"],
-			render: (location: string | null) => (
-				<span className='text-muted-foreground'>
-					{location || t("common.notProvided")}
-				</span>
-			),
-		},
-		{
-			title: t("clients.table.createdAt"),
+			title: t("users.table.createdAt"),
 			dataIndex: "createdAt",
 			key: "createdAt",
 			sorter: true,
-			responsive: ["lg"],
 			render: (date: string) => (
 				<span className='text-muted-foreground'>
 					{new Date(date).toLocaleDateString()}
@@ -107,10 +110,10 @@ export const useClientTableColumns = ({
 			),
 		},
 		{
-			title: t("clients.table.actions"),
+			title: t("users.table.actions"),
 			key: "actions",
 			width: 120,
-			render: (_text: string, record: ClientItemResponseType) => (
+			render: (_text: string, record: UserItemResponseType) => (
 				<Space size='small'>
 					<Tooltip title={t("ui.edit")}>
 						<Button
@@ -133,6 +136,4 @@ export const useClientTableColumns = ({
 			),
 		},
 	];
-
-	return columns;
 };

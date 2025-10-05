@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { ClientList } from '../components/client';
+import { ClientList } from './legacy';
 
 export const ClientManagement: React.FC = () => {
   return (
