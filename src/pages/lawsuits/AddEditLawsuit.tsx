@@ -4,7 +4,7 @@
  * Date: 3/10/2025
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	Typography,
 	Card,
@@ -19,6 +19,8 @@ import {
 	Space,
 	Select,
 } from "antd";
+
+const { TextArea } = Input;
 import {
 	ArrowLeftOutlined,
 	SaveOutlined,
@@ -28,6 +30,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { lawsuitService } from "../../services/LawsuitService";
 import { clientService } from "../../services/ClientService";
+import { courtService } from "../../services/CourtService";
 import { lawsuitStageService } from "../../services/LawsuitStageService";
 import { typeLawsuitService } from "../../services/TypeLawsuitService";
 import { queryKeys } from "../../services/QueryClientManager";
@@ -44,28 +47,30 @@ const { Title } = Typography;
 
 interface FormValues {
 	lawsuitCode: string;
+	description?: string;
 	clients: string[];
-	lawsuitStage: string;
-	lawsuitType: string;
+	court?: string;
+	lawsuitStage?: string;
+	lawsuitType?: string;
 	status: LAWSUIT_STATUS;
 }
 
-// Utility function to extract error message with proper typing
-const getErrorMessage = (error: unknown): string => {
-	if (error instanceof Error) {
-		return error.message;
-	}
-	if (typeof error === "string") {
-		return error;
-	}
-	if (error && typeof error === "object" && "message" in error) {
-		return String((error as { message: unknown }).message);
-	}
-	return "An unexpected error occurred";
-};
-
 export const AddEditLawsuit: React.FC = () => {
 	const { t } = useTranslation();
+
+	// Utility function to extract error message with proper typing
+	const getErrorMessage = (error: unknown): string => {
+		if (error instanceof Error) {
+			return error.message;
+		}
+		if (typeof error === "string") {
+			return error;
+		}
+		if (error && typeof error === "object" && "message" in error) {
+			return String((error as { message: unknown }).message);
+		}
+		return "An unexpected error occurred";
+	};
 	const { isRTL } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
@@ -73,48 +78,66 @@ export const AddEditLawsuit: React.FC = () => {
 	const [form] = Form.useForm<FormValues>();
 
 	const [loading, setLoading] = useState(false);
+	const [lawsuitData, setLawsuitData] = useState<LawsuitItemResponseType | null>(null);
+	const [fetchingLawsuit, setFetchingLawsuit] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	const isEditMode = !!id;
 
-	// Fetch lawsuit data using React Query for edit mode
-	const {
-		data: lawsuitData,
-		isLoading: fetchingLawsuit,
-		error: fetchError,
-	} = useQuery<LawsuitItemResponseType, Error>(
-		[queryKeys.LAWSUITS, id],
-		async () => {
-			if (!id) {
-				throw new Error("Lawsuit ID is required");
-			}
-			const response = await lawsuitService.getById(id);
-			return response.data;
-		},
-		{
-			enabled: isEditMode && !!id,
-			retry: 1,
-			onSuccess: (data) => {
-				// Pre-fill form with lawsuit data when data is successfully fetched
-				form.setFieldsValue({
-					lawsuitCode: data.lawsuitCode,
-					clients: data.clients.map((client) => client._id),
-					lawsuitStage: data.lawsuitStage._id,
-					lawsuitType: data.lawsuitType._id,
-					status: data.status,
+	// Fetch lawsuit data for edit mode
+	useEffect(() => {
+		if (isEditMode && id) {
+			setFetchingLawsuit(true);
+			setError(null);
+
+			lawsuitService
+				.getById(id)
+				.then((response) => {
+					const lawsuit = response.data;
+					setLawsuitData(lawsuit);
+
+					// Pre-fill form with lawsuit data
+					form.setFieldsValue({
+						lawsuitCode: lawsuit.lawsuitCode,
+						description: lawsuit.description,
+						clients: lawsuit.clients.map((client) => client._id),
+						court: lawsuit.court?._id,
+						lawsuitStage: lawsuit.lawsuitStage?._id,
+						lawsuitType: lawsuit.lawsuitType?._id,
+						status: lawsuit.status,
+					});
+				})
+				.catch((err) => {
+					console.error("Error fetching lawsuit:", err);
+					setError(getErrorMessage(err));
+				})
+				.finally(() => {
+					setFetchingLawsuit(false);
 				});
-			},
-			onError: (err) => {
-				console.error("Error fetching lawsuit:", err);
-			},
+		} else {
+			// Reset state when in create mode
+			setLawsuitData(null);
+			setError(null);
 		}
-	);
+	}, [isEditMode, id, form]);
 
 	// Fetch clients filter options
 	const { data: clientsOptions } = useQuery(
 		[queryKeys.CLIENTS, "filter"],
 		async () => {
 			const response = await clientService.filter();
+			return response.data;
+		},
+		{
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		}
+	);
+
+	// Fetch courts filter options
+	const { data: courtsOptions } = useQuery(
+		[queryKeys.COURTS, "filter"],
+		async () => {
+			const response = await courtService.filter();
 			return response.data;
 		},
 		{
@@ -166,7 +189,9 @@ export const AddEditLawsuit: React.FC = () => {
 					const updateData: UpdateLawsuitBodyRequest = {
 						_id: lawsuitData._id,
 						lawsuitCode: values.lawsuitCode.trim(),
+						description: values.description?.trim(),
 						clients: values.clients,
+						court: values.court,
 						lawsuitStage: values.lawsuitStage,
 						lawsuitType: values.lawsuitType,
 						status: values.status,
@@ -178,7 +203,9 @@ export const AddEditLawsuit: React.FC = () => {
 					// Create new lawsuit
 					const createData: CreateLawsuitBodyRequest = {
 						lawsuitCode: values.lawsuitCode.trim(),
+						description: values.description?.trim(),
 						clients: values.clients,
+						court: values.court,
 						lawsuitStage: values.lawsuitStage,
 						lawsuitType: values.lawsuitType,
 						status: values.status,
@@ -215,7 +242,7 @@ export const AddEditLawsuit: React.FC = () => {
 		navigate("/lawsuits");
 	}, [navigate]);
 
-	// Loading state
+	// Loading state for fetching lawsuit
 	if (fetchingLawsuit) {
 		return (
 			<div className='flex justify-center items-center min-h-[400px]'>
@@ -224,19 +251,23 @@ export const AddEditLawsuit: React.FC = () => {
 		);
 	}
 
-	// Error state for edit mode
-	if (fetchError && isEditMode) {
+	// Error state for fetching lawsuit
+	if (error && isEditMode) {
 		return (
 			<div className='space-y-6'>
+				<Button
+					icon={<ArrowLeftOutlined />}
+					onClick={handleBack}
+					className='mb-4'
+				>
+					{t("ui.back")}
+				</Button>
 				<Alert
 					message={t("lawsuits.error.fetchTitle")}
-					description={getErrorMessage(fetchError)}
+					description={error}
 					type='error'
 					showIcon
 				/>
-				<Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-					{t("ui.back")}
-				</Button>
 			</div>
 		);
 	}
@@ -327,6 +358,21 @@ export const AddEditLawsuit: React.FC = () => {
 					</Row>
 
 					<Row gutter={16}>
+						<Col xs={24}>
+							<Form.Item
+								name='description'
+								label={t("lawsuits.form.description")}
+							>
+								<TextArea
+									placeholder={t("lawsuits.form.descriptionPlaceholder")}
+									rows={4}
+									size='large'
+								/>
+							</Form.Item>
+						</Col>
+					</Row>
+
+					<Row gutter={16}>
 						<Col xs={24} md={12}>
 							<Form.Item
 								name='clients'
@@ -355,20 +401,15 @@ export const AddEditLawsuit: React.FC = () => {
 
 						<Col xs={24} md={12}>
 							<Form.Item
-								name='lawsuitStage'
-								label={t("lawsuits.form.lawsuitStage")}
-								rules={[
-									{
-										required: true,
-										message: t("lawsuits.form.lawsuitStageRequired"),
-									},
-								]}
+								name='court'
+								label={t("lawsuits.form.court")}
 							>
 								<Select
-									placeholder={t("lawsuits.form.lawsuitStagePlaceholder")}
+									placeholder={t("lawsuits.form.courtPlaceholder")}
 									size='large'
-									options={lawsuitStagesOptions}
+									options={courtsOptions}
 									showSearch
+									allowClear
 									filterOption={(input, option) =>
 										(option?.label ?? '')
 											.toLowerCase()
@@ -382,20 +423,35 @@ export const AddEditLawsuit: React.FC = () => {
 					<Row gutter={16}>
 						<Col xs={24} md={12}>
 							<Form.Item
+								name='lawsuitStage'
+								label={t("lawsuits.form.lawsuitStage")}
+							>
+								<Select
+									placeholder={t("lawsuits.form.lawsuitStagePlaceholder")}
+									size='large'
+									options={lawsuitStagesOptions}
+									showSearch
+									allowClear
+									filterOption={(input, option) =>
+										(option?.label ?? '')
+											.toLowerCase()
+											.includes(input.toLowerCase())
+									}
+								/>
+							</Form.Item>
+						</Col>
+
+						<Col xs={24} md={12}>
+							<Form.Item
 								name='lawsuitType'
 								label={t("lawsuits.form.lawsuitType")}
-								rules={[
-									{
-										required: true,
-										message: t("lawsuits.form.lawsuitTypeRequired"),
-									},
-								]}
 							>
 								<Select
 									placeholder={t("lawsuits.form.lawsuitTypePlaceholder")}
 									size='large'
 									options={lawsuitTypesOptions}
 									showSearch
+									allowClear
 									filterOption={(input, option) =>
 										(option?.label ?? '')
 											.toLowerCase()

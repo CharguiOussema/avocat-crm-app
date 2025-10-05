@@ -4,7 +4,7 @@
  * Date: 3/10/2025
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	Typography,
 	Card,
@@ -29,7 +29,7 @@ import {
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery, useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 import { AvatarUpload } from "../../components/common/AvatarUpload";
 import { clientService } from "../../services/ClientService";
 import { documentService } from "../../services/DocumentService";
@@ -77,42 +77,46 @@ export const AddEditClient: React.FC = () => {
 
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 	const [loading, setLoading] = useState(false);
+	const [clientData, setClientData] = useState<ClientItemResponseType | null>(null);
+	const [fetchingClient, setFetchingClient] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	const isEditMode = !!id;
 
-	// Fetch client data using React Query for edit mode
-	const {
-		data: clientData,
-		isLoading: fetchingClient,
-		error: fetchError,
-	} = useQuery<ClientItemResponseType, Error>(
-		[queryKeys.CLIENTS, id],
-		async () => {
-			if (!id) {
-				throw new Error("Client ID is required");
-			}
-			const response = await clientService.getById(id);
-			return response.data;
-		},
-		{
-			enabled: isEditMode && !!id,
-			retry: 1,
-			onSuccess: (data) => {
-				// Pre-fill form with client data when data is successfully fetched
-				form.setFieldsValue({
-					fullName: data.fullName,
-					email: data.email || "",
-					phoneNumber: data.phoneNumber || "",
-					cin: data.cin || "",
-					location: data.location || "",
+	// Fetch client data for edit mode
+	useEffect(() => {
+		if (isEditMode && id) {
+			setFetchingClient(true);
+			setError(null);
+
+			clientService
+				.getById(id)
+				.then((response) => {
+					const client = response.data;
+					setClientData(client);
+
+					// Pre-fill form with client data
+					form.setFieldsValue({
+						fullName: client.fullName,
+						email: client.email || "",
+						phoneNumber: client.phoneNumber || "",
+						cin: client.cin || "",
+						location: client.location || "",
+					});
+				})
+				.catch((err) => {
+					console.error("Error fetching client:", err);
+					setError(getErrorMessage(err));
+				})
+				.finally(() => {
+					setFetchingClient(false);
 				});
-			},
-			onError: (err) => {
-				console.error("Error fetching client:", err);
-			},
+		} else {
+			// Reset state when in create mode
+			setClientData(null);
+			setError(null);
 		}
-	);
+	}, [isEditMode, id, form]);
 
 	// Handle avatar selection
 	const handleAvatarSelected = useCallback((file: File | null) => {
@@ -219,18 +223,22 @@ export const AddEditClient: React.FC = () => {
 	}
 
 	// Error state for edit mode
-	if (fetchError && isEditMode) {
+	if (error && isEditMode) {
 		return (
 			<div className='space-y-6'>
+				<Button
+					icon={<ArrowLeftOutlined />}
+					onClick={handleBack}
+					className='mb-4'
+				>
+					{t("ui.back")}
+				</Button>
 				<Alert
 					message={t("clients.error.fetchTitle")}
-					description={getErrorMessage(fetchError)}
+					description={error}
 					type='error'
 					showIcon
 				/>
-				<Button icon={<ArrowLeftOutlined />} onClick={handleBack}>
-					{t("ui.back")}
-				</Button>
 			</div>
 		);
 	}

@@ -11,6 +11,9 @@ interface IPaginationParams {
 	search?: string;
 	client?: string;
 	status?: string;
+	court?: string;
+	lawsuitStage?: string;
+	lawsuitType?: string;
 	[key: string]: unknown;
 }
 
@@ -21,6 +24,9 @@ export function useFetchLawsuits() {
 		search = "",
 		client = "",
 		status = "",
+		court = "",
+		lawsuitStage = "",
+		lawsuitType = "",
 	} = useQueryParams<IPaginationParams>();
 	const navigate = useNavigate();
 
@@ -33,11 +39,21 @@ export function useFetchLawsuits() {
 				search,
 				client,
 				status,
+				court,
+				lawsuitStage,
+				lawsuitType,
 			},
 		] as const,
 		({ queryKey }) => {
-			const [, { page, limit, search, client, status }] = queryKey;
-			const filter: { search?: string; client?: string; status?: string } = {};
+			const [, { page, limit, search, client, status, court, lawsuitStage, lawsuitType }] = queryKey;
+			const filter: {
+				search?: string;
+				client?: string;
+				status?: string;
+				court?: string;
+				lawsuitStage?: string;
+				lawsuitType?: string;
+			} = {};
 			if (search && search.length !== 0) {
 				filter.search = search;
 			}
@@ -46,6 +62,15 @@ export function useFetchLawsuits() {
 			}
 			if (status && status.length !== 0) {
 				filter.status = status;
+			}
+			if (court && court.length !== 0) {
+				filter.court = court;
+			}
+			if (lawsuitStage && lawsuitStage.length !== 0) {
+				filter.lawsuitStage = lawsuitStage;
+			}
+			if (lawsuitType && lawsuitType.length !== 0) {
+				filter.lawsuitType = lawsuitType;
 			}
 
 			return lawsuitService.getAll({ page, limit, ...filter });

@@ -8,14 +8,16 @@ import { UserItemResponseType } from "../user";
 import { ClientItemResponseType } from "../client";
 import { LawsuitStageResponseType } from "../lawsuitStage";
 import { TypeLawsuitResponseType } from "../typeLawsuit";
+import { CourtResponseType } from "../court";
 import { LawsuitModelType } from "./model";
 
 export type LawsuitItemResponseType = Pick<
   LawsuitModelType,
-  "_id" | "lawsuitCode" | "status" | "createdAt" | "updatedAt"
+  "_id" | "lawsuitCode" | "description" | "status" | "createdAt" | "updatedAt"
 > & {
   clients: ClientItemResponseType[];
-  lawsuitStage: LawsuitStageResponseType;
-  lawsuitType: TypeLawsuitResponseType;
+  court?: CourtResponseType;
+  lawsuitStage?: LawsuitStageResponseType;
+  lawsuitType?: TypeLawsuitResponseType;
   createdBy: UserItemResponseType;
 };

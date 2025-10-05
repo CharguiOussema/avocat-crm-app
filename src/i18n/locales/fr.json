@@ -7,6 +7,7 @@
     "dashboard": "Tableau de bord",
     "clients": "Clients",
     "users": "Utilisateurs",
+    "lawsuits": "Litiges",
     "cases": "Dossiers",
     "documents": "Documents",
     "calendar": "Calendrier",
@@ -197,6 +198,103 @@
     "notProvided": "Non fourni",
     "pagination": {
       "total": "{{start}}-{{end}} sur {{total}} éléments"
+    }
+  },
+  "lawsuits": {
+    "title": "Gestion des Litiges",
+    "subtitle": "Gérez vos litiges et suivez leur progression",
+    "add": {
+      "button": "Ajouter un Litige",
+      "title": "Ajouter un Nouveau Litige",
+      "subtitle": "Créer un nouveau dossier de litige"
+    },
+    "edit": {
+      "title": "Modifier le Litige",
+      "subtitle": "Mettre à jour les informations du litige"
+    },
+    "table": {
+      "lawsuitCode": "Code du Litige",
+      "clients": "Clients",
+      "court": "Tribunal",
+      "lawsuitType": "Type",
+      "lawsuitStage": "Étape",
+      "status": "Statut",
+      "createdAt": "Créé le",
+      "actions": "Actions"
+    },
+    "search": {
+      "placeholder": "Rechercher des litiges par code..."
+    },
+    "filter": {
+      "status": "Filtrer par statut",
+      "client": "Filtrer par client",
+      "court": "Filtrer par tribunal",
+      "lawsuitStage": "Filtrer par étape",
+      "lawsuitType": "Filtrer par type",
+      "apply": "Appliquer les Filtres",
+      "clear": "Effacer les Filtres"
+    },
+    "status": {
+      "done": "Terminé",
+      "inprogress": "En Cours",
+      "scheduled": "Programmé",
+      "cancelled": "Annulé"
+    },
+    "delete": {
+      "title": "Supprimer le Litige",
+      "confirm": "Êtes-vous sûr de vouloir supprimer le litige {{code}} ? Cette action ne peut pas être annulée.",
+      "success": "Le litige {{code}} a été supprimé avec succès",
+      "error": "Échec de la suppression du litige"
+    },
+    "bulk": {
+      "noSelection": "Veuillez sélectionner des litiges à supprimer",
+      "delete": {
+        "title": "Supprimer Plusieurs Litiges",
+        "button": "Supprimer {{count}} Litiges",
+        "confirm": "Êtes-vous sûr de vouloir supprimer {{count}} litiges ? Cette action ne peut pas être annulée.",
+        "success": "{{count}} litiges ont été supprimés avec succès",
+        "error": "Échec de la suppression des litiges sélectionnés"
+      }
+    },
+    "error": {
+      "title": "Échec du Chargement des Litiges",
+      "fetchTitle": "Échec du Chargement du Litige",
+      "fetchFailed": "Impossible de récupérer les données du litige"
+    },
+    "create": {
+      "success": "Le litige {{code}} a été créé avec succès",
+      "error": "Échec de la création du litige"
+    },
+    "update": {
+      "success": "Le litige {{code}} a été mis à jour avec succès",
+      "error": "Échec de la mise à jour du litige"
+    },
+    "form": {
+      "lawsuitCode": "Code du Litige",
+      "lawsuitCodePlaceholder": "Entrer le code du litige",
+      "lawsuitCodeRequired": "Le code du litige est requis",
+      "lawsuitCodeMinLength": "Le code du litige doit contenir au moins 2 caractères",
+      "description": "Description",
+      "descriptionPlaceholder": "Entrer la description du litige",
+      "clients": "Clients",
+      "clientsPlaceholder": "Sélectionner les clients",
+      "clientsRequired": "Veuillez sélectionner au moins un client",
+      "court": "Tribunal",
+      "courtPlaceholder": "Sélectionner le tribunal",
+      "lawsuitStage": "Étape du Litige",
+      "lawsuitStagePlaceholder": "Sélectionner l'étape du litige",
+      "lawsuitStageRequired": "L'étape du litige est requise",
+      "lawsuitType": "Type de Litige",
+      "lawsuitTypePlaceholder": "Sélectionner le type de litige",
+      "lawsuitTypeRequired": "Le type de litige est requis",
+      "status": "Statut",
+      "statusPlaceholder": "Sélectionner le statut",
+      "statusRequired": "Le statut est requis",
+      "create": "Créer le Litige",
+      "update": "Mettre à Jour le Litige"
+    },
+    "pagination": {
+      "showTotal": "{{start}}-{{end}} sur {{total}} litiges"
     }
   },
   "cases": {

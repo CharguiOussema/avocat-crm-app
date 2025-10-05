@@ -7,26 +7,27 @@
 import React, { useState, useCallback } from "react";
 import {
 	Typography,
-	Card,
-	Table,
 	Button,
 	Space,
 	Alert,
 	Spin,
 	Modal,
 	message,
-	Row,
-	Col,
 } from "antd";
 import {
 	PlusOutlined,
 	DeleteOutlined,
 	ExclamationCircleOutlined,
 } from "@ant-design/icons";
+import type { TablePaginationConfig } from "antd/es/table";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useFetchLawsuits } from "../../hooks/useFetchLawsuits";
 import { lawsuitService } from "../../services/LawsuitService";
+import { clientService } from "../../services/ClientService";
+import { courtService } from "../../services/CourtService";
+import { lawsuitStageService } from "../../services/LawsuitStageService";
+import { typeLawsuitService } from "../../services/TypeLawsuitService";
 import { queryKeys } from "../../services/QueryClientManager";
 import { QueryBuilder } from "../../services/QueryBuilder";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +36,8 @@ import { LAWSUIT_STATUS } from "../../models/consts";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
 import { useLawsuitTableColumns } from "../../components/lawsuits/LawsuitTableColumns";
-import { SearchInput } from "../../components/common/SearchInput";
+import { LawsuitFilters } from "../../components/lawsuits/LawsuitFilters";
+import { LawsuitTable } from "../../components/lawsuits/LawsuitTable";
 
 const { Title } = Typography;
 const { confirm } = Modal;
@@ -46,31 +48,37 @@ interface QueryParams extends Record<string, unknown> {
 	lawsuitStage?: string;
 	lawsuitType?: string;
 	client?: string;
+	court?: string;
 	page?: number;
 	limit?: number;
 }
 
-// Utility function to extract error message with proper typing
-const getErrorMessage = (error: unknown): string => {
-	if (error instanceof Error) {
-		return error.message;
-	}
-	if (typeof error === "string") {
-		return error;
-	}
-	if (error && typeof error === "object" && "message" in error) {
-		return String((error as { message: unknown }).message);
-	}
-	return "An unexpected error occurred";
-};
-
 export const Lawsuits: React.FC = () => {
 	const { t } = useTranslation();
+
+	// Utility function to extract error message with proper typing
+	const getErrorMessage = (error: unknown): string => {
+		if (error instanceof Error) {
+			return error.message;
+		}
+		if (typeof error === "string") {
+			return error;
+		}
+		if (error && typeof error === "object" && "message" in error) {
+			return String((error as { message: unknown }).message);
+		}
+		return "An unexpected error occurred";
+	};
 	const { isRTL } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const {
 		search = "",
+		status,
+		lawsuitStage,
+		lawsuitType,
+		client,
+		court,
 		page = 1,
 		limit = 10,
 	} = useQueryParams<QueryParams>();
@@ -79,6 +87,51 @@ export const Lawsuits: React.FC = () => {
 
 	const { response } = useFetchLawsuits();
 	const { data, error, isLoading, isFetching } = response;
+
+	// Fetch filter options
+	const { data: clientsOptions } = useQuery(
+		[queryKeys.CLIENTS, "filter"],
+		async () => {
+			const response = await clientService.filter();
+			return response.data;
+		},
+		{
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		}
+	);
+
+	const { data: courtsOptions } = useQuery(
+		[queryKeys.COURTS, "filter"],
+		async () => {
+			const response = await courtService.filter();
+			return response.data;
+		},
+		{
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		}
+	);
+
+	const { data: lawsuitStagesOptions } = useQuery(
+		[queryKeys.LAWSUIT_STAGES, "filter"],
+		async () => {
+			const response = await lawsuitStageService.filter();
+			return response.data;
+		},
+		{
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		}
+	);
+
+	const { data: lawsuitTypesOptions } = useQuery(
+		[queryKeys.LAWSUIT_TYPES, "filter"],
+		async () => {
+			const response = await typeLawsuitService.filter();
+			return response.data;
+		},
+		{
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		}
+	);
 
 	// Status display names using i18n
 	const getStatusDisplayName = useCallback(
@@ -120,12 +173,34 @@ export const Lawsuits: React.FC = () => {
 		const searchParams = QueryBuilder.generateSearchParams()
 			.setPage(1)
 			.setLimit(limit)
-			.setQueryParam("search", value || undefined).search;
+			.setQueryParam("search", value || undefined)
+			.setQueryParam("status", status || undefined)
+			.setQueryParam("lawsuitStage", lawsuitStage || undefined)
+			.setQueryParam("lawsuitType", lawsuitType || undefined)
+			.setQueryParam("client", client || undefined)
+			.setQueryParam("court", court || undefined).search;
 
 		navigate({
 			search: searchParams,
 		});
-	}, [limit, navigate]);
+	}, [limit, status, lawsuitStage, lawsuitType, client, court, navigate]);
+
+	// Handle filter changes
+	const handleFilterChange = useCallback((filterName: string, value: string | undefined) => {
+		const searchParams = QueryBuilder.generateSearchParams()
+			.setPage(1)
+			.setLimit(limit)
+			.setQueryParam("search", search || undefined)
+			.setQueryParam("status", filterName === "status" ? value : status || undefined)
+			.setQueryParam("lawsuitStage", filterName === "lawsuitStage" ? value : lawsuitStage || undefined)
+			.setQueryParam("lawsuitType", filterName === "lawsuitType" ? value : lawsuitType || undefined)
+			.setQueryParam("client", filterName === "client" ? value : client || undefined)
+			.setQueryParam("court", filterName === "court" ? value : court || undefined).search;
+
+		navigate({
+			search: searchParams,
+		});
+	}, [limit, search, status, lawsuitStage, lawsuitType, client, court, navigate]);
 
 	// Clear all filters
 	const clearFilters = useCallback(() => {
@@ -140,17 +215,22 @@ export const Lawsuits: React.FC = () => {
 
 	// Handle table pagination change
 	const handleTableChange = useCallback(
-		(pagination: { pageSize?: number; current?: number }) => {
+		(pagination: TablePaginationConfig) => {
 			const searchParams = QueryBuilder.generateSearchParams()
 				.setLimit(pagination.pageSize || limit)
 				.setPage(pagination.current || page)
-				.setQueryParam("search", search || undefined).search;
+				.setQueryParam("search", search || undefined)
+				.setQueryParam("status", status || undefined)
+				.setQueryParam("lawsuitStage", lawsuitStage || undefined)
+				.setQueryParam("lawsuitType", lawsuitType || undefined)
+				.setQueryParam("client", client || undefined)
+				.setQueryParam("court", court || undefined).search;
 
 			navigate({
 				search: searchParams,
 			});
 		},
-		[limit, page, search, navigate]
+		[limit, page, search, status, lawsuitStage, lawsuitType, client, court, navigate]
 	);
 
 	// Handle lawsuit deletion
@@ -201,13 +281,10 @@ export const Lawsuits: React.FC = () => {
 		getStatusColor,
 	});
 
-	// Row selection configuration
-	const rowSelection = {
-		selectedRowKeys,
-		onChange: (newSelectedRowKeys: React.Key[]) => {
-			setSelectedRowKeys(newSelectedRowKeys);
-		},
-	};
+	// Handle row selection change
+	const handleSelectionChange = useCallback((newSelectedRowKeys: React.Key[]) => {
+		setSelectedRowKeys(newSelectedRowKeys);
+	}, []);
 
 	// Loading state
 	if (isLoading) {
@@ -266,48 +343,37 @@ export const Lawsuits: React.FC = () => {
 			</div>
 
 			{/* Filters */}
-			<Card className='border-border'>
-				<Row gutter={16} align='middle'>
-					<Col xs={24} sm={12} lg={8}>
-						<SearchInput
-							value={search}
-							onChange={handleSearchChange}
-							placeholder={t("lawsuits.search.placeholder")}
-						/>
-					</Col>
-					<Col xs={24} sm={24} lg={16}>
-						<Space className='w-full justify-end'>
-							<Button onClick={clearFilters}>{t("lawsuits.filter.clear")}</Button>
-						</Space>
-					</Col>
-				</Row>
-			</Card>
+			<LawsuitFilters
+				search={search}
+				status={status}
+				client={client}
+				court={court}
+				lawsuitStage={lawsuitStage}
+				lawsuitType={lawsuitType}
+				clientsOptions={clientsOptions}
+				courtsOptions={courtsOptions}
+				lawsuitStagesOptions={lawsuitStagesOptions}
+				lawsuitTypesOptions={lawsuitTypesOptions}
+				onSearchChange={handleSearchChange}
+				onFilterChange={handleFilterChange}
+				onClearFilters={clearFilters}
+				getStatusDisplayName={getStatusDisplayName}
+			/>
 
 			{/* Lawsuits Table */}
-			<Card className='border-border'>
-				<Table
-					rowSelection={rowSelection}
-					columns={columns}
-					dataSource={lawsuits}
-					rowKey='_id'
-					pagination={{
-						current: page,
-						pageSize: limit,
-						total,
-						showSizeChanger: true,
-						showQuickJumper: true,
-						showTotal: (total, range) =>
-							t("common.pagination.total", {
-								start: range[0],
-								end: range[1],
-								total,
-							}),
-					}}
-					onChange={handleTableChange}
-					loading={isFetching}
-					className='lawsuits-table'
-				/>
-			</Card>
+			<LawsuitTable
+				lawsuits={lawsuits}
+				columns={columns}
+				loading={isFetching}
+				selectedRowKeys={selectedRowKeys}
+				pagination={{
+					current: page,
+					pageSize: limit,
+					total,
+				}}
+				onSelectionChange={handleSelectionChange}
+				onTableChange={handleTableChange}
+			/>
 		</div>
 	);
 };

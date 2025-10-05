@@ -285,6 +285,7 @@
     "table": {
       "lawsuitCode": "Lawsuit Code",
       "clients": "Clients",
+      "court": "Court",
       "lawsuitType": "Type",
       "lawsuitStage": "Stage",
       "status": "Status",
@@ -295,6 +296,11 @@
       "placeholder": "Search lawsuits by code..."
     },
     "filter": {
+      "status": "Filter by status",
+      "client": "Filter by client",
+      "court": "Filter by court",
+      "lawsuitStage": "Filter by stage",
+      "lawsuitType": "Filter by type",
       "apply": "Apply Filters",
       "clear": "Clear Filters"
     },
@@ -338,9 +344,13 @@
       "lawsuitCodePlaceholder": "Enter lawsuit code",
       "lawsuitCodeRequired": "Lawsuit code is required",
       "lawsuitCodeMinLength": "Lawsuit code must be at least 2 characters",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter lawsuit description",
       "clients": "Clients",
       "clientsPlaceholder": "Select clients",
       "clientsRequired": "Please select at least one client",
+      "court": "Court",
+      "courtPlaceholder": "Select court",
       "lawsuitStage": "Lawsuit Stage",
       "lawsuitStagePlaceholder": "Select lawsuit stage",
       "lawsuitStageRequired": "Lawsuit stage is required",

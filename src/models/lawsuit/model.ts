@@ -9,9 +9,11 @@ import { LAWSUIT_STATUS } from "../consts";
 export type LawsuitModelType = {
   _id: string;
   lawsuitCode: string;
+  description?: string;
   clients: string[];
-  lawsuitStage: string;
-  lawsuitType: string;
+  court?: string;
+  lawsuitStage?: string;
+  lawsuitType?: string;
   status: LAWSUIT_STATUS;
   company: string;
   createdAt: string;

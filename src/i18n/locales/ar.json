@@ -7,6 +7,7 @@
     "dashboard": "لوحة التحكم",
     "clients": "العملاء",
     "users": "المستخدمون",
+    "lawsuits": "الدعاوى القضائية",
     "cases": "القضايا",
     "documents": "الوثائق",
     "calendar": "التقويم",
@@ -197,6 +198,103 @@
     "notProvided": "غير مقدم",
     "pagination": {
       "total": "{{start}}-{{end}} من {{total}} عنصر"
+    }
+  },
+  "lawsuits": {
+    "title": "إدارة الدعاوى القضائية",
+    "subtitle": "إدارة دعاواك القضائية وتتبع تقدمها",
+    "add": {
+      "button": "إضافة دعوى قضائية",
+      "title": "إضافة دعوى قضائية جديدة",
+      "subtitle": "إنشاء ملف دعوى قضائية جديد"
+    },
+    "edit": {
+      "title": "تعديل الدعوى القضائية",
+      "subtitle": "تحديث معلومات الدعوى القضائية"
+    },
+    "table": {
+      "lawsuitCode": "رمز الدعوى",
+      "clients": "العملاء",
+      "court": "المحكمة",
+      "lawsuitType": "النوع",
+      "lawsuitStage": "المرحلة",
+      "status": "الحالة",
+      "createdAt": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
+    },
+    "search": {
+      "placeholder": "البحث عن دعوى قضائية بالرمز..."
+    },
+    "filter": {
+      "status": "تصفية حسب الحالة",
+      "client": "تصفية حسب العميل",
+      "court": "تصفية حسب المحكمة",
+      "lawsuitStage": "تصفية حسب المرحلة",
+      "lawsuitType": "تصفية حسب النوع",
+      "apply": "تطبيق المرشحات",
+      "clear": "مسح المرشحات"
+    },
+    "status": {
+      "done": "منتهية",
+      "inprogress": "قيد التنفيذ",
+      "scheduled": "مجدولة",
+      "cancelled": "ملغاة"
+    },
+    "delete": {
+      "title": "حذف الدعوى القضائية",
+      "confirm": "هل أنت متأكد من حذف الدعوى القضائية {{code}}؟ لا يمكن التراجع عن هذا الإجراء.",
+      "success": "تم حذف الدعوى القضائية {{code}} بنجاح",
+      "error": "فشل في حذف الدعوى القضائية"
+    },
+    "bulk": {
+      "noSelection": "يرجى اختيار دعاوى قضائية للحذف",
+      "delete": {
+        "title": "حذف عدة دعاوى قضائية",
+        "button": "حذف {{count}} دعاوى قضائية",
+        "confirm": "هل أنت متأكد من حذف {{count}} دعاوى قضائية؟ لا يمكن التراجع عن هذا الإجراء.",
+        "success": "تم حذف {{count}} دعاوى قضائية بنجاح",
+        "error": "فشل في حذف الدعاوى القضائية المحددة"
+      }
+    },
+    "error": {
+      "title": "فشل في تحميل الدعاوى القضائية",
+      "fetchTitle": "فشل في تحميل الدعوى القضائية",
+      "fetchFailed": "تعذر جلب بيانات الدعوى القضائية"
+    },
+    "create": {
+      "success": "تم إنشاء الدعوى القضائية {{code}} بنجاح",
+      "error": "فشل في إنشاء الدعوى القضائية"
+    },
+    "update": {
+      "success": "تم تحديث الدعوى القضائية {{code}} بنجاح",
+      "error": "فشل في تحديث الدعوى القضائية"
+    },
+    "form": {
+      "lawsuitCode": "رمز الدعوى",
+      "lawsuitCodePlaceholder": "أدخل رمز الدعوى",
+      "lawsuitCodeRequired": "رمز الدعوى مطلوب",
+      "lawsuitCodeMinLength": "يجب أن يحتوي رمز الدعوى على حرفين على الأقل",
+      "description": "الوصف",
+      "descriptionPlaceholder": "أدخل وصف الدعوى القضائية",
+      "clients": "العملاء",
+      "clientsPlaceholder": "اختر العملاء",
+      "clientsRequired": "يرجى اختيار عميل واحد على الأقل",
+      "court": "المحكمة",
+      "courtPlaceholder": "اختر المحكمة",
+      "lawsuitStage": "مرحلة الدعوى",
+      "lawsuitStagePlaceholder": "اختر مرحلة الدعوى",
+      "lawsuitStageRequired": "مرحلة الدعوى مطلوبة",
+      "lawsuitType": "نوع الدعوى",
+      "lawsuitTypePlaceholder": "اختر نوع الدعوى",
+      "lawsuitTypeRequired": "نوع الدعوى مطلوب",
+      "status": "الحالة",
+      "statusPlaceholder": "اختر الحالة",
+      "statusRequired": "الحالة مطلوبة",
+      "create": "إنشاء الدعوى",
+      "update": "تحديث الدعوى"
+    },
+    "pagination": {
+      "showTotal": "{{start}}-{{end}} من {{total}} دعوى قضائية"
     }
   },
   "cases": {

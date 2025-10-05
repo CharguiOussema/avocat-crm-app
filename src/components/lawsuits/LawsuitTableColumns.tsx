@@ -54,12 +54,21 @@ export const useLawsuitTableColumns = ({
 			),
 		},
 		{
+			title: t("lawsuits.table.court"),
+			dataIndex: "court",
+			key: "court",
+			responsive: ["lg"],
+			render: (court: LawsuitItemResponseType["court"]) => (
+				<span className='text-muted-foreground'>{court?.name || t("common.notProvided")}</span>
+			),
+		},
+		{
 			title: t("lawsuits.table.lawsuitType"),
 			dataIndex: "lawsuitType",
 			key: "lawsuitType",
 			responsive: ["lg"],
 			render: (lawsuitType: LawsuitItemResponseType["lawsuitType"]) => (
-				<span className='text-muted-foreground'>{lawsuitType.name}</span>
+				<span className='text-muted-foreground'>{lawsuitType?.name || t("common.notProvided")}</span>
 			),
 		},
 		{
@@ -68,7 +77,7 @@ export const useLawsuitTableColumns = ({
 			key: "lawsuitStage",
 			responsive: ["lg"],
 			render: (lawsuitStage: LawsuitItemResponseType["lawsuitStage"]) => (
-				<span className='text-muted-foreground'>{lawsuitStage.name}</span>
+				<span className='text-muted-foreground'>{lawsuitStage?.name || t("common.notProvided")}</span>
 			),
 		},
 		{

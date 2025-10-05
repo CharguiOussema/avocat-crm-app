@@ -8,7 +8,13 @@ import { LawsuitModelType } from "./model";
 
 export type CreateLawsuitBodyRequest = Pick<
   LawsuitModelType,
-  "lawsuitCode" | "clients" | "lawsuitStage" | "lawsuitType" | "status"
+  | "lawsuitCode"
+  | "description"
+  | "clients"
+  | "court"
+  | "lawsuitStage"
+  | "lawsuitType"
+  | "status"
 >;
 export type UpdateLawsuitBodyRequest = Pick<LawsuitModelType, "_id"> &
   CreateLawsuitBodyRequest;
