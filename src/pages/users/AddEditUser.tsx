@@ -53,22 +53,22 @@ interface FormValues {
 	phoneNumber?: string;
 }
 
-// Utility function to extract error message with proper typing
-const getErrorMessage = (error: unknown): string => {
-	if (error instanceof Error) {
-		return error.message;
-	}
-	if (typeof error === "string") {
-		return error;
-	}
-	if (error && typeof error === "object" && "message" in error) {
-		return String((error as { message: unknown }).message);
-	}
-	return "An unexpected error occurred";
-};
-
 export const AddEditUser: React.FC = () => {
 	const { t } = useTranslation();
+
+	// Utility function to extract error message with proper typing
+	const getErrorMessage = (error: unknown): string => {
+		if (error instanceof Error) {
+			return error.message;
+		}
+		if (typeof error === "string") {
+			return error;
+		}
+		if (error && typeof error === "object" && "message" in error) {
+			return String((error as { message: unknown }).message);
+		}
+		return t("common.unexpectedError");
+	};
 	const { isRTL } = useApp();
 	const { user: currentUser } = useAuth();
 	const navigate = useNavigate();

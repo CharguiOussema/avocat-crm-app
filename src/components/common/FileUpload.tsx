@@ -6,6 +6,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { Upload, X, FileText, Image, Music, Video, File } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { fileService, type FileUploadData, type FileModel } from '../../services';
 
 interface FileUploadProps {
@@ -39,6 +40,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   className = '',
   disabled = false,
 }) => {
+  const { t } = useTranslation();
   const [dragActive, setDragActive] = useState(false);
   const [uploads, setUploads] = useState<UploadProgress[]>([]);
 
@@ -61,7 +63,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       });
 
       if (!validation.valid) {
-        onUploadError?.(validation.error || 'File validation failed');
+        onUploadError?.(validation.error || t('common.fileManager.error.validationFailed'));
         continue;
       }
 
@@ -93,7 +95,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
       } catch (error) {
         uploadProgress.status = 'error';
-        uploadProgress.error = error instanceof Error ? error.message : 'Upload failed';
+        uploadProgress.error = error instanceof Error ? error.message : t('common.fileManager.error.uploadFailed');
 
         setUploads(prev => prev.map(u => u.file === file ? uploadProgress : u));
 
@@ -173,13 +175,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
         <div className="text-sm text-gray-600">
           <span className="font-medium text-blue-600 hover:text-blue-500">
-            Click to upload
+            {t('common.fileManager.actions.clickToUpload')}
           </span>
-          {' '}or drag and drop
+          {' '}{t('common.fileManager.actions.orDragDrop')}
         </div>
 
         <p className="text-xs text-gray-500 mt-2">
-          Max file size: {fileService.formatFileSize(maxFileSize)}
+          {t('common.fileManager.maxFileSize')}: {fileService.formatFileSize(maxFileSize)}
         </p>
       </div>
 
@@ -212,7 +214,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
               {upload.status === 'success' && (
                 <div className="text-green-500 text-xs font-medium">
-                  ✓ Uploaded
+                  ✓ {t('common.fileManager.uploadSuccess')}
                 </div>
               )}
 

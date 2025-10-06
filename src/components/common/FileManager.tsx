@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Grid, List, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { fileService, type FileModel, type FileQueryParams, type FileUploadData } from '../../services';
 import { FileUpload } from './FileUpload';
 import { FileDisplay } from './FileDisplay';
@@ -25,6 +26,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
   showUpload = true,
   className = '',
 }) => {
+  const { t } = useTranslation();
   const [files, setFiles] = useState<FileModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,12 +41,12 @@ export const FileManager: React.FC<FileManagerProps> = ({
     value: 'all' | 'document' | 'image' | 'audio' | 'video' | 'other';
     label: string;
   }> = [
-    { value: 'all', label: 'All Files' },
-    { value: 'document', label: 'Documents' },
-    { value: 'image', label: 'Images' },
-    { value: 'audio', label: 'Audio' },
-    { value: 'video', label: 'Video' },
-    { value: 'other', label: 'Other' },
+    { value: 'all', label: t('common.fileManager.categories.all') },
+    { value: 'document', label: t('common.fileManager.categories.document') },
+    { value: 'image', label: t('common.fileManager.categories.image') },
+    { value: 'audio', label: t('common.fileManager.categories.audio') },
+    { value: 'video', label: t('common.fileManager.categories.video') },
+    { value: 'other', label: t('common.fileManager.categories.other') },
   ] as const;
 
   const fetchFiles = async () => {
@@ -67,7 +69,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
       setFiles(response.files);
       setTotalPages(response.totalPages);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch files');
+      setError(err instanceof Error ? err.message : t('common.fileManager.error.fetchFiles'));
     } finally {
       setLoading(false);
     }
@@ -87,13 +89,13 @@ export const FileManager: React.FC<FileManagerProps> = ({
   };
 
   const handleDeleteFile = async (file: FileModel) => {
-    if (!confirm('Are you sure you want to delete this file?')) return;
+    if (!confirm(t('common.fileManager.delete.confirm'))) return;
 
     try {
       await fileService.deleteFile(file._id);
       setFiles(prev => prev.filter(f => f._id !== file._id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete file');
+      setError(err instanceof Error ? err.message : t('common.fileManager.error.deleteFile'));
     }
   };
 
@@ -108,10 +110,10 @@ export const FileManager: React.FC<FileManagerProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-900">
-          File Manager
+          {t('common.fileManager.title')}
           {files.length > 0 && (
             <span className="ml-2 text-sm font-normal text-gray-500">
-              ({files.length} files)
+              ({t('common.fileManager.filesCount', { count: files.length })})
             </span>
           )}
         </h2>
@@ -123,7 +125,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
               className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <Plus className="w-4 h-4 mr-1" />
-              Upload
+              {t('common.fileManager.upload')}
             </button>
           )}
 
@@ -131,14 +133,14 @@ export const FileManager: React.FC<FileManagerProps> = ({
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2 ${viewMode === 'grid' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
-              title="Grid view"
+              title={t('common.fileManager.gridView')}
             >
               <Grid className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('list')}
               className={`p-2 ${viewMode === 'list' ? 'bg-gray-100' : 'hover:bg-gray-50'}`}
-              title="List view"
+              title={t('common.fileManager.listView')}
             >
               <List className="w-4 h-4" />
             </button>
@@ -165,7 +167,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search files..."
+              placeholder={t('common.fileManager.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -197,7 +199,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
             onClick={() => setError(null)}
             className="mt-2 text-xs text-red-600 hover:text-red-800"
           >
-            Dismiss
+            {t('clients.legacy.dismiss')}
           </button>
         </div>
       )}
@@ -215,9 +217,9 @@ export const FileManager: React.FC<FileManagerProps> = ({
           <div className="mx-auto h-12 w-12 text-gray-400">
             📁
           </div>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">No files</h3>
+          <h3 className="mt-2 text-sm font-medium text-gray-900">{t('common.fileManager.empty.title')}</h3>
           <p className="mt-1 text-sm text-gray-500">
-            {showUpload ? 'Get started by uploading a file.' : 'No files found.'}
+            {t('common.fileManager.empty.description')}
           </p>
         </div>
       )}
@@ -249,17 +251,17 @@ export const FileManager: React.FC<FileManagerProps> = ({
                   disabled={page === 1}
                   className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  {t('clients.legacy.pagination.previous')}
                 </button>
                 <span className="text-sm text-gray-700">
-                  Page {page} of {totalPages}
+                  {t('clients.legacy.pagination.page', { current: page, total: totalPages })}
                 </span>
                 <button
                   onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={page === totalPages}
                   className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  {t('clients.legacy.pagination.next')}
                 </button>
               </div>
             </div>

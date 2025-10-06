@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { Download, Eye, Trash2, Edit, FileText, Image, Music, Video, File } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { fileService, type FileModel } from '../../services';
 
 interface FileDisplayProps {
@@ -29,6 +30,8 @@ export const FileDisplay: React.FC<FileDisplayProps> = ({
   compact = false,
   className = '',
 }) => {
+  const { t } = useTranslation();
+
   const getFileIcon = () => {
     if (fileService.isImage(file)) return <Image className="w-5 h-5 text-blue-500" />;
     if (fileService.isAudio(file)) return <Music className="w-5 h-5 text-purple-500" />;
@@ -80,14 +83,14 @@ export const FileDisplay: React.FC<FileDisplayProps> = ({
             <button
               onClick={handleView}
               className="p-1 text-gray-400 hover:text-blue-500"
-              title="View"
+              title={t('common.fileManager.actions.view')}
             >
               <Eye className="w-4 h-4" />
             </button>
             <button
               onClick={handleDownload}
               className="p-1 text-gray-400 hover:text-green-500"
-              title="Download"
+              title={t('common.fileManager.actions.download')}
             >
               <Download className="w-4 h-4" />
             </button>
@@ -166,14 +169,14 @@ export const FileDisplay: React.FC<FileDisplayProps> = ({
               className="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 hover:text-blue-700"
             >
               <Eye className="w-3 h-3 mr-1" />
-              View
+              {t('common.fileManager.actions.view')}
             </button>
             <button
               onClick={handleDownload}
               className="inline-flex items-center px-3 py-1 text-xs font-medium text-green-600 hover:text-green-700"
             >
               <Download className="w-3 h-3 mr-1" />
-              Download
+              {t('common.fileManager.actions.download')}
             </button>
           </div>
 
@@ -182,7 +185,7 @@ export const FileDisplay: React.FC<FileDisplayProps> = ({
               <button
                 onClick={() => onEdit(file)}
                 className="p-1 text-gray-400 hover:text-blue-500"
-                title="Edit"
+                title={t('ui.edit')}
               >
                 <Edit className="w-4 h-4" />
               </button>
@@ -191,7 +194,7 @@ export const FileDisplay: React.FC<FileDisplayProps> = ({
               <button
                 onClick={() => onDelete(file)}
                 className="p-1 text-gray-400 hover:text-red-500"
-                title="Delete"
+                title={t('ui.delete')}
               >
                 <Trash2 className="w-4 h-4" />
               </button>

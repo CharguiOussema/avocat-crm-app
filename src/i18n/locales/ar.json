@@ -31,7 +31,11 @@
     "edit": "تعديل",
     "delete": "حذف",
     "back": "رجوع",
-    "noData": "لا توجد بيانات"
+    "noData": "لا توجد بيانات",
+    "create": "إنشاء",
+    "update": "تحديث",
+    "yes": "نعم",
+    "no": "لا"
   },
   "themes": {
     "light": "فاتح",
@@ -46,28 +50,137 @@
     "ar": "العربية"
   },
   "clients": {
+    "title": "إدارة العملاء",
+    "subtitle": "إدارة عملائك ومعلوماتهم",
     "name": "الاسم",
     "email": "البريد الإلكتروني",
     "phone": "الهاتف",
     "location": "الموقع",
     "status": "الحالة",
     "cases": "القضايا",
-    "add": "إضافة عميل",
-    "edit": "تعديل العميل",
-    "search": "البحث عن العملاء...",
+    "add": {
+      "button": "إضافة عميل",
+      "title": "إضافة عميل جديد",
+      "subtitle": "إنشاء ملف عميل جديد"
+    },
+    "edit": {
+      "title": "تعديل العميل",
+      "subtitle": "تحديث معلومات العميل"
+    },
+    "table": {
+      "avatar": "الصورة",
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phoneNumber": "رقم الهاتف",
+      "cin": "رقم الهوية",
+      "location": "الموقع",
+      "createdAt": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
+    },
+    "search": {
+      "placeholder": "البحث عن العملاء بالاسم، البريد الإلكتروني، الهاتف..."
+    },
+    "filter": {
+      "apply": "تطبيق المرشحات",
+      "clear": "مسح المرشحات"
+    },
     "delete": {
       "title": "حذف العميل",
-      "content": "هل أنت متأكد من حذف {{name}}؟",
-      "confirm": "نعم، احذف",
+      "confirm": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
       "success": "تم حذف {{name}} بنجاح",
       "error": "فشل في حذف العميل"
     },
-    "modal": {
-      "addTitle": "إضافة عميل جديد",
-      "updateTitle": "تعديل العميل"
+    "bulk": {
+      "noSelection": "يرجى اختيار عملاء للحذف",
+      "delete": {
+        "title": "حذف عدة عملاء",
+        "button": "حذف {{count}} عملاء",
+        "confirm": "هل أنت متأكد من حذف {{count}} عملاء؟ لا يمكن التراجع عن هذا الإجراء.",
+        "success": "تم حذف {{count}} عملاء بنجاح",
+        "error": "فشل في حذف العملاء المحددين"
+      }
+    },
+    "error": {
+      "title": "فشل في تحميل العملاء",
+      "fetchTitle": "فشل في تحميل العميل",
+      "fetchFailed": "تعذر جلب بيانات العميل"
+    },
+    "create": {
+      "success": "تم إنشاء {{name}} بنجاح",
+      "error": "فشل في إنشاء العميل"
+    },
+    "update": {
+      "success": "تم تحديث {{name}} بنجاح",
+      "error": "فشل في تحديث العميل"
+    },
+    "form": {
+      "avatar": "الصورة الشخصية",
+      "avatarSubtitle": "رفع صورة شخصية لهذا العميل",
+      "fullName": "الاسم الكامل",
+      "fullNamePlaceholder": "أدخل الاسم الكامل للعميل",
+      "fullNameRequired": "الاسم الكامل مطلوب",
+      "fullNameMinLength": "يجب أن يحتوي الاسم الكامل على حرفين على الأقل",
+      "email": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "client@example.com",
+      "emailRequired": "عنوان البريد الإلكتروني مطلوب",
+      "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
+      "phoneNumber": "رقم الهاتف",
+      "phoneNumberPlaceholder": "+966 50 123 4567",
+      "phoneNumberInvalid": "يرجى إدخال رقم هاتف صالح",
+      "cin": "رقم الهوية الوطنية",
+      "cinPlaceholder": "12345678",
+      "cinMinLength": "يجب أن يحتوي رقم الهوية على 3 أحرف على الأقل",
+      "cinInvalid": "يرجى إدخال رقم هوية صالح",
+      "location": "الموقع",
+      "locationPlaceholder": "أدخل المدينة أو العنوان أو البلد",
+      "create": "إنشاء العميل",
+      "update": "تحديث العميل"
     },
     "pagination": {
       "showTotal": "{{start}}-{{end}} من {{total}} عميل"
+    },
+    "legacy": {
+      "title": "العملاء",
+      "subtitle": "إدارة علاقاتك مع العملاء",
+      "addButton": "إضافة عميل",
+      "searchPlaceholder": "البحث عن العملاء...",
+      "dismiss": "إغلاق",
+      "empty": {
+        "title": "لا يوجد عملاء",
+        "description": "ابدأ بإضافة عميلك الأول."
+      },
+      "table": {
+        "client": "العميل",
+        "contactInfo": "معلومات الاتصال",
+        "details": "التفاصيل",
+        "created": "تاريخ الإنشاء",
+        "actions": "الإجراءات",
+        "editTitle": "تعديل العميل",
+        "deleteTitle": "حذف العميل"
+      },
+      "pagination": {
+        "previous": "السابق",
+        "next": "التالي",
+        "page": "صفحة {{current}} من {{total}}",
+        "showing": "عرض {{count}} من {{total}} عميل"
+      },
+      "error": {
+        "fetchFailed": "فشل في جلب العملاء",
+        "deleteFailed": "فشل في حذف العميل",
+        "clientRequired": "بيانات العميل مطلوبة لوضع التحديث"
+      },
+      "delete": {
+        "confirm": "هل أنت متأكد من حذف {{name}}؟"
+      },
+      "form": {
+        "fullNameRequired": "الاسم الكامل مطلوب",
+        "fullNameMinLength": "يجب أن يحتوي الاسم الكامل على حرفين على الأقل",
+        "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
+        "phoneInvalid": "يرجى إدخال رقم هاتف صالح",
+        "cinInvalid": "يجب أن يحتوي رقم الهوية على 8 أرقام بالضبط",
+        "saveButton": "حفظ",
+        "cancelButton": "إلغاء"
+      }
     }
   },
   "users": {
@@ -196,8 +309,53 @@
   "common": {
     "error": "خطأ",
     "notProvided": "غير مقدم",
+    "unexpectedError": "حدث خطأ غير متوقع",
     "pagination": {
       "total": "{{start}}-{{end}} من {{total}} عنصر"
+    },
+    "fileManager": {
+      "title": "مدير الملفات",
+      "filesCount": "{{count}} ملفات",
+      "upload": "رفع",
+      "gridView": "عرض شبكي",
+      "listView": "عرض قائمة",
+      "searchPlaceholder": "البحث في الملفات...",
+      "maxFileSize": "الحد الأقصى لحجم الملف",
+      "uploadSuccess": "تم الرفع",
+      "categories": {
+        "all": "جميع الملفات",
+        "document": "المستندات",
+        "image": "الصور",
+        "audio": "الصوت",
+        "video": "الفيديو",
+        "other": "أخرى"
+      },
+      "actions": {
+        "view": "عرض",
+        "download": "تنزيل",
+        "clickToUpload": "انقر للرفع",
+        "orDragDrop": "أو اسحب وأفلت"
+      },
+      "error": {
+        "fetchFiles": "فشل في جلب الملفات",
+        "deleteFile": "فشل في حذف الملف",
+        "uploadFailed": "فشل الرفع",
+        "validationFailed": "فشل في التحقق من الملف"
+      },
+      "delete": {
+        "confirm": "هل أنت متأكد من حذف هذا الملف؟"
+      },
+      "empty": {
+        "title": "لم يتم العثور على ملفات",
+        "description": "قم برفع الملفات للبدء"
+      }
+    },
+    "avatar": {
+      "newAvatar": "صورة شخصية جديدة",
+      "invalidFile": "ملف غير صالح",
+      "change": "تغيير",
+      "upload": "رفع",
+      "uploadTitle": "رفع الصورة الشخصية"
     }
   },
   "lawsuits": {
@@ -338,29 +496,167 @@
     "caseTypes": "أنواع القضايا"
   },
   "settings": {
-    "profile": "الملف الشخصي",
-    "preferences": "التفضيلات",
-    "security": "الأمان",
-    "firstName": "الاسم الأول",
-    "lastName": "الاسم الأخير",
-    "email": "البريد الإلكتروني",
-    "phone": "الهاتف",
-    "firm": "مكتب المحاماة",
-    "license": "رقم الترخيص",
-    "firstNameRequired": "الاسم الأول مطلوب",
-    "lastNameRequired": "الاسم الأخير مطلوب",
-    "emailRequired": "البريد الإلكتروني مطلوب",
-    "emailInvalid": "يرجى إدخال بريد إلكتروني صالح",
-    "saveProfile": "حفظ الملف الشخصي",
-    "notifications": "الإشعارات",
-    "emailNotifications": "إشعارات البريد الإلكتروني",
-    "autoSave": "الحفظ التلقائي",
-    "darkMode": "الوضع الداكن",
-    "savePreferences": "حفظ التفضيلات",
-    "currentPassword": "كلمة المرور الحالية",
-    "newPassword": "كلمة المرور الجديدة",
-    "confirmPassword": "تأكيد كلمة المرور",
-    "changePassword": "تغيير كلمة المرور"
+    "subtitle": "إدارة تفضيلات التطبيق والبيانات",
+    "nav": {
+      "monProfil": "ملفي الشخصي",
+      "entreprise": "الشركة",
+      "court": "المحاكم",
+      "lawsuitStage": "مراحل الدعاوى",
+      "typeLawsuit": "أنواع الدعاوى"
+    },
+    "profile": {
+      "title": "ملفي الشخصي",
+      "subtitle": "إدارة معلوماتك الشخصية وتفضيلاتك",
+      "personalInfo": "المعلومات الشخصية",
+      "avatar": "الصورة الشخصية",
+      "avatarSubtitle": "رفع صورة شخصية",
+      "fullName": "الاسم الكامل",
+      "fullNamePlaceholder": "أدخل اسمك الكامل",
+      "fullNameRequired": "الاسم الكامل مطلوب",
+      "fullNameMinLength": "يجب أن يحتوي الاسم الكامل على حرفين على الأقل",
+      "email": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "your@email.com",
+      "emailRequired": "عنوان البريد الإلكتروني مطلوب",
+      "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
+      "phoneNumber": "رقم الهاتف",
+      "phoneNumberPlaceholder": "+966 50 123 4567",
+      "phoneNumberInvalid": "يرجى إدخال رقم هاتف صالح",
+      "cin": "رقم الهوية الوطنية",
+      "cinPlaceholder": "12345678",
+      "cinInvalid": "يجب أن يحتوي رقم الهوية على 8 أرقام بالضبط",
+      "saveProfile": "حفظ الملف الشخصي",
+      "updateSuccess": "تم تحديث الملف الشخصي بنجاح",
+      "updateError": "فشل في تحديث الملف الشخصي"
+    },
+    "password": {
+      "title": "تغيير كلمة المرور",
+      "current": "كلمة المرور الحالية",
+      "currentPlaceholder": "أدخل كلمة المرور الحالية",
+      "currentRequired": "كلمة المرور الحالية مطلوبة",
+      "new": "كلمة المرور الجديدة",
+      "newPlaceholder": "أدخل كلمة المرور الجديدة",
+      "newRequired": "كلمة المرور الجديدة مطلوبة",
+      "minLength": "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل",
+      "confirm": "تأكيد كلمة المرور الجديدة",
+      "confirmPlaceholder": "أكد كلمة المرور الجديدة",
+      "confirmRequired": "يرجى تأكيد كلمة المرور الجديدة",
+      "mismatch": "كلمات المرور غير متطابقة",
+      "changePassword": "تغيير كلمة المرور",
+      "changeSuccess": "تم تغيير كلمة المرور بنجاح",
+      "changeError": "فشل في تغيير كلمة المرور"
+    },
+    "company": {
+      "title": "إعدادات الشركة",
+      "subtitle": "إدارة معلومات شركتك",
+      "companyInfo": "معلومات الشركة",
+      "logo": "شعار الشركة",
+      "logoSubtitle": "رفع شعار شركتك",
+      "name": "اسم الشركة",
+      "namePlaceholder": "أدخل اسم الشركة",
+      "nameRequired": "اسم الشركة مطلوب",
+      "nameMinLength": "يجب أن يحتوي اسم الشركة على حرفين على الأقل",
+      "email": "البريد الإلكتروني للشركة",
+      "emailPlaceholder": "company@example.com",
+      "emailRequired": "البريد الإلكتروني للشركة مطلوب",
+      "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
+      "phoneNumber": "رقم الهاتف",
+      "phoneNumberPlaceholder": "+966 50 123 4567",
+      "phoneNumberRequired": "رقم الهاتف مطلوب",
+      "phoneNumberInvalid": "يرجى إدخال رقم هاتف صالح",
+      "website": "الموقع الإلكتروني",
+      "websitePlaceholder": "https://www.company.com",
+      "websiteInvalid": "يرجى إدخال عنوان موقع إلكتروني صالح",
+      "saveCompany": "حفظ الشركة",
+      "updateSuccess": "تم تحديث الشركة بنجاح",
+      "updateError": "فشل في تحديث الشركة",
+      "fetchError": "فشل في جلب بيانات الشركة",
+      "accessDenied": "الوصول مرفوض",
+      "accessDeniedDescription": "تحتاج إلى صلاحيات المسؤول لإدارة إعدادات الشركة."
+    },
+    "court": {
+      "title": "إدارة المحاكم",
+      "subtitle": "إدارة المحاكم في نظامك",
+      "management": "إدارة المحاكم",
+      "searchPlaceholder": "البحث في المحاكم...",
+      "addCourt": "إضافة محكمة",
+      "editCourt": "تعديل المحكمة",
+      "table": {
+        "name": "اسم المحكمة",
+        "createdAt": "تاريخ الإنشاء",
+        "actions": "الإجراءات",
+        "showTotal": "{{start}}-{{end}} من {{total}} محكمة"
+      },
+      "form": {
+        "name": "اسم المحكمة",
+        "namePlaceholder": "أدخل اسم المحكمة",
+        "nameRequired": "اسم المحكمة مطلوب",
+        "nameMinLength": "يجب أن يحتوي اسم المحكمة على حرفين على الأقل"
+      },
+      "createSuccess": "تم إنشاء المحكمة بنجاح",
+      "updateSuccess": "تم تحديث المحكمة بنجاح",
+      "deleteSuccess": "تم حذف المحكمة بنجاح",
+      "createError": "فشل في إنشاء المحكمة",
+      "updateError": "فشل في تحديث المحكمة",
+      "deleteError": "فشل في حذف المحكمة",
+      "deleteConfirm": "حذف المحكمة",
+      "deleteConfirmDescription": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء."
+    },
+    "lawsuitStage": {
+      "title": "إدارة مراحل الدعاوى",
+      "subtitle": "إدارة مراحل الدعاوى في نظامك",
+      "management": "إدارة مراحل الدعاوى",
+      "searchPlaceholder": "البحث في مراحل الدعاوى...",
+      "addStage": "إضافة مرحلة",
+      "editStage": "تعديل المرحلة",
+      "table": {
+        "name": "اسم المرحلة",
+        "createdAt": "تاريخ الإنشاء",
+        "actions": "الإجراءات",
+        "showTotal": "{{start}}-{{end}} من {{total}} مرحلة"
+      },
+      "form": {
+        "name": "اسم المرحلة",
+        "namePlaceholder": "أدخل اسم المرحلة",
+        "nameRequired": "اسم المرحلة مطلوب",
+        "nameMinLength": "يجب أن يحتوي اسم المرحلة على حرفين على الأقل"
+      },
+      "createSuccess": "تم إنشاء مرحلة الدعوى بنجاح",
+      "updateSuccess": "تم تحديث مرحلة الدعوى بنجاح",
+      "deleteSuccess": "تم حذف مرحلة الدعوى بنجاح",
+      "createError": "فشل في إنشاء مرحلة الدعوى",
+      "updateError": "فشل في تحديث مرحلة الدعوى",
+      "deleteError": "فشل في حذف مرحلة الدعوى",
+      "deleteConfirm": "حذف مرحلة الدعوى",
+      "deleteConfirmDescription": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء."
+    },
+    "typeLawsuit": {
+      "title": "إدارة أنواع الدعاوى",
+      "subtitle": "إدارة أنواع الدعاوى في نظامك",
+      "management": "إدارة أنواع الدعاوى",
+      "searchPlaceholder": "البحث في أنواع الدعاوى...",
+      "addType": "إضافة نوع",
+      "editType": "تعديل النوع",
+      "table": {
+        "name": "اسم النوع",
+        "createdAt": "تاريخ الإنشاء",
+        "actions": "الإجراءات",
+        "showTotal": "{{start}}-{{end}} من {{total}} نوع"
+      },
+      "form": {
+        "name": "اسم النوع",
+        "namePlaceholder": "أدخل اسم النوع",
+        "nameRequired": "اسم النوع مطلوب",
+        "nameMinLength": "يجب أن يحتوي اسم النوع على حرفين على الأقل"
+      },
+      "createSuccess": "تم إنشاء نوع الدعوى بنجاح",
+      "updateSuccess": "تم تحديث نوع الدعوى بنجاح",
+      "deleteSuccess": "تم حذف نوع الدعوى بنجاح",
+      "createError": "فشل في إنشاء نوع الدعوى",
+      "updateError": "فشل في تحديث نوع الدعوى",
+      "deleteError": "فشل في حذف نوع الدعوى",
+      "deleteConfirm": "حذف نوع الدعوى",
+      "deleteConfirmDescription": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء."
+    }
   },
   "error": {
     "fetchFailed": "فشل في جلب البيانات"

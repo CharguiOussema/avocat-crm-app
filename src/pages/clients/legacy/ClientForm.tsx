@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ClientAvatarUpload } from "./ClientAvatarUpload";
 import { clientService } from "../../../services/ClientService";
 import { documentService } from "../../../services/DocumentService";
@@ -57,6 +58,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 	onCancel,
 	className = "",
 }) => {
+	const { t } = useTranslation();
 	const { isRTL } = useApp();
 	const [formData, setFormData] = useState<FormData>(initialFormData);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -85,16 +87,16 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 
 		// Required field validation
 		if (!formData.fullName.trim()) {
-			newErrors.fullName = "Full name is required";
+			newErrors.fullName = t("clients.legacy.form.fullNameRequired");
 		} else if (formData.fullName.trim().length < 2) {
-			newErrors.fullName = "Full name must be at least 2 characters";
+			newErrors.fullName = t("clients.legacy.form.fullNameMinLength");
 		}
 
 		// Email validation
 		if (formData.email.trim()) {
 			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 			if (!emailRegex.test(formData.email)) {
-				newErrors.email = "Please enter a valid email address";
+				newErrors.email = t("clients.legacy.form.emailInvalid");
 			}
 		}
 
@@ -102,7 +104,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 		if (formData.phoneNumber.trim()) {
 			const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
 			if (!phoneRegex.test(formData.phoneNumber.replace(/\s/g, ""))) {
-				newErrors.phoneNumber = "Please enter a valid phone number";
+				newErrors.phoneNumber = t("clients.legacy.form.phoneInvalid");
 			}
 		}
 
@@ -110,7 +112,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 		if (formData.cin.trim()) {
 			const cinRegex = /^\d{8}$/;
 			if (!cinRegex.test(formData.cin)) {
-				newErrors.cin = "CIN must be exactly 8 digits";
+				newErrors.cin = t("clients.legacy.form.cinInvalid");
 			}
 		}
 
@@ -178,7 +180,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 				response = await clientService.create(createData);
 			} else {
 				if (!client) {
-					throw new Error("Client data is required for update mode");
+					throw new Error(t("clients.legacy.error.clientRequired"));
 				}
 
 				const updateData: UpdateClientBodyRequest = {

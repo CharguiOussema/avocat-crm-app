@@ -16,6 +16,7 @@ import {
 	MapPin,
 	CreditCard,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ClientAvatarDisplay } from "./ClientAvatarDisplay";
 import { ClientFormModal } from "./ClientFormModal";
 import { clientService } from "../../../services/ClientService";
@@ -57,6 +58,7 @@ const initialModalState: ModalState = {
 };
 
 export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
+	const { t } = useTranslation();
 	const [state, setState] = useState<ClientListState>(initialState);
 	const [modalState, setModalState] = useState<ModalState>(initialModalState);
 
@@ -80,7 +82,7 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 			setState((prev) => ({
 				...prev,
 				error:
-					error instanceof Error ? error.message : "Failed to fetch clients",
+					error instanceof Error ? error.message : t("clients.legacy.error.fetchFailed"),
 				loading: false,
 			}));
 		}
@@ -114,7 +116,7 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 	};
 
 	const handleDeleteClient = async (client: ClientItemResponseType) => {
-		if (!confirm(`Are you sure you want to delete ${client.fullName}?`)) {
+		if (!confirm(t("clients.legacy.delete.confirm", { name: client.fullName }))) {
 			return;
 		}
 
@@ -128,7 +130,7 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 			setState((prev) => ({
 				...prev,
 				error:
-					error instanceof Error ? error.message : "Failed to delete client",
+					error instanceof Error ? error.message : t("clients.legacy.error.deleteFailed"),
 			}));
 		}
 	};
@@ -166,8 +168,8 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 			{/* Header */}
 			<div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6'>
 				<div>
-					<h1 className='text-2xl font-bold text-gray-900'>Clients</h1>
-					<p className='text-gray-600'>Manage your client relationships</p>
+					<h1 className='text-2xl font-bold text-gray-900'>{t("clients.legacy.title")}</h1>
+					<p className='text-gray-600'>{t("clients.legacy.subtitle")}</p>
 				</div>
 
 				<button
@@ -175,7 +177,7 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 					className='inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
 				>
 					<Plus className='w-4 h-4 mr-2' />
-					Add Client
+					{t("clients.legacy.addButton")}
 				</button>
 			</div>
 
@@ -185,7 +187,7 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 					<Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4' />
 					<input
 						type='text'
-						placeholder='Search clients...'
+						placeholder={t("clients.legacy.searchPlaceholder")}
 						value={state.searchTerm}
 						onChange={(e) => handleSearch(e.target.value)}
 						className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500'
@@ -201,7 +203,7 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 						onClick={() => setState((prev) => ({ ...prev, error: null }))}
 						className='mt-2 text-xs text-red-600 hover:text-red-800'
 					>
-						Dismiss
+						{t("clients.legacy.dismiss")}
 					</button>
 				</div>
 			)}
@@ -217,16 +219,16 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 			{!state.loading && state.clients.length === 0 && (
 				<div className='text-center py-12'>
 					<User className='mx-auto h-12 w-12 text-gray-400' />
-					<h3 className='mt-2 text-sm font-medium text-gray-900'>No clients</h3>
+					<h3 className='mt-2 text-sm font-medium text-gray-900'>{t("clients.legacy.empty.title")}</h3>
 					<p className='mt-1 text-sm text-gray-500'>
-						Get started by adding your first client.
+						{t("clients.legacy.empty.description")}
 					</p>
 					<button
 						onClick={handleAddClient}
 						className='mt-6 inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700'
 					>
 						<Plus className='w-4 h-4 mr-2' />
-						Add Client
+						{t("clients.legacy.addButton")}
 					</button>
 				</div>
 			)}
@@ -240,19 +242,19 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 							<thead className='bg-gray-50'>
 								<tr>
 									<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-										Client
+										{t("clients.legacy.table.client")}
 									</th>
 									<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-										Contact Info
+										{t("clients.legacy.table.contactInfo")}
 									</th>
 									<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-										Details
+										{t("clients.legacy.table.details")}
 									</th>
 									<th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-										Created
+										{t("clients.legacy.table.created")}
 									</th>
 									<th className='px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider'>
-										Actions
+										{t("clients.legacy.table.actions")}
 									</th>
 								</tr>
 							</thead>
@@ -315,14 +317,14 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 												<button
 													onClick={() => handleEditClient(client)}
 													className='text-blue-600 hover:text-blue-900 p-1'
-													title='Edit client'
+													title={t("clients.legacy.table.editTitle")}
 												>
 													<Edit className='w-4 h-4' />
 												</button>
 												<button
 													onClick={() => handleDeleteClient(client)}
 													className='text-red-600 hover:text-red-900 p-1'
-													title='Delete client'
+													title={t("clients.legacy.table.deleteTitle")}
 												>
 													<Trash2 className='w-4 h-4' />
 												</button>
@@ -377,20 +379,20 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 
 										<div className='mt-3 flex items-center justify-between'>
 											<span className='text-xs text-gray-500'>
-												Created {formatDate(client.createdAt)}
+												{t("clients.legacy.table.created")} {formatDate(client.createdAt)}
 											</span>
 											<div className='flex items-center space-x-2'>
 												<button
 													onClick={() => handleEditClient(client)}
 													className='text-blue-600 hover:text-blue-900 p-1'
-													title='Edit client'
+													title={t("clients.legacy.table.editTitle")}
 												>
 													<Edit className='w-4 h-4' />
 												</button>
 												<button
 													onClick={() => handleDeleteClient(client)}
 													className='text-red-600 hover:text-red-900 p-1'
-													title='Delete client'
+													title={t("clients.legacy.table.deleteTitle")}
 												>
 													<Trash2 className='w-4 h-4' />
 												</button>
@@ -416,10 +418,10 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 									disabled={state.page === 1}
 									className='px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
 								>
-									Previous
+									{t("clients.legacy.pagination.previous")}
 								</button>
 								<span className='text-sm text-gray-700'>
-									Page {state.page} of {state.totalPages}
+									{t("clients.legacy.pagination.page", { current: state.page, total: state.totalPages })}
 								</span>
 								<button
 									onClick={() =>
@@ -431,11 +433,11 @@ export const ClientList: React.FC<ClientListProps> = ({ className = "" }) => {
 									disabled={state.page === state.totalPages}
 									className='px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
 								>
-									Next
+									{t("clients.legacy.pagination.next")}
 								</button>
 							</div>
 							<div className='text-sm text-gray-500'>
-								Showing {state.clients.length} of {state.clients.length} clients
+								{t("clients.legacy.pagination.showing", { count: state.clients.length, total: state.clients.length })}
 							</div>
 						</div>
 					)}

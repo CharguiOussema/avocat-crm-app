@@ -31,7 +31,11 @@
     "edit": "Modifier",
     "delete": "Supprimer",
     "back": "Retour",
-    "noData": "Aucune donnée"
+    "noData": "Aucune donnée",
+    "create": "Créer",
+    "update": "Mettre à Jour",
+    "yes": "Oui",
+    "no": "Non"
   },
   "themes": {
     "light": "Clair",
@@ -46,28 +50,137 @@
     "ar": "Arabe"
   },
   "clients": {
+    "title": "Gestion des Clients",
+    "subtitle": "Gérez vos clients et leurs informations",
     "name": "Nom",
     "email": "Email",
     "phone": "Téléphone",
     "location": "Localisation",
     "status": "Statut",
     "cases": "Dossiers",
-    "add": "Ajouter un Client",
-    "edit": "Modifier le Client",
-    "search": "Rechercher des clients...",
+    "add": {
+      "button": "Ajouter un Client",
+      "title": "Ajouter un Nouveau Client",
+      "subtitle": "Créer un nouveau profil client"
+    },
+    "edit": {
+      "title": "Modifier le Client",
+      "subtitle": "Mettre à jour les informations du client"
+    },
+    "table": {
+      "avatar": "Avatar",
+      "fullName": "Nom Complet",
+      "email": "Email",
+      "phoneNumber": "Numéro de Téléphone",
+      "cin": "CIN",
+      "location": "Localisation",
+      "createdAt": "Créé le",
+      "actions": "Actions"
+    },
+    "search": {
+      "placeholder": "Rechercher des clients par nom, email, téléphone..."
+    },
+    "filter": {
+      "apply": "Appliquer les Filtres",
+      "clear": "Effacer les Filtres"
+    },
     "delete": {
       "title": "Supprimer le Client",
-      "content": "Êtes-vous sûr de vouloir supprimer {{name}} ?",
-      "confirm": "Oui, Supprimer",
+      "confirm": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée.",
       "success": "{{name}} a été supprimé avec succès",
       "error": "Échec de la suppression du client"
     },
-    "modal": {
-      "addTitle": "Ajouter un Nouveau Client",
-      "updateTitle": "Modifier le Client"
+    "bulk": {
+      "noSelection": "Veuillez sélectionner des clients à supprimer",
+      "delete": {
+        "title": "Supprimer Plusieurs Clients",
+        "button": "Supprimer {{count}} Clients",
+        "confirm": "Êtes-vous sûr de vouloir supprimer {{count}} clients ? Cette action ne peut pas être annulée.",
+        "success": "{{count}} clients ont été supprimés avec succès",
+        "error": "Échec de la suppression des clients sélectionnés"
+      }
+    },
+    "error": {
+      "title": "Échec du Chargement des Clients",
+      "fetchTitle": "Échec du Chargement du Client",
+      "fetchFailed": "Impossible de récupérer les données du client"
+    },
+    "create": {
+      "success": "{{name}} a été créé avec succès",
+      "error": "Échec de la création du client"
+    },
+    "update": {
+      "success": "{{name}} a été mis à jour avec succès",
+      "error": "Échec de la mise à jour du client"
+    },
+    "form": {
+      "avatar": "Photo de Profil",
+      "avatarSubtitle": "Télécharger une photo de profil pour ce client",
+      "fullName": "Nom Complet",
+      "fullNamePlaceholder": "Entrer le nom complet du client",
+      "fullNameRequired": "Le nom complet est requis",
+      "fullNameMinLength": "Le nom complet doit contenir au moins 2 caractères",
+      "email": "Adresse Email",
+      "emailPlaceholder": "client@exemple.com",
+      "emailRequired": "L'adresse email est requise",
+      "emailInvalid": "Veuillez entrer une adresse email valide",
+      "phoneNumber": "Numéro de Téléphone",
+      "phoneNumberPlaceholder": "+33 1 23 45 67 89",
+      "phoneNumberInvalid": "Veuillez entrer un numéro de téléphone valide",
+      "cin": "CIN (Numéro National)",
+      "cinPlaceholder": "12345678",
+      "cinMinLength": "Le CIN doit contenir au moins 3 caractères",
+      "cinInvalid": "Veuillez entrer un CIN valide",
+      "location": "Localisation",
+      "locationPlaceholder": "Entrer la ville, l'adresse ou le pays",
+      "create": "Créer le Client",
+      "update": "Mettre à Jour le Client"
     },
     "pagination": {
       "showTotal": "{{start}}-{{end}} sur {{total}} clients"
+    },
+    "legacy": {
+      "title": "Clients",
+      "subtitle": "Gérez vos relations clients",
+      "addButton": "Ajouter un Client",
+      "searchPlaceholder": "Rechercher des clients...",
+      "dismiss": "Fermer",
+      "empty": {
+        "title": "Aucun client",
+        "description": "Commencez par ajouter votre premier client."
+      },
+      "table": {
+        "client": "Client",
+        "contactInfo": "Coordonnées",
+        "details": "Détails",
+        "created": "Créé le",
+        "actions": "Actions",
+        "editTitle": "Modifier le client",
+        "deleteTitle": "Supprimer le client"
+      },
+      "pagination": {
+        "previous": "Précédent",
+        "next": "Suivant",
+        "page": "Page {{current}} sur {{total}}",
+        "showing": "Affichage de {{count}} sur {{total}} clients"
+      },
+      "error": {
+        "fetchFailed": "Échec de la récupération des clients",
+        "deleteFailed": "Échec de la suppression du client",
+        "clientRequired": "Les données client sont requises pour le mode mise à jour"
+      },
+      "delete": {
+        "confirm": "Êtes-vous sûr de vouloir supprimer {{name}} ?"
+      },
+      "form": {
+        "fullNameRequired": "Le nom complet est requis",
+        "fullNameMinLength": "Le nom complet doit contenir au moins 2 caractères",
+        "emailInvalid": "Veuillez entrer une adresse email valide",
+        "phoneInvalid": "Veuillez entrer un numéro de téléphone valide",
+        "cinInvalid": "Le CIN doit contenir exactement 8 chiffres",
+        "saveButton": "Enregistrer",
+        "cancelButton": "Annuler"
+      }
     }
   },
   "users": {
@@ -196,8 +309,53 @@
   "common": {
     "error": "Erreur",
     "notProvided": "Non fourni",
+    "unexpectedError": "Une erreur inattendue s'est produite",
     "pagination": {
       "total": "{{start}}-{{end}} sur {{total}} éléments"
+    },
+    "fileManager": {
+      "title": "Gestionnaire de Fichiers",
+      "filesCount": "{{count}} fichiers",
+      "upload": "Télécharger",
+      "gridView": "Vue grille",
+      "listView": "Vue liste",
+      "searchPlaceholder": "Rechercher des fichiers...",
+      "maxFileSize": "Taille maximale du fichier",
+      "uploadSuccess": "Téléchargé",
+      "categories": {
+        "all": "Tous les Fichiers",
+        "document": "Documents",
+        "image": "Images",
+        "audio": "Audio",
+        "video": "Vidéo",
+        "other": "Autre"
+      },
+      "actions": {
+        "view": "Voir",
+        "download": "Télécharger",
+        "clickToUpload": "Cliquez pour télécharger",
+        "orDragDrop": "ou glissez-déposez"
+      },
+      "error": {
+        "fetchFiles": "Échec de la récupération des fichiers",
+        "deleteFile": "Échec de la suppression du fichier",
+        "uploadFailed": "Échec du téléchargement",
+        "validationFailed": "Échec de la validation du fichier"
+      },
+      "delete": {
+        "confirm": "Êtes-vous sûr de vouloir supprimer ce fichier ?"
+      },
+      "empty": {
+        "title": "Aucun fichier trouvé",
+        "description": "Téléchargez des fichiers pour commencer"
+      }
+    },
+    "avatar": {
+      "newAvatar": "Nouvel Avatar",
+      "invalidFile": "Fichier invalide",
+      "change": "Changer",
+      "upload": "Télécharger",
+      "uploadTitle": "Télécharger l'avatar"
     }
   },
   "lawsuits": {
@@ -338,29 +496,167 @@
     "caseTypes": "Types de Dossiers"
   },
   "settings": {
-    "profile": "Profil",
-    "preferences": "Préférences",
-    "security": "Sécurité",
-    "firstName": "Prénom",
-    "lastName": "Nom",
-    "email": "Email",
-    "phone": "Téléphone",
-    "firm": "Cabinet d'Avocat",
-    "license": "Numéro de Licence",
-    "firstNameRequired": "Le prénom est requis",
-    "lastNameRequired": "Le nom est requis",
-    "emailRequired": "L'email est requis",
-    "emailInvalid": "Veuillez entrer un email valide",
-    "saveProfile": "Enregistrer le Profil",
-    "notifications": "Notifications",
-    "emailNotifications": "Notifications par Email",
-    "autoSave": "Sauvegarde Automatique",
-    "darkMode": "Mode Sombre",
-    "savePreferences": "Enregistrer les Préférences",
-    "currentPassword": "Mot de Passe Actuel",
-    "newPassword": "Nouveau Mot de Passe",
-    "confirmPassword": "Confirmer le Mot de Passe",
-    "changePassword": "Changer le Mot de Passe"
+    "subtitle": "Gérez vos préférences d'application et vos données",
+    "nav": {
+      "monProfil": "Mon Profil",
+      "entreprise": "Entreprise",
+      "court": "Tribunaux",
+      "lawsuitStage": "Étapes de Litige",
+      "typeLawsuit": "Types de Litige"
+    },
+    "profile": {
+      "title": "Mon Profil",
+      "subtitle": "Gérez vos informations personnelles et préférences",
+      "personalInfo": "Informations Personnelles",
+      "avatar": "Photo de Profil",
+      "avatarSubtitle": "Télécharger une photo de profil",
+      "fullName": "Nom Complet",
+      "fullNamePlaceholder": "Entrer votre nom complet",
+      "fullNameRequired": "Le nom complet est requis",
+      "fullNameMinLength": "Le nom complet doit contenir au moins 2 caractères",
+      "email": "Adresse Email",
+      "emailPlaceholder": "votre@email.com",
+      "emailRequired": "L'adresse email est requise",
+      "emailInvalid": "Veuillez entrer une adresse email valide",
+      "phoneNumber": "Numéro de Téléphone",
+      "phoneNumberPlaceholder": "+33 1 23 45 67 89",
+      "phoneNumberInvalid": "Veuillez entrer un numéro de téléphone valide",
+      "cin": "CIN (Numéro National)",
+      "cinPlaceholder": "12345678",
+      "cinInvalid": "Le CIN doit contenir exactement 8 chiffres",
+      "saveProfile": "Enregistrer le Profil",
+      "updateSuccess": "Profil mis à jour avec succès",
+      "updateError": "Échec de la mise à jour du profil"
+    },
+    "password": {
+      "title": "Changer le Mot de Passe",
+      "current": "Mot de Passe Actuel",
+      "currentPlaceholder": "Entrer le mot de passe actuel",
+      "currentRequired": "Le mot de passe actuel est requis",
+      "new": "Nouveau Mot de Passe",
+      "newPlaceholder": "Entrer le nouveau mot de passe",
+      "newRequired": "Le nouveau mot de passe est requis",
+      "minLength": "Le mot de passe doit contenir au moins 6 caractères",
+      "confirm": "Confirmer le Nouveau Mot de Passe",
+      "confirmPlaceholder": "Confirmer le nouveau mot de passe",
+      "confirmRequired": "Veuillez confirmer le nouveau mot de passe",
+      "mismatch": "Les mots de passe ne correspondent pas",
+      "changePassword": "Changer le Mot de Passe",
+      "changeSuccess": "Mot de passe changé avec succès",
+      "changeError": "Échec du changement de mot de passe"
+    },
+    "company": {
+      "title": "Paramètres de l'Entreprise",
+      "subtitle": "Gérez les informations de votre entreprise",
+      "companyInfo": "Informations de l'Entreprise",
+      "logo": "Logo de l'Entreprise",
+      "logoSubtitle": "Télécharger le logo de votre entreprise",
+      "name": "Nom de l'Entreprise",
+      "namePlaceholder": "Entrer le nom de l'entreprise",
+      "nameRequired": "Le nom de l'entreprise est requis",
+      "nameMinLength": "Le nom de l'entreprise doit contenir au moins 2 caractères",
+      "email": "Email de l'Entreprise",
+      "emailPlaceholder": "entreprise@exemple.com",
+      "emailRequired": "L'email de l'entreprise est requis",
+      "emailInvalid": "Veuillez entrer une adresse email valide",
+      "phoneNumber": "Numéro de Téléphone",
+      "phoneNumberPlaceholder": "+33 1 23 45 67 89",
+      "phoneNumberRequired": "Le numéro de téléphone est requis",
+      "phoneNumberInvalid": "Veuillez entrer un numéro de téléphone valide",
+      "website": "Site Web",
+      "websitePlaceholder": "https://www.entreprise.com",
+      "websiteInvalid": "Veuillez entrer une URL de site web valide",
+      "saveCompany": "Enregistrer l'Entreprise",
+      "updateSuccess": "Entreprise mise à jour avec succès",
+      "updateError": "Échec de la mise à jour de l'entreprise",
+      "fetchError": "Échec de la récupération des données de l'entreprise",
+      "accessDenied": "Accès Refusé",
+      "accessDeniedDescription": "Vous avez besoin de privilèges administrateur pour gérer les paramètres de l'entreprise."
+    },
+    "court": {
+      "title": "Gestion des Tribunaux",
+      "subtitle": "Gérez les tribunaux dans votre système",
+      "management": "Gestion des Tribunaux",
+      "searchPlaceholder": "Rechercher des tribunaux...",
+      "addCourt": "Ajouter un Tribunal",
+      "editCourt": "Modifier le Tribunal",
+      "table": {
+        "name": "Nom du Tribunal",
+        "createdAt": "Date de Création",
+        "actions": "Actions",
+        "showTotal": "{{start}}-{{end}} sur {{total}} tribunaux"
+      },
+      "form": {
+        "name": "Nom du Tribunal",
+        "namePlaceholder": "Entrer le nom du tribunal",
+        "nameRequired": "Le nom du tribunal est requis",
+        "nameMinLength": "Le nom du tribunal doit contenir au moins 2 caractères"
+      },
+      "createSuccess": "Tribunal créé avec succès",
+      "updateSuccess": "Tribunal mis à jour avec succès",
+      "deleteSuccess": "Tribunal supprimé avec succès",
+      "createError": "Échec de la création du tribunal",
+      "updateError": "Échec de la mise à jour du tribunal",
+      "deleteError": "Échec de la suppression du tribunal",
+      "deleteConfirm": "Supprimer le Tribunal",
+      "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée."
+    },
+    "lawsuitStage": {
+      "title": "Gestion des Étapes de Litige",
+      "subtitle": "Gérez les étapes de litige dans votre système",
+      "management": "Gestion des Étapes de Litige",
+      "searchPlaceholder": "Rechercher des étapes de litige...",
+      "addStage": "Ajouter une Étape",
+      "editStage": "Modifier l'Étape",
+      "table": {
+        "name": "Nom de l'Étape",
+        "createdAt": "Date de Création",
+        "actions": "Actions",
+        "showTotal": "{{start}}-{{end}} sur {{total}} étapes"
+      },
+      "form": {
+        "name": "Nom de l'Étape",
+        "namePlaceholder": "Entrer le nom de l'étape",
+        "nameRequired": "Le nom de l'étape est requis",
+        "nameMinLength": "Le nom de l'étape doit contenir au moins 2 caractères"
+      },
+      "createSuccess": "Étape de litige créée avec succès",
+      "updateSuccess": "Étape de litige mise à jour avec succès",
+      "deleteSuccess": "Étape de litige supprimée avec succès",
+      "createError": "Échec de la création de l'étape de litige",
+      "updateError": "Échec de la mise à jour de l'étape de litige",
+      "deleteError": "Échec de la suppression de l'étape de litige",
+      "deleteConfirm": "Supprimer l'Étape de Litige",
+      "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée."
+    },
+    "typeLawsuit": {
+      "title": "Gestion des Types de Litige",
+      "subtitle": "Gérez les types de litige dans votre système",
+      "management": "Gestion des Types de Litige",
+      "searchPlaceholder": "Rechercher des types de litige...",
+      "addType": "Ajouter un Type",
+      "editType": "Modifier le Type",
+      "table": {
+        "name": "Nom du Type",
+        "createdAt": "Date de Création",
+        "actions": "Actions",
+        "showTotal": "{{start}}-{{end}} sur {{total}} types"
+      },
+      "form": {
+        "name": "Nom du Type",
+        "namePlaceholder": "Entrer le nom du type",
+        "nameRequired": "Le nom du type est requis",
+        "nameMinLength": "Le nom du type doit contenir au moins 2 caractères"
+      },
+      "createSuccess": "Type de litige créé avec succès",
+      "updateSuccess": "Type de litige mis à jour avec succès",
+      "deleteSuccess": "Type de litige supprimé avec succès",
+      "createError": "Échec de la création du type de litige",
+      "updateError": "Échec de la mise à jour du type de litige",
+      "deleteError": "Échec de la suppression du type de litige",
+      "deleteConfirm": "Supprimer le Type de Litige",
+      "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée."
+    }
   },
   "error": {
     "fetchFailed": "Échec de la récupération des données"

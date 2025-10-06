@@ -69,7 +69,7 @@ export const AddEditLawsuit: React.FC = () => {
 		if (error && typeof error === "object" && "message" in error) {
 			return String((error as { message: unknown }).message);
 		}
-		return "An unexpected error occurred";
+		return t("common.unexpectedError");
 	};
 	const { isRTL } = useApp();
 	const navigate = useNavigate();

@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { Avatar } from "./Avatar";
 import { avatarService, type AvatarEntity } from "../../services/AvatarService";
 
@@ -27,6 +28,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 	useTailwind = true,
 	size = "large",
 }) => {
+	const { t } = useTranslation();
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 	const displayEntity: AvatarEntity = entity || {
 		_id: "temp",
 		avatar: null,
-		fullName: "New Avatar",
+		fullName: t('common.avatar.newAvatar'),
 	};
 
 	// Use preview URL if file is selected, otherwise use existing avatar
@@ -73,7 +75,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 		// Validate file
 		const validation = avatarService.validateAvatarFile(file);
 		if (!validation.valid) {
-			setError(validation.error || "Invalid file");
+			setError(validation.error || t('common.avatar.invalidFile'));
 			setSelectedFile(null);
 			onAvatarSelected?.(null);
 			return;
@@ -174,7 +176,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 						onClick={triggerFileSelect}
 						className={buttonClasses}
 						style={buttonBaseStyles}
-						title='Upload avatar'
+						title={t('common.avatar.uploadTitle')}
 					>
 						📷
 					</button>
@@ -207,7 +209,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 								}
 						}
 					>
-						{selectedFile || displayEntity.avatar ? "Change" : "Upload"}
+						{selectedFile || displayEntity.avatar ? t('common.avatar.change') : t('common.avatar.upload')}
 					</button>
 
 					{(selectedFile || displayEntity.avatar) && (
@@ -229,7 +231,7 @@ export const AvatarUpload: React.FC<AvatarUploadProps> = ({
 									}
 							}
 						>
-							Clear
+							{t('ui.delete')}
 						</button>
 					)}
 				</div>
