@@ -8,6 +8,7 @@
     "clients": "Clients",
     "users": "Users",
     "lawsuits": "Lawsuits",
+    "events": "Events",
     "cases": "Cases",
     "documents": "Documents",
     "calendar": "Calendar",
@@ -453,6 +454,103 @@
     },
     "pagination": {
       "showTotal": "{{start}}-{{end}} of {{total}} lawsuits"
+    }
+  },
+  "events": {
+    "title": "Event Management",
+    "subtitle": "Manage your events and appointments",
+    "tabs": {
+      "list": "List View",
+      "calendar": "Calendar View"
+    },
+    "add": {
+      "button": "Add Event",
+      "title": "Add New Event",
+      "subtitle": "Create a new event or appointment"
+    },
+    "edit": {
+      "title": "Edit Event",
+      "subtitle": "Update event information"
+    },
+    "table": {
+      "name": "Event Name",
+      "description": "Description",
+      "clients": "Clients",
+      "lawsuit": "Lawsuit",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "createdAt": "Created",
+      "actions": "Actions"
+    },
+    "search": {
+      "placeholder": "Search events by name or description..."
+    },
+    "filter": {
+      "apply": "Apply Filters",
+      "clear": "Clear Filters"
+    },
+    "delete": {
+      "title": "Delete Event",
+      "confirm": "Are you sure you want to delete event {{name}}? This action cannot be undone.",
+      "success": "Event {{name}} has been deleted successfully",
+      "error": "Failed to delete event"
+    },
+    "bulk": {
+      "noSelection": "Please select events to delete",
+      "delete": {
+        "title": "Delete Multiple Events",
+        "button": "Delete {{count}} Events",
+        "confirm": "Are you sure you want to delete {{count}} events? This action cannot be undone.",
+        "success": "{{count}} events have been deleted successfully",
+        "error": "Failed to delete selected events"
+      }
+    },
+    "error": {
+      "title": "Failed to Load Events",
+      "fetchTitle": "Failed to Load Event",
+      "fetchFailed": "Could not fetch event data"
+    },
+    "create": {
+      "success": "Event {{name}} has been created successfully",
+      "error": "Failed to create event"
+    },
+    "update": {
+      "success": "Event {{name}} has been updated successfully",
+      "error": "Failed to update event"
+    },
+    "form": {
+      "name": "Event Name",
+      "namePlaceholder": "Enter event name",
+      "nameRequired": "Event name is required",
+      "nameMinLength": "Event name must be at least 2 characters",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter event description",
+      "clients": "Clients",
+      "clientsPlaceholder": "Select clients (optional)",
+      "lawsuit": "Lawsuit",
+      "lawsuitPlaceholder": "Select lawsuit (optional)",
+      "startDate": "Start Date & Time",
+      "startDatePlaceholder": "Select start date and time",
+      "startDateRequired": "Start date is required",
+      "endDate": "End Date & Time",
+      "endDatePlaceholder": "Select end date and time",
+      "endDateRequired": "End date is required",
+      "endDateAfterStart": "End date must be after start date",
+      "create": "Create Event",
+      "update": "Update Event"
+    },
+    "calendar": {
+      "today": "Today",
+      "month": "Month",
+      "week": "Week",
+      "day": "Day",
+      "agenda": "Agenda",
+      "noEventsInRange": "No events in this time range",
+      "clickToAdd": "Click on the calendar to add an event",
+      "clickEventToEdit": "Click on an event to edit it"
+    },
+    "pagination": {
+      "showTotal": "{{start}}-{{end}} of {{total}} events"
     }
   },
   "cases": {

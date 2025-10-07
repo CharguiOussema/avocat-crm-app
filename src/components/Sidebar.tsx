@@ -13,7 +13,8 @@ import {
   BarChartOutlined,
   SettingOutlined,
   CloseOutlined,
-  AuditOutlined
+  AuditOutlined,
+  ClockCircleOutlined
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -23,6 +24,7 @@ const navigationItems = [
   { key: 'clients', icon: UserOutlined, href: '/clients', label: 'navigation.clients' },
   { key: 'users', icon: TeamOutlined, href: '/users', label: 'navigation.users' },
   { key: 'lawsuits', icon: AuditOutlined, href: '/lawsuits', label: 'navigation.lawsuits' },
+  { key: 'events', icon: ClockCircleOutlined, href: '/events', label: 'navigation.events' },
   { key: 'cases', icon: FileTextOutlined, href: '/cases', label: 'navigation.cases' },
   { key: 'documents', icon: FolderOpenOutlined, href: '/documents', label: 'navigation.documents' },
   { key: 'calendar', icon: CalendarOutlined, href: '/calendar', label: 'navigation.calendar' },
@@ -82,6 +84,9 @@ export const Sidebar: React.FC = () => {
     }
     if (path.startsWith('/lawsuits')) {
       return ['lawsuits'];
+    }
+    if (path.startsWith('/events')) {
+      return ['events'];
     }
     const currentItem = navigationItems.find(item => item.href === path);
     return currentItem ? [currentItem.key] : ['dashboard'];

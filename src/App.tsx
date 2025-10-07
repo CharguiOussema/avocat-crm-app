@@ -10,6 +10,7 @@ import { Dashboard } from "./pages/dashboard";
 import { Clients, AddEditClient } from "./pages/clients";
 import { Users, AddEditUser } from "./pages/users";
 import { Lawsuits, AddEditLawsuit } from "./pages/lawsuits";
+import { Events } from "./pages/events/Events";
 import { Cases } from "./pages/cases";
 import { Documents } from "./pages/documents";
 import { Calendar } from "./pages/calendar";
@@ -105,6 +106,7 @@ const AppContent = () => {
 											<Route path='/lawsuits' element={<Lawsuits />} />
 											<Route path='/lawsuits/add' element={<AddEditLawsuit />} />
 											<Route path='/lawsuits/:id/edit' element={<AddEditLawsuit />} />
+											<Route path='/events' element={<Events />} />
 											<Route path='/cases' element={<Cases />} />
 											<Route path='/documents' element={<Documents />} />
 											<Route path='/calendar' element={<Calendar />} />

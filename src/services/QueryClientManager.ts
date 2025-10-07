@@ -33,6 +33,10 @@ export const queryKeys = {
   LAWSUIT_TYPES: 'typeLawsuits',
   TYPE_LAWSUIT_DETAILS: 'typeLawsuit-details',
 
+  // Event-related queries
+  EVENTS: 'events',
+  EVENT_DETAILS: 'event-details',
+
   // Filter queries
   FILTERS: 'filters',
 } as const;

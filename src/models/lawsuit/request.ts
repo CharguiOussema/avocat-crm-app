@@ -20,6 +20,11 @@ export type UpdateLawsuitBodyRequest = Pick<LawsuitModelType, "_id"> &
   CreateLawsuitBodyRequest;
 export type GetAllLawsuitQueryRequest = {
   search?: string;
+  status?: string;
+  client?: string;
+  court?: string;
+  lawsuitStage?: string;
+  lawsuitType?: string;
   limit: number;
   page: number;
 };
