@@ -19,9 +19,11 @@ import {
 } from "@ant-design/icons";
 import type { TablePaginationConfig } from "antd/es/table";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useFetchEvents } from "../../hooks/useFetchEvents";
 import { eventService } from "../../services/EventService";
+import { clientService } from "../../services/ClientService";
+import { lawsuitService } from "../../services/LawsuitService";
 import { queryKeys } from "../../services/QueryClientManager";
 import { QueryBuilder } from "../../services/QueryBuilder";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +36,8 @@ const { confirm } = Modal;
 
 interface QueryParams extends Record<string, unknown> {
 	search?: string;
+	lawsuit?: string;
+	client?: string;
 	page?: number;
 	limit?: number;
 }
@@ -61,7 +65,13 @@ export const EventList: React.FC<EventListProps> = ({ onEdit }) => {
 
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
-	const { search = "", page = 1, limit = 10 } = useQueryParams<QueryParams>();
+	const {
+		search = "",
+		lawsuit,
+		client,
+		page = 1,
+		limit = 10,
+	} = useQueryParams<QueryParams>();
 
 	// Local state
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -69,6 +79,29 @@ export const EventList: React.FC<EventListProps> = ({ onEdit }) => {
 	// Fetch events data
 	const { response } = useFetchEvents();
 	const { data, error, isLoading, isFetching } = response;
+
+	// Fetch filter options
+	const { data: clientsOptions } = useQuery(
+		[queryKeys.CLIENTS, "filter"],
+		async () => {
+			const response = await clientService.filter();
+			return response.data;
+		},
+		{
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		}
+	);
+
+	const { data: lawsuitsOptions } = useQuery(
+		[queryKeys.LAWSUITS, "filter"],
+		async () => {
+			const response = await lawsuitService.filter();
+			return response.data;
+		},
+		{
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		}
+	);
 
 	// Memoized computed values
 	const events = useMemo(() => data?.data?.docs || [], [data]);
@@ -80,10 +113,35 @@ export const EventList: React.FC<EventListProps> = ({ onEdit }) => {
 			const searchParams = QueryBuilder.generateSearchParams()
 				.setPage(1)
 				.setLimit(limit)
-				.setQueryParam("search", value || undefined).search;
+				.setQueryParam("search", value || undefined)
+				.setQueryParam("lawsuit", lawsuit || undefined)
+				.setQueryParam("client", client || undefined).search;
 			navigate({ search: searchParams });
 		},
-		[limit, navigate]
+		[limit, lawsuit, client, navigate]
+	);
+
+	// Handle filter changes
+	const handleFilterChange = useCallback(
+		(filterName: string, value: string | undefined) => {
+			const searchParams = QueryBuilder.generateSearchParams()
+				.setPage(1)
+				.setLimit(limit)
+				.setQueryParam("search", search || undefined)
+				.setQueryParam(
+					"lawsuit",
+					filterName === "lawsuit" ? value : lawsuit || undefined
+				)
+				.setQueryParam(
+					"client",
+					filterName === "client" ? value : client || undefined
+				).search;
+
+			navigate({
+				search: searchParams,
+			});
+		},
+		[limit, search, lawsuit, client, navigate]
 	);
 
 	// Clear all filters
@@ -103,10 +161,12 @@ export const EventList: React.FC<EventListProps> = ({ onEdit }) => {
 			const searchParams = QueryBuilder.generateSearchParams()
 				.setLimit(pagination.pageSize || limit)
 				.setPage(pagination.current || page)
-				.setQueryParam("search", search || undefined).search;
+				.setQueryParam("search", search || undefined)
+				.setQueryParam("lawsuit", lawsuit || undefined)
+				.setQueryParam("client", client || undefined).search;
 			navigate({ search: searchParams });
 		},
-		[search, navigate, limit, page]
+		[search, lawsuit, client, navigate, limit, page]
 	);
 
 	// Delete handler
@@ -200,23 +260,26 @@ export const EventList: React.FC<EventListProps> = ({ onEdit }) => {
 
 	return (
 		<div className="space-y-4">
-			{/* Filters and Actions */}
-			<div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-between">
-				<div className="flex-1">
-					<EventFilters
-						search={search}
-						onSearchChange={handleSearchChange}
-						onClearFilters={clearFilters}
-					/>
+			{/* Filters */}
+			<EventFilters
+				search={search}
+				lawsuit={lawsuit}
+				client={client}
+				lawsuitsOptions={lawsuitsOptions}
+				clientsOptions={clientsOptions}
+				onSearchChange={handleSearchChange}
+				onFilterChange={handleFilterChange}
+				onClearFilters={clearFilters}
+			/>
+
+			{/* Bulk Delete Action */}
+			{selectedRowKeys.length > 0 && (
+				<div className="flex justify-end">
+					<Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
+						{t("events.bulk.delete.button", { count: selectedRowKeys.length })}
+					</Button>
 				</div>
-				{selectedRowKeys.length > 0 && (
-					<div className="flex justify-end">
-						<Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
-							{t("events.bulk.delete.button", { count: selectedRowKeys.length })}
-						</Button>
-					</div>
-				)}
-			</div>
+			)}
 
 			{/* Events Table */}
 			<Card className="border-border">
