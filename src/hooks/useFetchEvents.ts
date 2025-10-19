@@ -15,7 +15,8 @@ interface IPaginationParams {
 	page?: number;
 	limit?: number;
 	search?: string;
-	[key: string]: unknown;
+	client?: string;
+	lawsuit?: string;
 }
 
 export function useFetchEvents() {
@@ -23,6 +24,8 @@ export function useFetchEvents() {
 		limit = 10,
 		page = 1,
 		search = "",
+		client,
+		lawsuit,
 	} = useQueryParams<IPaginationParams>();
 	const navigate = useNavigate();
 
@@ -30,18 +33,29 @@ export function useFetchEvents() {
 		[
 			queryKeys.EVENTS,
 			{
-				page: page,
-				limit: limit,
+				page,
+				limit,
 				search,
+				client,
+				lawsuit,
 			},
 		] as const,
 		({ queryKey }) => {
-			const [, { page, limit, search }] = queryKey;
+			const [, { page, limit, search, client, lawsuit }] = queryKey;
 			const filter: {
 				search?: string;
+				client?: string;
+				lawsuit?: string;
 			} = {};
+
 			if (search && search.length !== 0) {
 				filter.search = search;
+			}
+			if (client && client.length !== 0) {
+				filter.client = client;
+			}
+			if (lawsuit && lawsuit.length !== 0) {
+				filter.lawsuit = lawsuit;
 			}
 
 			return eventService.getAll({ page, limit, ...filter });

@@ -455,6 +455,105 @@
       "showTotal": "{{start}}-{{end}} من {{total}} دعوى قضائية"
     }
   },
+  "events": {
+    "title": "إدارة الأحداث",
+    "subtitle": "إدارة الأحداث والمواعيد",
+    "tabs": {
+      "list": "عرض القائمة",
+      "calendar": "عرض التقويم"
+    },
+    "add": {
+      "button": "إضافة حدث",
+      "title": "إضافة حدث جديد",
+      "subtitle": "إنشاء حدث أو موعد جديد"
+    },
+    "edit": {
+      "title": "تعديل الحدث",
+      "subtitle": "تحديث معلومات الحدث"
+    },
+    "table": {
+      "name": "اسم الحدث",
+      "description": "الوصف",
+      "clients": "العملاء",
+      "lawsuit": "الدعوى القضائية",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء",
+      "createdAt": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
+    },
+    "search": {
+      "placeholder": "البحث عن الأحداث بالاسم أو الوصف..."
+    },
+    "filter": {
+      "client": "تصفية حسب العميل",
+      "lawsuit": "تصفية حسب الدعوى القضائية",
+      "apply": "تطبيق المرشحات",
+      "clear": "مسح المرشحات"
+    },
+    "delete": {
+      "title": "حذف الحدث",
+      "confirm": "هل أنت متأكد من حذف الحدث {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
+      "success": "تم حذف الحدث {{name}} بنجاح",
+      "error": "فشل في حذف الحدث"
+    },
+    "bulk": {
+      "noSelection": "يرجى اختيار أحداث للحذف",
+      "delete": {
+        "title": "حذف عدة أحداث",
+        "button": "حذف {{count}} أحداث",
+        "confirm": "هل أنت متأكد من حذف {{count}} أحداث؟ لا يمكن التراجع عن هذا الإجراء.",
+        "success": "تم حذف {{count}} أحداث بنجاح",
+        "error": "فشل في حذف الأحداث المحددة"
+      }
+    },
+    "error": {
+      "title": "فشل في تحميل الأحداث",
+      "fetchTitle": "فشل في تحميل الحدث",
+      "fetchFailed": "تعذر جلب بيانات الحدث"
+    },
+    "create": {
+      "success": "تم إنشاء الحدث {{name}} بنجاح",
+      "error": "فشل في إنشاء الحدث"
+    },
+    "update": {
+      "success": "تم تحديث الحدث {{name}} بنجاح",
+      "error": "فشل في تحديث الحدث"
+    },
+    "form": {
+      "name": "اسم الحدث",
+      "namePlaceholder": "أدخل اسم الحدث",
+      "nameRequired": "اسم الحدث مطلوب",
+      "nameMinLength": "يجب أن يحتوي اسم الحدث على حرفين على الأقل",
+      "description": "الوصف",
+      "descriptionPlaceholder": "أدخل وصف الحدث",
+      "clients": "العملاء",
+      "clientsPlaceholder": "اختر العملاء (اختياري)",
+      "lawsuit": "الدعوى القضائية",
+      "lawsuitPlaceholder": "اختر الدعوى القضائية (اختياري)",
+      "startDate": "تاريخ ووقت البدء",
+      "startDatePlaceholder": "اختر تاريخ ووقت البدء",
+      "startDateRequired": "تاريخ البدء مطلوب",
+      "endDate": "تاريخ ووقت الانتهاء",
+      "endDatePlaceholder": "اختر تاريخ ووقت الانتهاء",
+      "endDateRequired": "تاريخ الانتهاء مطلوب",
+      "endDateAfterStart": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء",
+      "create": "إنشاء الحدث",
+      "update": "تحديث الحدث"
+    },
+    "calendar": {
+      "today": "اليوم",
+      "month": "شهر",
+      "week": "أسبوع",
+      "day": "يوم",
+      "agenda": "جدول الأعمال",
+      "noEventsInRange": "لا توجد أحداث في هذه الفترة",
+      "clickToAdd": "انقر على التقويم لإضافة حدث",
+      "clickEventToEdit": "انقر على حدث لتعديله"
+    },
+    "pagination": {
+      "showTotal": "{{start}}-{{end}} من {{total}} حدث"
+    }
+  },
   "cases": {
     "title": "العنوان",
     "client": "العميل",

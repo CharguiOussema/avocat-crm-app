@@ -17,6 +17,8 @@ interface GetAllEventsParams {
 	page?: number;
 	limit?: number;
 	search?: string;
+	client?: string;
+	lawsuit?: string;
 }
 
 class EventService {
@@ -28,6 +30,8 @@ class EventService {
 			.setQueryParam("page", params?.page)
 			.setQueryParam("limit", params?.limit)
 			.setQueryParam("search", params?.search)
+			.setQueryParam("client", params?.client)
+			.setQueryParam("lawsuit", params?.lawsuit)
 			.build();
 		return this.instance.get<PaginationResponse<EventItemResponseType>>(url);
 	};

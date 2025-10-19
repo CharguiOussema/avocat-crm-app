@@ -486,6 +486,8 @@
       "placeholder": "Search events by name or description..."
     },
     "filter": {
+      "client": "Filter by client",
+      "lawsuit": "Filter by lawsuit",
       "apply": "Apply Filters",
       "clear": "Clear Filters"
     },

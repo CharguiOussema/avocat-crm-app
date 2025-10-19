@@ -4,8 +4,9 @@
  * Date: 10/8/2025
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import { Row, Col, Select, Card, Button } from "antd";
+import type { DefaultOptionType } from "antd/es/select";
 import { useTranslation } from "react-i18next";
 import { SearchInput } from "../../components/common/SearchInput";
 
@@ -37,6 +38,34 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
 }) => {
 	const { t } = useTranslation();
 
+	// Handle client filter change
+	const handleClientChange = useCallback(
+		(value: string | undefined) => {
+			onFilterChange("client", value);
+		},
+		[onFilterChange]
+	);
+
+	// Handle lawsuit filter change
+	const handleLawsuitChange = useCallback(
+		(value: string | undefined) => {
+			onFilterChange("lawsuit", value);
+		},
+		[onFilterChange]
+	);
+
+	// Filter option handler for Select components
+	const filterOption = useCallback(
+		(input: string, option: DefaultOptionType | undefined): boolean => {
+			const label = option?.label;
+			if (typeof label === "string") {
+				return label.toLowerCase().includes(input.toLowerCase());
+			}
+			return false;
+		},
+		[]
+	);
+
 	return (
 		<Card className='border-border'>
 			<Row gutter={16} align='middle'>
@@ -48,33 +77,29 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
 					/>
 				</Col>
 				<Col xs={24} sm={12} md={8} lg={5}>
-					<Select
+					<Select<string>
 						placeholder={t("events.filter.client")}
 						value={client}
-						onChange={(value) => onFilterChange("client", value)}
+						onChange={handleClientChange}
 						options={clientsOptions}
 						allowClear
 						showSearch
 						size='large'
 						className='w-full'
-						filterOption={(input, option) =>
-							(option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-						}
+						filterOption={filterOption}
 					/>
 				</Col>
 				<Col xs={24} sm={12} md={8} lg={5}>
-					<Select
+					<Select<string>
 						placeholder={t("events.filter.lawsuit")}
 						value={lawsuit}
-						onChange={(value) => onFilterChange("lawsuit", value)}
+						onChange={handleLawsuitChange}
 						options={lawsuitsOptions}
 						allowClear
 						showSearch
 						size='large'
 						className='w-full'
-						filterOption={(input, option) =>
-							(option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-						}
+						filterOption={filterOption}
 					/>
 				</Col>
 
