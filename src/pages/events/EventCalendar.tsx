@@ -4,12 +4,13 @@
  * Date: 10/7/2025
  */
 
-import React, { useState, useMemo, useCallback } from "react";
-import { Calendar, momentLocalizer, View } from "react-big-calendar";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+import "moment/locale/fr";
+import "moment/locale/ar";
 import { useQuery } from "react-query";
-import { Spin, Alert, Button, Space } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Spin, Alert } from "antd";
 import { useTranslation } from "react-i18next";
 import { eventService } from "../../services/EventService";
 import { queryKeys } from "../../services/QueryClientManager";
@@ -30,12 +31,17 @@ interface CalendarEvent {
 }
 
 export const EventCalendar: React.FC = () => {
-	const { t } = useTranslation();
-	const [view, setView] = useState<View>("month");
+	const { t, i18n } = useTranslation();
 	const [date, setDate] = useState(new Date());
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedEvent, setSelectedEvent] = useState<EventItemResponseType | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Dayjs | undefined>();
+
+	// Set moment locale based on current language
+	useEffect(() => {
+		const currentLanguage = i18n.language;
+		moment.locale(currentLanguage);
+	}, [i18n.language]);
 
 	const { data, error, isLoading } = useQuery(
 		[queryKeys.EVENTS, "calendar"],
@@ -76,12 +82,6 @@ export const EventCalendar: React.FC = () => {
 		setIsModalOpen(false);
 		setSelectedEvent(null);
 		setSelectedDate(undefined);
-	}, []);
-
-	const handleAddEvent = useCallback(() => {
-		setSelectedEvent(null);
-		setSelectedDate(undefined);
-		setIsModalOpen(true);
 	}, []);
 
 	const eventStyleGetter = () => {
@@ -126,18 +126,6 @@ export const EventCalendar: React.FC = () => {
 
 	return (
 		<div className="space-y-4">
-			<div className="flex justify-between items-center">
-				<Space>
-					<Button
-						type="primary"
-						icon={<PlusOutlined />}
-						onClick={handleAddEvent}
-					>
-						{t("events.add.button")}
-					</Button>
-				</Space>
-			</div>
-
 			<div className="bg-background p-4 rounded-lg border">
 				<Calendar
 					localizer={localizer}
@@ -145,21 +133,25 @@ export const EventCalendar: React.FC = () => {
 					startAccessor="start"
 					endAccessor="end"
 					style={{ height: 700 }}
-					view={view}
-					onView={setView}
+					view="month"
+					views={["month"]}
 					date={date}
 					onNavigate={setDate}
 					onSelectSlot={handleSelectSlot}
 					onSelectEvent={handleSelectEvent}
 					selectable
 					eventPropGetter={eventStyleGetter}
+					toolbar={true}
 					messages={{
 						today: t("events.calendar.today"),
-						month: t("events.calendar.month"),
-						week: t("events.calendar.week"),
-						day: t("events.calendar.day"),
-						agenda: t("events.calendar.agenda"),
+						previous: t("events.calendar.previous"),
+						next: t("events.calendar.next"),
+						date: t("events.calendar.date"),
+						time: t("events.calendar.time"),
+						event: t("events.calendar.event"),
+						allDay: t("events.calendar.allDay"),
 						noEventsInRange: t("events.calendar.noEventsInRange"),
+						showMore: (count: number) => `+${count} ${t("events.calendar.showMore")}`,
 					}}
 				/>
 			</div>
