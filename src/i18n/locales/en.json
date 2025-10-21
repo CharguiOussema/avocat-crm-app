@@ -559,7 +559,12 @@
       "noEventsInRange": "No events in this time range",
       "showMore": "more",
       "clickToAdd": "Click on the calendar to add an event",
-      "clickEventToEdit": "Click on an event to edit it"
+      "clickEventToEdit": "Click on an event to edit it",
+      "moreEvents": "Events on This Day",
+      "start": "Start",
+      "end": "End",
+      "eventsCount": "events",
+      "clickToView": "Click to view details"
     },
     "pagination": {
       "showTotal": "{{start}}-{{end}} of {{total}} events"

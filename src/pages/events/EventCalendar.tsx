@@ -10,8 +10,11 @@ import moment from "moment";
 import "moment/locale/fr";
 import "moment/locale/ar";
 import { useQuery } from "react-query";
-import { Spin, Alert } from "antd";
+import { Spin, Alert, Modal, List, Typography, Badge, Divider, Empty } from "antd";
+import { ClockCircleOutlined, CalendarOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
+
+const { Text, Title } = Typography;
 import { eventService } from "../../services/EventService";
 import { queryKeys } from "../../services/QueryClientManager";
 import { EventFormModal } from "./EventFormModal";
@@ -36,6 +39,8 @@ export const EventCalendar: React.FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedEvent, setSelectedEvent] = useState<EventItemResponseType | null>(null);
 	const [selectedDate, setSelectedDate] = useState<Dayjs | undefined>();
+	const [showMoreEvents, setShowMoreEvents] = useState<CalendarEvent[]>([]);
+	const [showMoreModalOpen, setShowMoreModalOpen] = useState(false);
 
 	// Set moment locale based on current language
 	useEffect(() => {
@@ -83,6 +88,31 @@ export const EventCalendar: React.FC = () => {
 		setSelectedEvent(null);
 		setSelectedDate(undefined);
 	}, []);
+
+	const handleShowMore = useCallback((events: CalendarEvent[]) => {
+		setShowMoreEvents(events);
+		setShowMoreModalOpen(true);
+	}, []);
+
+	const handleShowMoreModalClose = useCallback(() => {
+		setShowMoreModalOpen(false);
+		setShowMoreEvents([]);
+	}, []);
+
+	const handleEventClickInModal = useCallback((event: CalendarEvent) => {
+		setShowMoreModalOpen(false);
+		setShowMoreEvents([]);
+		setSelectedEvent(event.resource);
+		setSelectedDate(undefined);
+		setIsModalOpen(true);
+	}, []);
+
+	const getModalWidth = (): string | number => {
+		if (typeof window !== "undefined") {
+			return window.innerWidth > 768 ? 650 : "90%";
+		}
+		return 650;
+	};
 
 	const eventStyleGetter = () => {
 		const style: React.CSSProperties = {
@@ -139,6 +169,7 @@ export const EventCalendar: React.FC = () => {
 					onNavigate={setDate}
 					onSelectSlot={handleSelectSlot}
 					onSelectEvent={handleSelectEvent}
+					onShowMore={handleShowMore}
 					selectable
 					eventPropGetter={eventStyleGetter}
 					toolbar={true}
@@ -155,6 +186,94 @@ export const EventCalendar: React.FC = () => {
 					}}
 				/>
 			</div>
+
+			<Modal
+				open={showMoreModalOpen}
+				onCancel={handleShowMoreModalClose}
+				footer={null}
+				width={getModalWidth()}
+				centered
+				title={
+					<div className="flex items-center gap-3 pb-2">
+						<CalendarOutlined className="text-2xl text-primary" />
+						<div>
+							<Title level={4} className="!mb-0">
+								{t("events.calendar.moreEvents")}
+							</Title>
+							{showMoreEvents.length > 0 && (
+								<Text type="secondary" className="text-sm">
+									{showMoreEvents.length} {t("events.calendar.eventsCount")}
+								</Text>
+							)}
+						</div>
+					</div>
+				}
+				className="event-details-modal"
+			>
+				{showMoreEvents.length === 0 ? (
+					<Empty
+						description={t("events.calendar.noEventsInRange")}
+						className="py-8"
+					/>
+				) : (
+					<List
+						dataSource={showMoreEvents}
+						className="event-list"
+						split={false}
+						renderItem={(event, index) => (
+							<div key={event.id}>
+								<List.Item
+									onClick={() => handleEventClickInModal(event)}
+									className="cursor-pointer hover:bg-blue-50 transition-all duration-200 rounded-lg px-4 py-3 -mx-2 my-1"
+									style={{ border: "none" }}
+								>
+									<div className="w-full">
+										<div className="flex items-start justify-between gap-3 mb-3">
+											<div className="flex-1">
+												<Badge
+													status="processing"
+													text={
+														<Text strong className="text-base">
+															{event.title}
+														</Text>
+													}
+												/>
+											</div>
+										</div>
+
+										<div className="space-y-2 ml-6">
+											<div className="flex items-center gap-2">
+												<ClockCircleOutlined className="text-green-600" />
+												<Text type="secondary" className="text-sm">
+													<span className="font-medium">{t("events.calendar.start")}:</span>{" "}
+													{moment(event.start).format("LLL")}
+												</Text>
+											</div>
+
+											<div className="flex items-center gap-2">
+												<ClockCircleOutlined className="text-red-600" />
+												<Text type="secondary" className="text-sm">
+													<span className="font-medium">{t("events.calendar.end")}:</span>{" "}
+													{moment(event.end).format("LLL")}
+												</Text>
+											</div>
+										</div>
+
+										<div className="mt-3 ml-6">
+											<Text type="secondary" className="text-xs italic">
+												{t("events.calendar.clickToView")}
+											</Text>
+										</div>
+									</div>
+								</List.Item>
+								{index !== undefined && index < showMoreEvents.length - 1 && (
+									<Divider className="my-2" />
+								)}
+							</div>
+						)}
+					/>
+				)}
+			</Modal>
 
 			<EventFormModal
 				open={isModalOpen}

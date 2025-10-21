@@ -559,7 +559,12 @@
       "noEventsInRange": "Aucun événement dans cette période",
       "showMore": "plus",
       "clickToAdd": "Cliquez sur le calendrier pour ajouter un événement",
-      "clickEventToEdit": "Cliquez sur un événement pour le modifier"
+      "clickEventToEdit": "Cliquez sur un événement pour le modifier",
+      "moreEvents": "Événements de ce Jour",
+      "start": "Début",
+      "end": "Fin",
+      "eventsCount": "événements",
+      "clickToView": "Cliquez pour voir les détails"
     },
     "pagination": {
       "showTotal": "{{start}}-{{end}} sur {{total}} événements"
@@ -787,105 +792,6 @@
         "zoom": "Utilisez les contrôles de zoom pour redimensionner",
         "click": "Cliquez à l'extérieur pour fermer"
       }
-    }
-  },
-  "events": {
-    "title": "Gestion des Événements",
-    "subtitle": "Gérez vos événements et rendez-vous",
-    "tabs": {
-      "list": "Vue Liste",
-      "calendar": "Vue Calendrier"
-    },
-    "add": {
-      "button": "Ajouter un Événement",
-      "title": "Ajouter un Nouvel Événement",
-      "subtitle": "Créer un nouvel événement ou rendez-vous"
-    },
-    "edit": {
-      "title": "Modifier l'Événement",
-      "subtitle": "Mettre à jour les informations de l'événement"
-    },
-    "table": {
-      "name": "Nom de l'Événement",
-      "description": "Description",
-      "clients": "Clients",
-      "lawsuit": "Litige",
-      "startDate": "Date de Début",
-      "endDate": "Date de Fin",
-      "createdAt": "Créé le",
-      "actions": "Actions"
-    },
-    "search": {
-      "placeholder": "Rechercher des événements par nom ou description..."
-    },
-    "filter": {
-      "client": "Filtrer par client",
-      "lawsuit": "Filtrer par litige",
-      "apply": "Appliquer les Filtres",
-      "clear": "Effacer les Filtres"
-    },
-    "delete": {
-      "title": "Supprimer l'Événement",
-      "confirm": "Êtes-vous sûr de vouloir supprimer l'événement {{name}} ? Cette action ne peut pas être annulée.",
-      "success": "L'événement {{name}} a été supprimé avec succès",
-      "error": "Échec de la suppression de l'événement"
-    },
-    "bulk": {
-      "noSelection": "Veuillez sélectionner des événements à supprimer",
-      "delete": {
-        "title": "Supprimer Plusieurs Événements",
-        "button": "Supprimer {{count}} Événements",
-        "confirm": "Êtes-vous sûr de vouloir supprimer {{count}} événements ? Cette action ne peut pas être annulée.",
-        "success": "{{count}} événements ont été supprimés avec succès",
-        "error": "Échec de la suppression des événements sélectionnés"
-      }
-    },
-    "error": {
-      "title": "Échec du Chargement des Événements",
-      "fetchTitle": "Échec du Chargement de l'Événement",
-      "fetchFailed": "Impossible de récupérer les données de l'événement"
-    },
-    "create": {
-      "success": "L'événement {{name}} a été créé avec succès",
-      "error": "Échec de la création de l'événement"
-    },
-    "update": {
-      "success": "L'événement {{name}} a été mis à jour avec succès",
-      "error": "Échec de la mise à jour de l'événement"
-    },
-    "form": {
-      "name": "Nom de l'Événement",
-      "namePlaceholder": "Entrer le nom de l'événement",
-      "nameRequired": "Le nom de l'événement est requis",
-      "nameMinLength": "Le nom de l'événement doit contenir au moins 2 caractères",
-      "description": "Description",
-      "descriptionPlaceholder": "Entrer la description de l'événement",
-      "clients": "Clients",
-      "clientsPlaceholder": "Sélectionner les clients (optionnel)",
-      "lawsuit": "Litige",
-      "lawsuitPlaceholder": "Sélectionner le litige (optionnel)",
-      "startDate": "Date et Heure de Début",
-      "startDatePlaceholder": "Sélectionner la date et l'heure de début",
-      "startDateRequired": "La date de début est requise",
-      "endDate": "Date et Heure de Fin",
-      "endDatePlaceholder": "Sélectionner la date et l'heure de fin",
-      "endDateRequired": "La date de fin est requise",
-      "endDateAfterStart": "La date de fin doit être après la date de début",
-      "create": "Créer l'Événement",
-      "update": "Mettre à Jour l'Événement"
-    },
-    "calendar": {
-      "today": "Aujourd'hui",
-      "month": "Mois",
-      "week": "Semaine",
-      "day": "Jour",
-      "agenda": "Agenda",
-      "noEventsInRange": "Aucun événement dans cette période",
-      "clickToAdd": "Cliquez sur le calendrier pour ajouter un événement",
-      "clickEventToEdit": "Cliquez sur un événement pour le modifier"
-    },
-    "pagination": {
-      "showTotal": "{{start}}-{{end}} sur {{total}} événements"
     }
   }
 }

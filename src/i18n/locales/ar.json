@@ -558,7 +558,12 @@
       "noEventsInRange": "لا توجد أحداث في هذه الفترة",
       "showMore": "المزيد",
       "clickToAdd": "انقر على التقويم لإضافة حدث",
-      "clickEventToEdit": "انقر على حدث لتعديله"
+      "clickEventToEdit": "انقر على حدث لتعديله",
+      "moreEvents": "أحداث هذا اليوم",
+      "start": "البداية",
+      "end": "النهاية",
+      "eventsCount": "أحداث",
+      "clickToView": "انقر لعرض التفاصيل"
     },
     "pagination": {
       "showTotal": "{{start}}-{{end}} من {{total}} حدث"
