@@ -42,6 +42,7 @@ import {
 import { LAWSUIT_STATUS } from "../../models/consts";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
+import { getErrorMessage, logError } from "../../utils/errorHandling";
 
 const { Title } = Typography;
 
@@ -57,20 +58,6 @@ interface FormValues {
 
 export const AddEditLawsuit: React.FC = () => {
 	const { t } = useTranslation();
-
-	// Utility function to extract error message with proper typing
-	const getErrorMessage = (error: unknown): string => {
-		if (error instanceof Error) {
-			return error.message;
-		}
-		if (typeof error === "string") {
-			return error;
-		}
-		if (error && typeof error === "object" && "message" in error) {
-			return String((error as { message: unknown }).message);
-		}
-		return t("common.unexpectedError");
-	};
 	const { isRTL } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
@@ -97,19 +84,30 @@ export const AddEditLawsuit: React.FC = () => {
 					setLawsuitData(lawsuit);
 
 					// Pre-fill form with lawsuit data
+					// Handle both populated objects and string IDs from backend
 					form.setFieldsValue({
 						lawsuitCode: lawsuit.lawsuitCode,
 						description: lawsuit.description,
-						clients: lawsuit.clients.map((client) => client._id),
-						court: lawsuit.court?._id,
-						lawsuitStage: lawsuit.lawsuitStage?._id,
-						lawsuitType: lawsuit.lawsuitType?._id,
+						clients: Array.isArray(lawsuit.clients)
+							? lawsuit.clients.map((client) =>
+								typeof client === 'string' ? client : (client as {_id: string})._id
+							  )
+							: [],
+						court: lawsuit.court
+							? (typeof lawsuit.court === 'string' ? lawsuit.court : (lawsuit.court as {_id: string})._id)
+							: undefined,
+						lawsuitStage: lawsuit.lawsuitStage
+							? (typeof lawsuit.lawsuitStage === 'string' ? lawsuit.lawsuitStage : (lawsuit.lawsuitStage as {_id: string})._id)
+							: undefined,
+						lawsuitType: lawsuit.lawsuitType
+							? (typeof lawsuit.lawsuitType === 'string' ? lawsuit.lawsuitType : (lawsuit.lawsuitType as {_id: string})._id)
+							: undefined,
 						status: lawsuit.status,
 					});
 				})
 				.catch((err) => {
-					console.error("Error fetching lawsuit:", err);
-					setError(getErrorMessage(err));
+					logError(err, "Error fetching lawsuit");
+					setError(getErrorMessage(err, t("common.unexpectedError")));
 				})
 				.finally(() => {
 					setFetchingLawsuit(false);
@@ -159,7 +157,7 @@ export const AddEditLawsuit: React.FC = () => {
 
 	// Fetch lawsuit types filter options
 	const { data: lawsuitTypesOptions } = useQuery(
-		[queryKeys.LAWSUIT_TYPES, "filter"],
+		[queryKeys.TYPE_LAWSUITS, "filter"],
 		async () => {
 			const response = await typeLawsuitService.filter();
 			return response.data;
@@ -221,11 +219,8 @@ export const AddEditLawsuit: React.FC = () => {
 				// Navigate back to lawsuits list
 				navigate("/lawsuits");
 			} catch (err) {
-				console.error(
-					`Error ${isEditMode ? "updating" : "creating"} lawsuit:`,
-					err
-				);
-				const errorMessage = getErrorMessage(err);
+				logError(err, `Error ${isEditMode ? "updating" : "creating"} lawsuit`);
+				const errorMessage = getErrorMessage(err, t("common.unexpectedError"));
 				setError(errorMessage);
 				message.error(
 					isEditMode ? t("lawsuits.update.error") : t("lawsuits.create.error")

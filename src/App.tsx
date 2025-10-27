@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { AppProvider } from "./contexts/AppContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Login } from "./pages/auth";
@@ -10,6 +11,7 @@ import { Dashboard } from "./pages/dashboard";
 import { Clients, AddEditClient } from "./pages/clients";
 import { Users, AddEditUser } from "./pages/users";
 import { Lawsuits, AddEditLawsuit } from "./pages/lawsuits";
+import { Folders } from "./pages/folders";
 import { Events } from "./pages/events/Events";
 import { Cases } from "./pages/cases";
 import { Documents } from "./pages/documents";
@@ -106,6 +108,7 @@ const AppContent = () => {
 											<Route path='/lawsuits' element={<Lawsuits />} />
 											<Route path='/lawsuits/add' element={<AddEditLawsuit />} />
 											<Route path='/lawsuits/:id/edit' element={<AddEditLawsuit />} />
+											<Route path='/folders' element={<Folders />} />
 											<Route path='/events' element={<Events />} />
 											<Route path='/cases' element={<Cases />} />
 											<Route path='/documents' element={<Documents />} />
@@ -133,13 +136,15 @@ const AppContent = () => {
 
 function App() {
 	return (
-		<QueryClientProvider client={queryClient}>
-			<AppProvider>
-				<AuthProvider>
-					<AppContent />
-				</AuthProvider>
-			</AppProvider>
-		</QueryClientProvider>
+		<ErrorBoundary>
+			<QueryClientProvider client={queryClient}>
+				<AppProvider>
+					<AuthProvider>
+						<AppContent />
+					</AuthProvider>
+				</AppProvider>
+			</QueryClientProvider>
+		</ErrorBoundary>
 	);
 }
 

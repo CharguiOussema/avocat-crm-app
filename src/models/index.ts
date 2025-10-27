@@ -8,5 +8,6 @@ export * from "./typeLawsuit";
 export * from "./lawsuitStage";
 export * from "./court";
 export * from "./file";
+export * from "./folder";
 export * from "./event";
 export * from "./consts";

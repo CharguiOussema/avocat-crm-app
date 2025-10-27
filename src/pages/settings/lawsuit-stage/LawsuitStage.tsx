@@ -24,6 +24,7 @@ import { useQuery, useQueryClient } from 'react-query';
 import { lawsuitStageService } from '../../../services/LawsuitStageService';
 import { queryKeys } from '../../../services/QueryClientManager';
 import { useApp } from '../../../hooks';
+import { usePagination } from '../../../hooks/usePagination';
 import {
   LawsuitStageModelType,
   CreateLawsuitStageBodyRequest,
@@ -49,10 +50,7 @@ export const LawsuitStage: React.FC = () => {
   const [editingStage, setEditingStage] = useState<LawsuitStageModelType | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-  });
+  const { pagination, handleTableChange, setPagination } = usePagination(1, 10);
 
   // Fetch lawsuit stages data
   const {
@@ -70,14 +68,6 @@ export const LawsuitStage: React.FC = () => {
       keepPreviousData: true,
     }
   );
-
-  // Handle table pagination
-  const handleTableChange = (newPagination: any) => {
-    setPagination({
-      current: newPagination.current,
-      pageSize: newPagination.pageSize,
-    });
-  };
 
   // Handle search
   const handleSearch = (value: string) => {

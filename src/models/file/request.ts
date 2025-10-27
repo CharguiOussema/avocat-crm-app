@@ -12,6 +12,9 @@ export type FileUploadRequestType = {
   associatedEntity?: string;
   associatedEntityType?: string;
   isPublic?: boolean;
+  parent?: string;
+  clientId?: string;
+  lawsuitId?: string;
 };
 
 export type FileUpdateRequestType = {
@@ -20,6 +23,9 @@ export type FileUpdateRequestType = {
   associatedEntity?: string;
   associatedEntityType?: string;
   isPublic?: boolean;
+  parent?: string;
+  clientId?: string;
+  lawsuitId?: string;
 };
 
 export type FileQueryRequestType = {
@@ -30,4 +36,7 @@ export type FileQueryRequestType = {
   uploadedBy?: string;
   isPublic?: boolean;
   status?: string;
+  parent?: string;
+  clientId?: string;
+  lawsuitId?: string;
 };

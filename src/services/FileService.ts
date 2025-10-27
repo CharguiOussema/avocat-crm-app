@@ -12,6 +12,9 @@ export interface FileUploadData {
   associatedEntity?: string;
   associatedEntityType?: string;
   isPublic?: boolean;
+  parent?: string;
+  clientId?: string;
+  lawsuitId?: string;
 }
 
 export interface FileModel {
@@ -121,6 +124,15 @@ export class FileService {
     }
     if (data?.isPublic !== undefined) {
       formData.append('isPublic', data.isPublic.toString());
+    }
+    if (data?.parent) {
+      formData.append('parent', data.parent);
+    }
+    if (data?.clientId) {
+      formData.append('clientId', data.clientId);
+    }
+    if (data?.lawsuitId) {
+      formData.append('lawsuitId', data.lawsuitId);
     }
 
     return await apiService.request<FileModel>(

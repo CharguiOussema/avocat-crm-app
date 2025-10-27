@@ -43,14 +43,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 	const isAuthenticated = !!token;
 
-	// Configure axios with token
-	useEffect(() => {
-		if (token) {
-			axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-		} else {
-			delete axios.defaults.headers.common["Authorization"];
-		}
-	}, [token]);
+	// Note: Authorization header is automatically added by BaseHttpClient interceptor
+	// No need to set axios defaults here as all services use BaseHttpClient
 
 	// !example of fetch current user using service
 	const {
@@ -104,8 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const logout = () => {
 		localStorage.removeItem("accessToken");
 		setToken(null);
-		// Clear axios authorization header
-		delete axios.defaults.headers.common["Authorization"];
+		// Authorization header will be automatically removed by BaseHttpClient interceptor
 	};
 
 	const isLoading = userLoading || companyLoading;

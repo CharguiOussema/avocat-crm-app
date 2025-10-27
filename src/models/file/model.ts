@@ -44,6 +44,9 @@ export type FileModelType = {
   checksum?: string;
   storageType: string;
   isPublic: boolean;
+  parent?: string;
+  clientId?: string;
+  lawsuitId?: string;
   company: string;
   createdAt: string;
   updatedAt: string;

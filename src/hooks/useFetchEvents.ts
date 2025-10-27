@@ -11,7 +11,7 @@ import { queryKeys } from "../services/QueryClientManager";
 import { eventService } from "../services/EventService";
 import useQueryParams from "./useQueryParams";
 
-interface IPaginationParams {
+interface IPaginationParams extends Record<string, unknown> {
 	page?: number;
 	limit?: number;
 	search?: string;

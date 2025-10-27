@@ -35,6 +35,7 @@ import useQueryParams from "../../hooks/useQueryParams";
 import { LAWSUIT_STATUS } from "../../models/consts";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
+import { getErrorMessage, logError } from "../../utils/errorHandling";
 import { useLawsuitTableColumns } from "./LawsuitTableColumns";
 import { LawsuitFilters } from "./LawsuitFilters";
 import { LawsuitTable } from "./LawsuitTable";
@@ -55,20 +56,6 @@ interface QueryParams extends Record<string, unknown> {
 
 export const Lawsuits: React.FC = () => {
 	const { t } = useTranslation();
-
-	// Utility function to extract error message with proper typing
-	const getErrorMessage = (error: unknown): string => {
-		if (error instanceof Error) {
-			return error.message;
-		}
-		if (typeof error === "string") {
-			return error;
-		}
-		if (error && typeof error === "object" && "message" in error) {
-			return String((error as { message: unknown }).message);
-		}
-		return t("common.unexpectedError");
-	};
 	const { isRTL } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
@@ -123,7 +110,7 @@ export const Lawsuits: React.FC = () => {
 	);
 
 	const { data: lawsuitTypesOptions } = useQuery(
-		[queryKeys.LAWSUIT_TYPES, "filter"],
+		[queryKeys.TYPE_LAWSUITS, "filter"],
 		async () => {
 			const response = await typeLawsuitService.filter();
 			return response.data;
@@ -250,7 +237,7 @@ export const Lawsuits: React.FC = () => {
 						// Invalidate and refetch lawsuits data
 						queryClient.invalidateQueries(queryKeys.LAWSUITS);
 					} catch (error) {
-						console.error("Error deleting lawsuit:", error);
+						logError(error, "Error deleting lawsuit");
 						message.error(t("lawsuits.delete.error"));
 					}
 				},
@@ -300,7 +287,7 @@ export const Lawsuits: React.FC = () => {
 		return (
 			<Alert
 				message={t("lawsuits.error.title")}
-				description={getErrorMessage(error)}
+				description={getErrorMessage(error, t("common.unexpectedError"))}
 				type='error'
 				showIcon
 				className='m-4'

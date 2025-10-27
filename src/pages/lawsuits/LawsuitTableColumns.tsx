@@ -40,45 +40,61 @@ export const useLawsuitTableColumns = ({
 			dataIndex: "clients",
 			key: "clients",
 			responsive: ["md"],
-			render: (clients: LawsuitItemResponseType["clients"]) => (
-				<div className='flex flex-wrap gap-1'>
-					{clients.slice(0, 2).map((client) => (
-						<Tag key={client._id} className='text-xs'>
-							{client.fullName}
-						</Tag>
-					))}
-					{clients.length > 2 && (
-						<Tag className='text-xs'>+{clients.length - 2}</Tag>
-					)}
-				</div>
-			),
+			render: (clients: LawsuitItemResponseType["clients"]) => {
+				if (!Array.isArray(clients) || clients.length === 0) {
+					return <span className='text-muted-foreground'>{t("common.notProvided")}</span>;
+				}
+				// Handle both string IDs and populated objects
+				const displayClients = clients.slice(0, 2).map((client, index) => {
+					const key = typeof client === 'string' ? client : (client as {_id: string})._id;
+					const name = typeof client === 'string' ? `Client ${index + 1}` : (client as {fullName: string}).fullName;
+					return <Tag key={key} className='text-xs'>{name}</Tag>;
+				});
+				return (
+					<div className='flex flex-wrap gap-1'>
+						{displayClients}
+						{clients.length > 2 && (
+							<Tag className='text-xs'>+{clients.length - 2}</Tag>
+						)}
+					</div>
+				);
+			},
 		},
 		{
 			title: t("lawsuits.table.court"),
 			dataIndex: "court",
 			key: "court",
 			responsive: ["lg"],
-			render: (court: LawsuitItemResponseType["court"]) => (
-				<span className='text-muted-foreground'>{court?.name || t("common.notProvided")}</span>
-			),
+			render: (court: LawsuitItemResponseType["court"]) => {
+				if (!court) return <span className='text-muted-foreground'>{t("common.notProvided")}</span>;
+				// Handle both string ID and populated object
+				const name = typeof court === 'string' ? court : (court as {name: string}).name;
+				return <span className='text-muted-foreground'>{name}</span>;
+			},
 		},
 		{
 			title: t("lawsuits.table.lawsuitType"),
 			dataIndex: "lawsuitType",
 			key: "lawsuitType",
 			responsive: ["lg"],
-			render: (lawsuitType: LawsuitItemResponseType["lawsuitType"]) => (
-				<span className='text-muted-foreground'>{lawsuitType?.name || t("common.notProvided")}</span>
-			),
+			render: (lawsuitType: LawsuitItemResponseType["lawsuitType"]) => {
+				if (!lawsuitType) return <span className='text-muted-foreground'>{t("common.notProvided")}</span>;
+				// Handle both string ID and populated object
+				const name = typeof lawsuitType === 'string' ? lawsuitType : (lawsuitType as {name: string}).name;
+				return <span className='text-muted-foreground'>{name}</span>;
+			},
 		},
 		{
 			title: t("lawsuits.table.lawsuitStage"),
 			dataIndex: "lawsuitStage",
 			key: "lawsuitStage",
 			responsive: ["lg"],
-			render: (lawsuitStage: LawsuitItemResponseType["lawsuitStage"]) => (
-				<span className='text-muted-foreground'>{lawsuitStage?.name || t("common.notProvided")}</span>
-			),
+			render: (lawsuitStage: LawsuitItemResponseType["lawsuitStage"]) => {
+				if (!lawsuitStage) return <span className='text-muted-foreground'>{t("common.notProvided")}</span>;
+				// Handle both string ID and populated object
+				const name = typeof lawsuitStage === 'string' ? lawsuitStage : (lawsuitStage as {name: string}).name;
+				return <span className='text-muted-foreground'>{name}</span>;
+			},
 		},
 		{
 			title: t("lawsuits.table.status"),

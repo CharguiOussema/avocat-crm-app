@@ -24,6 +24,7 @@ const navigationItems = [
   { key: 'clients', icon: UserOutlined, href: '/clients', label: 'navigation.clients' },
   { key: 'users', icon: TeamOutlined, href: '/users', label: 'navigation.users' },
   { key: 'lawsuits', icon: AuditOutlined, href: '/lawsuits', label: 'navigation.lawsuits' },
+  { key: 'folders', icon: FolderOpenOutlined, href: '/folders', label: 'navigation.folders' },
   { key: 'events', icon: ClockCircleOutlined, href: '/events', label: 'navigation.events' },
   { key: 'cases', icon: FileTextOutlined, href: '/cases', label: 'navigation.cases' },
   { key: 'documents', icon: FolderOpenOutlined, href: '/documents', label: 'navigation.documents' },
@@ -84,6 +85,9 @@ export const Sidebar: React.FC = () => {
     }
     if (path.startsWith('/lawsuits')) {
       return ['lawsuits'];
+    }
+    if (path.startsWith('/folders')) {
+      return ['folders'];
     }
     if (path.startsWith('/events')) {
       return ['events'];

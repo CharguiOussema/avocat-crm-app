@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
+import { getErrorMessage, logError } from "../../utils/errorHandling";
 import { useClientTableColumns } from "./ClientTableColumns";
 import { SearchInput } from "../../components/common/SearchInput";
 
@@ -47,20 +48,6 @@ interface QueryParams extends Record<string, unknown> {
 
 export const Clients: React.FC = () => {
 	const { t } = useTranslation();
-
-	// Utility function to extract error message with proper typing
-	const getErrorMessage = (error: unknown): string => {
-		if (error instanceof Error) {
-			return error.message;
-		}
-		if (typeof error === "string") {
-			return error;
-		}
-		if (error && typeof error === "object" && "message" in error) {
-			return String((error as { message: unknown }).message);
-		}
-		return t("common.unexpectedError");
-	};
 	const { isRTL } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
@@ -130,7 +117,7 @@ export const Clients: React.FC = () => {
 						// Invalidate and refetch clients data
 						queryClient.invalidateQueries(queryKeys.CLIENTS);
 					} catch (error) {
-						console.error("Error deleting client:", error);
+						logError(error, "Error deleting client");
 						message.error(t("clients.delete.error"));
 					}
 				},
@@ -165,7 +152,7 @@ export const Clients: React.FC = () => {
 					// Invalidate and refetch clients data
 					queryClient.invalidateQueries(queryKeys.CLIENTS);
 				} catch (error) {
-					console.error("Error bulk deleting clients:", error);
+					logError(error, "Error bulk deleting clients");
 					message.error(t("clients.bulk.delete.error"));
 				}
 			},

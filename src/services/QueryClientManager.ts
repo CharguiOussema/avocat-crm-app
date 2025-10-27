@@ -30,12 +30,20 @@ export const queryKeys = {
 
   // Type Lawsuit-related queries
   TYPE_LAWSUITS: 'typeLawsuits',
-  LAWSUIT_TYPES: 'typeLawsuits',
   TYPE_LAWSUIT_DETAILS: 'typeLawsuit-details',
 
   // Event-related queries
   EVENTS: 'events',
   EVENT_DETAILS: 'event-details',
+
+  // Folder-related queries
+  FOLDERS: 'folders',
+  FOLDER_DETAILS: 'folder-details',
+  FOLDER_TREE: 'folder-tree',
+
+  // File-related queries
+  FILES: 'files',
+  FILE_DETAILS: 'file-details',
 
   // Filter queries
   FILTERS: 'filters',

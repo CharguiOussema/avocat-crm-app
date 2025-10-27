@@ -24,6 +24,7 @@ import { useQuery, useQueryClient } from 'react-query';
 import { courtService } from '../../../services/CourtService';
 import { queryKeys } from '../../../services/QueryClientManager';
 import { useApp } from '../../../hooks';
+import { usePagination } from '../../../hooks/usePagination';
 import {
   CourtModelType,
   CreateCourtBodyRequest,
@@ -49,10 +50,7 @@ export const Court: React.FC = () => {
   const [editingCourt, setEditingCourt] = useState<CourtModelType | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-  });
+  const { pagination, handleTableChange, setPagination } = usePagination(1, 10);
 
   // Fetch courts data
   const {
@@ -70,14 +68,6 @@ export const Court: React.FC = () => {
       keepPreviousData: true,
     }
   );
-
-  // Handle table pagination
-  const handleTableChange = (newPagination: any) => {
-    setPagination({
-      current: newPagination.current,
-      pageSize: newPagination.pageSize,
-    });
-  };
 
   // Handle search
   const handleSearch = (value: string) => {
