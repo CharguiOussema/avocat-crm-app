@@ -5,6 +5,7 @@
  */
 
 import { FolderModelType } from "./model";
+import { FileCategory, FileStatus } from "../file/model";
 
 export type FolderResponseType = Omit<FolderModelType, "isDeleted">;
 
@@ -21,13 +22,35 @@ export type FolderListResponseType = {
   totalPages: number;
 };
 
+export type FolderTreeFileType = {
+  _id: string;
+  originalName: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  category: FileCategory;
+  filePath: string;
+  status: FileStatus;
+  uploadedBy: string;
+  storageType: string;
+  isPublic: boolean;
+  isDeleted: boolean;
+  parent?: string;
+  clientId?: string;
+  lawsuitId?: string;
+  company: string;
+  createdBy: string;
+  updatedBy: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type FolderTreeResponseType = FolderResponseType & {
   children?: FolderTreeResponseType[];
-  files?: Array<{
-    _id: string;
-    originalName: string;
-    fileSize: number;
-    mimeType: string;
-    category: string;
-  }>;
+  files?: FolderTreeFileType[];
+};
+
+export type FolderTreeWithRootFilesResponseType = {
+  folders: FolderTreeResponseType[];
+  rootFiles: FolderTreeFileType[];
 };

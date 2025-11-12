@@ -3,7 +3,7 @@ import {
 	FolderUpdateRequestType,
 	FolderResponseType,
 	FolderListResponseType,
-	FolderTreeResponseType,
+	FolderTreeWithRootFilesResponseType,
 } from "../models/folder";
 import { QueryBuilder } from "./QueryBuilder";
 import { baseHttpClient } from "./abstract/BaseHttpClient";
@@ -35,12 +35,12 @@ class FolderService {
 		return this.instance.get<FolderListResponseType>(url);
 	};
 
-	// Get folder tree (hierarchical structure)
+	// Get folder tree (hierarchical structure) with root files
 	getTree = (folderId?: string) => {
 		const url = QueryBuilder.generateURL("/api/folders/tree")
 			.setQueryParam("folderId", folderId)
 			.build();
-		return this.instance.get<FolderTreeResponseType[]>(url);
+		return this.instance.get<FolderTreeWithRootFilesResponseType>(url);
 	};
 
 	// Get folder by ID

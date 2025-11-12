@@ -26,8 +26,9 @@ export const Folders: React.FC = () => {
 
 	const { data: folderTreeResponse, isLoading, refetch } = useFetchFolderTree(currentFolderId);
 
-	// Extract the actual data array from the Axios response
-	const folderTree = folderTreeResponse?.data;
+	// Extract folders and root files from the response
+	const folderTree = folderTreeResponse?.data?.folders || [];
+	const rootFiles = folderTreeResponse?.data?.rootFiles || [];
 
 	const handleFolderClick = (folder: FolderTreeResponseType) => {
 		setCurrentFolderId(folder._id);
@@ -51,7 +52,6 @@ export const Folders: React.FC = () => {
 	};
 
 	const filteredTree = React.useMemo(() => {
-		if (!folderTree || !Array.isArray(folderTree)) return [];
 		if (!searchQuery) return folderTree;
 
 		const filterTree = (items: FolderTreeResponseType[]): FolderTreeResponseType[] => {
@@ -67,6 +67,13 @@ export const Folders: React.FC = () => {
 
 		return filterTree(folderTree);
 	}, [folderTree, searchQuery]);
+
+	const filteredRootFiles = React.useMemo(() => {
+		if (!searchQuery) return rootFiles;
+		return rootFiles.filter(file =>
+			file.originalName.toLowerCase().includes(searchQuery.toLowerCase())
+		);
+	}, [rootFiles, searchQuery]);
 
 	return (
 		<div style={{ padding: '24px' }}>
@@ -136,6 +143,7 @@ export const Folders: React.FC = () => {
 			<Card loading={isLoading}>
 				<FolderTree
 					folders={filteredTree}
+					rootFiles={filteredRootFiles}
 					onFolderClick={handleFolderClick}
 					onRefresh={refetch}
 					currentFolderId={currentFolderId}

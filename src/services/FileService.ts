@@ -98,7 +98,7 @@ export class FileService {
 
     this.storageConfig = await apiService.request<StorageConfig>(
       'GET',
-      '/files/config',
+      '/api/files/config',
       undefined,
       { skipAuth: true }
     );
@@ -137,7 +137,7 @@ export class FileService {
 
     return await apiService.request<FileModel>(
       'POST',
-      '/files/upload',
+      '/api/files/upload',
       formData,
       {
         headers: {
@@ -153,7 +153,7 @@ export class FileService {
   async getFiles(params?: FileQueryParams): Promise<FileListResponse> {
     return await apiService.request<FileListResponse>(
       'GET',
-      '/files',
+      '/api/files',
       undefined,
       { params }
     );
@@ -165,7 +165,7 @@ export class FileService {
   async getFileById(id: string): Promise<FileModel> {
     return await apiService.request<FileModel>(
       'GET',
-      `/files/${id}`
+      `/api/files/${id}`
     );
   }
 
@@ -175,7 +175,7 @@ export class FileService {
   async updateFile(id: string, data: Partial<FileUploadData>): Promise<FileModel> {
     return await apiService.request<FileModel>(
       'PUT',
-      `/files/${id}`,
+      `/api/files/${id}`,
       data
     );
   }
@@ -186,7 +186,7 @@ export class FileService {
   async deleteFile(id: string): Promise<void> {
     await apiService.request<{ message: string }>(
       'DELETE',
-      `/files/${id}`
+      `/api/files/${id}`
     );
   }
 
@@ -213,7 +213,7 @@ export class FileService {
   async downloadFile(fileName: string): Promise<Blob> {
     return await apiService.request<Blob>(
       'GET',
-      `/files/download/${fileName}`,
+      `/api/files/download/${fileName}`,
       undefined,
       { responseType: 'blob' }
     );

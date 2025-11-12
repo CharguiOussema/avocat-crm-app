@@ -8,19 +8,34 @@ import {
 	DeleteOutlined,
 	DownloadOutlined,
 	FolderOpenOutlined,
+	FileImageOutlined,
+	FilePdfOutlined,
+	FileWordOutlined,
+	FileExcelOutlined,
+	FilePptOutlined,
+	FileTextOutlined,
+	FileZipOutlined,
+	VideoCameraOutlined,
+	AudioOutlined,
+	EyeOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
-import { FolderTreeResponseType } from '../../../models/folder';
+import { FolderTreeResponseType, FolderTreeFileType } from '../../../models/folder';
 import { folderService } from '../../../services/FolderService';
+import { fileService } from '../../../services/FileService';
 import { queryKeys } from '../../../services/QueryClientManager';
 import { EditFolderDialog } from './EditFolderDialog';
+import { formatFileSize, downloadFile, isPreviewSupported } from '../../../utils/file.utils';
+import { FilePreviewDialog } from '../../../components/common/FilePreviewDialog';
+import type { FileModelType } from '../../../models/file';
 
 const { Text } = Typography;
 
 interface FolderTreeProps {
 	folders: FolderTreeResponseType[];
+	rootFiles: FolderTreeFileType[];
 	onFolderClick: (folder: FolderTreeResponseType) => void;
 	onRefresh: () => void;
 	currentFolderId?: string;
@@ -28,6 +43,7 @@ interface FolderTreeProps {
 
 export const FolderTree: React.FC<FolderTreeProps> = ({
 	folders,
+	rootFiles,
 	onFolderClick,
 	onRefresh,
 	currentFolderId,
@@ -36,18 +52,35 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 	const queryClient = useQueryClient();
 	const [editFolder, setEditFolder] = useState<FolderTreeResponseType | null>(null);
 	const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+	const [previewFile, setPreviewFile] = useState<FileModelType | null>(null);
+	const [previewOpen, setPreviewOpen] = useState(false);
 
-	const deleteMutation = useMutation(
+	const deleteFolderMutation = useMutation(
 		(folderId: string) => folderService.delete(folderId),
 		{
 			onSuccess: () => {
 				message.success(t('folders.deleteSuccess', 'Folder deleted successfully'));
-				queryClient.invalidateQueries(queryKeys.FOLDER_TREE);
-				queryClient.invalidateQueries(queryKeys.FOLDERS);
+				queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
+				queryClient.invalidateQueries([queryKeys.FOLDERS]);
 				onRefresh();
 			},
 			onError: () => {
 				message.error(t('folders.deleteError', 'Failed to delete folder'));
+			},
+		}
+	);
+
+	const deleteFileMutation = useMutation(
+		(fileId: string) => fileService.deleteFile(fileId),
+		{
+			onSuccess: () => {
+				message.success(t('files.deleteSuccess', 'File deleted successfully'));
+				queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
+				queryClient.invalidateQueries([queryKeys.FILES]);
+				onRefresh();
+			},
+			onError: () => {
+				message.error(t('files.deleteError', 'Failed to delete file'));
 			},
 		}
 	);
@@ -59,8 +92,39 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 			okText: t('common.delete', 'Delete'),
 			okType: 'danger',
 			cancelText: t('common.cancel', 'Cancel'),
-			onOk: () => deleteMutation.mutate(folder._id),
+			onOk: () => deleteFolderMutation.mutate(folder._id),
 		});
+	};
+
+	const handleDeleteFile = (file: { _id: string; originalName: string }) => {
+		Modal.confirm({
+			title: t('files.confirmDelete', 'Delete File'),
+			content: t('files.confirmDeleteMessage', `Are you sure you want to delete "${file.originalName}"?`),
+			okText: t('common.delete', 'Delete'),
+			okType: 'danger',
+			cancelText: t('common.cancel', 'Cancel'),
+			onOk: () => deleteFileMutation.mutate(file._id),
+		});
+	};
+
+	const handleDownloadFile = async (file: { _id: string; originalName: string }) => {
+		try {
+			message.loading({ content: t('files.downloading', 'Downloading...'), key: 'download' });
+
+			// Get the file details first to get the fileName
+			const fileDetails = await fileService.getFileById(file._id);
+
+			// Download the file as a blob
+			const blob = await fileService.downloadFile(fileDetails.fileName);
+
+			// Use utility function to handle download
+			downloadFile(blob, file.originalName);
+
+			message.success({ content: t('files.downloadSuccess', 'File downloaded successfully'), key: 'download' });
+		} catch (error) {
+			message.error({ content: t('files.downloadError', 'Failed to download file'), key: 'download' });
+			console.error('Download error:', error);
+		}
 	};
 
 	const getFolderMenu = (folder: FolderTreeResponseType): MenuProps => ({
@@ -90,32 +154,50 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 		],
 	});
 
-	const getFileMenu = (_file: { _id: string; originalName: string }): MenuProps => ({
-		items: [
-			{
-				key: 'download',
-				icon: <DownloadOutlined />,
-				label: t('files.download', 'Download'),
-				onClick: () => {
-					// TODO: Implement file download
-					message.info(t('files.downloadStarted', 'Download started'));
-				},
-			},
-			{
-				type: 'divider',
-			},
-			{
-				key: 'delete',
-				icon: <DeleteOutlined />,
-				label: t('common.delete', 'Delete'),
-				danger: true,
-				onClick: () => {
-					// TODO: Implement file delete
-					message.info(t('files.deleteNotImplemented', 'File deletion not yet implemented'));
-				},
-			},
-		],
-	});
+	const handlePreviewFile = (file: FileModelType) => {
+		setPreviewFile(file);
+		setPreviewOpen(true);
+	};
+
+	const getFileMenu = (file: FileModelType): MenuProps => {
+		const canPreview = isPreviewSupported(file.originalName);
+
+		const menuItems: MenuProps['items'] = [];
+
+		// Add preview option if supported
+		if (canPreview) {
+			menuItems.push({
+				key: 'preview',
+				icon: <EyeOutlined />,
+				label: t('files.preview', 'Preview'),
+				onClick: () => handlePreviewFile(file),
+			});
+		}
+
+		// Add download option
+		menuItems.push({
+			key: 'download',
+			icon: <DownloadOutlined />,
+			label: t('files.download', 'Download'),
+			onClick: () => handleDownloadFile(file),
+		});
+
+		// Add divider
+		menuItems.push({
+			type: 'divider',
+		});
+
+		// Add delete option
+		menuItems.push({
+			key: 'delete',
+			icon: <DeleteOutlined />,
+			label: t('common.delete', 'Delete'),
+			danger: true,
+			onClick: () => handleDeleteFile(file),
+		});
+
+		return { items: menuItems };
+	};
 
 	const toggleFolder = (folderId: string) => {
 		const newExpanded = new Set(expandedFolders);
@@ -127,12 +209,85 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 		setExpandedFolders(newExpanded);
 	};
 
-	const formatFileSize = (bytes: number): string => {
-		if (bytes === 0) return '0 Bytes';
-		const k = 1024;
-		const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-		return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+	const getFileIcon = (file: { mimeType: string; category: string }) => {
+		const iconStyle = { fontSize: '16px' };
+
+		// Check by MIME type first for more specific icons
+		if (file.mimeType.includes('pdf')) {
+			return <FilePdfOutlined style={{ ...iconStyle, color: '#f5222d' }} />;
+		}
+		if (file.mimeType.includes('word') || file.mimeType.includes('document')) {
+			return <FileWordOutlined style={{ ...iconStyle, color: '#2b579a' }} />;
+		}
+		if (file.mimeType.includes('sheet') || file.mimeType.includes('excel')) {
+			return <FileExcelOutlined style={{ ...iconStyle, color: '#217346' }} />;
+		}
+		if (file.mimeType.includes('presentation') || file.mimeType.includes('powerpoint')) {
+			return <FilePptOutlined style={{ ...iconStyle, color: '#d24726' }} />;
+		}
+		if (file.mimeType.includes('zip') || file.mimeType.includes('rar') || file.mimeType.includes('7z')) {
+			return <FileZipOutlined style={{ ...iconStyle, color: '#faad14' }} />;
+		}
+		if (file.mimeType.includes('text/plain') || file.mimeType.includes('text/csv')) {
+			return <FileTextOutlined style={{ ...iconStyle, color: '#8c8c8c' }} />;
+		}
+
+		// Fallback to category-based icons
+		switch (file.category.toLowerCase()) {
+			case 'image':
+				return <FileImageOutlined style={{ ...iconStyle, color: '#52c41a' }} />;
+			case 'video':
+				return <VideoCameraOutlined style={{ ...iconStyle, color: '#722ed1' }} />;
+			case 'audio':
+				return <AudioOutlined style={{ ...iconStyle, color: '#13c2c2' }} />;
+			case 'document':
+				return <FileTextOutlined style={{ ...iconStyle, color: '#1890ff' }} />;
+			default:
+				return <FileOutlined style={{ ...iconStyle, color: '#8c8c8c' }} />;
+		}
+	};
+
+	const renderRootFile = (file: FolderTreeFileType) => {
+		return (
+			<List.Item
+				key={file._id}
+				style={{
+					padding: '8px 16px',
+					borderRadius: '6px',
+					marginBottom: '2px',
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.backgroundColor = '#fafafa';
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.backgroundColor = 'transparent';
+				}}
+			>
+				<List.Item.Meta
+					avatar={getFileIcon(file)}
+					title={<Text>{file.originalName}</Text>}
+					description={
+						<Space size="small">
+							<Text type="secondary" style={{ fontSize: '12px' }}>
+								{formatFileSize(file.fileSize)}
+							</Text>
+							<Text type="secondary" style={{ fontSize: '12px' }}>
+								•
+							</Text>
+							<Text type="secondary" style={{ fontSize: '12px' }}>
+								{file.category}
+							</Text>
+						</Space>
+					}
+				/>
+				<Dropdown menu={getFileMenu(file)} trigger={['click']}>
+					<MoreOutlined
+						style={{ fontSize: '16px', cursor: 'pointer', padding: '4px' }}
+						onClick={(e) => e.stopPropagation()}
+					/>
+				</Dropdown>
+			</List.Item>
+		);
 	};
 
 	const renderFolder = (folder: FolderTreeResponseType, level = 0) => {
@@ -208,7 +363,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 								}}
 							>
 								<List.Item.Meta
-									avatar={<FileOutlined style={{ fontSize: '16px', color: '#1890ff' }} />}
+									avatar={getFileIcon(file)}
 									title={<Text>{file.originalName}</Text>}
 									description={
 										<Space size="small">
@@ -244,12 +399,15 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 		);
 	};
 
-	if (!folders || folders.length === 0) {
+	const hasRootFiles = !currentFolderId && rootFiles && rootFiles.length > 0;
+	const hasFolders = folders && folders.length > 0;
+
+	if (!hasFolders && !hasRootFiles) {
 		return (
 			<div style={{ textAlign: 'center', padding: '48px 0' }}>
 				<FolderOutlined style={{ fontSize: '64px', color: '#d9d9d9' }} />
 				<div style={{ marginTop: '16px', color: '#8c8c8c' }}>
-					{t('folders.empty', 'No folders found. Create your first folder to get started.')}
+					{t('folders.empty', 'No folders or files found. Create your first folder or upload a file to get started.')}
 				</div>
 			</div>
 		);
@@ -257,11 +415,28 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 
 	return (
 		<>
-			<List
-				dataSource={folders}
-				renderItem={(folder) => renderFolder(folder)}
-				style={{ maxHeight: 'calc(100vh - 400px)', overflowY: 'auto' }}
-			/>
+			<div style={{ maxHeight: 'calc(100vh - 400px)', overflowY: 'auto' }}>
+				{/* Display root files when at root level */}
+				{hasRootFiles && (
+					<div style={{ marginBottom: '16px' }}>
+						<Text type="secondary" style={{ fontSize: '12px', marginLeft: '16px', display: 'block', marginBottom: '8px' }}>
+							{t('files.rootFiles', 'Files in Root')}
+						</Text>
+						<List
+							dataSource={rootFiles}
+							renderItem={(file) => renderRootFile(file)}
+						/>
+					</div>
+				)}
+
+				{/* Display folders */}
+				{hasFolders && (
+					<List
+						dataSource={folders}
+						renderItem={(folder) => renderFolder(folder)}
+					/>
+				)}
+			</div>
 
 			{editFolder && (
 				<EditFolderDialog
@@ -274,6 +449,15 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 					}}
 				/>
 			)}
+
+			<FilePreviewDialog
+				open={previewOpen}
+				onClose={() => {
+					setPreviewOpen(false);
+					setPreviewFile(null);
+				}}
+				file={previewFile}
+			/>
 		</>
 	);
 };

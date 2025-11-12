@@ -55,8 +55,8 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 		{
 			onSuccess: () => {
 				message.success(t('folders.createSuccess', 'Folder created successfully'));
-				queryClient.invalidateQueries(queryKeys.FOLDER_TREE);
-				queryClient.invalidateQueries(queryKeys.FOLDERS);
+				queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
+				queryClient.invalidateQueries([queryKeys.FOLDERS]);
 				form.resetFields();
 				onSuccess();
 			},
@@ -72,7 +72,7 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 							'Cannot create folder here. Please refresh the page and try again. If the issue persists, contact support.')
 					);
 					// Force refresh the folder tree to ensure we have latest data
-					queryClient.invalidateQueries(queryKeys.FOLDER_TREE);
+					queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				} else if (errorMessage.includes('already exists')) {
 					message.error(
 						t('folders.nameExists', 'A folder with this name already exists in this location.')
@@ -81,7 +81,7 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 					message.error(
 						t('folders.parentNotFound', 'Parent folder not found. Please refresh and try again.')
 					);
-					queryClient.invalidateQueries(queryKeys.FOLDER_TREE);
+					queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				} else {
 					message.error(handleApiError(error, 'create folder'));
 				}

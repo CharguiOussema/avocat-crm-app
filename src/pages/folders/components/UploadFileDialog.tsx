@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Upload, Form, Select, message } from 'antd';
+import { Modal, Upload, Form, Select, message, Alert, Typography } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from 'react-query';
@@ -8,7 +8,10 @@ import { clientService } from '../../../services/ClientService';
 import { lawsuitService } from '../../../services/LawsuitService';
 import { queryKeys } from '../../../services/QueryClientManager';
 import { handleApiError } from '../../../utils/errorHandling';
+import { formatFileSize } from '../../../utils/file.utils';
 import type { UploadFile, UploadProps } from 'antd';
+
+const { Text } = Typography;
 
 const { Dragger } = Upload;
 
@@ -30,6 +33,19 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 	const queryClient = useQueryClient();
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
 	const [uploading, setUploading] = useState(false);
+
+	// Fetch storage configuration with React Query (cached)
+	const { data: storageConfig } = useQuery(
+		[queryKeys.FILES, 'storage-config'],
+		async () => {
+			const config = await fileService.getStorageConfig();
+			return config;
+		},
+		{
+			staleTime: 1000 * 60 * 60, // 1 hour
+			cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+		}
+	);
 
 	// Fetch clients for dropdown
 	const { data: clientsData } = useQuery(
@@ -59,10 +75,18 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 		multiple: true,
 		fileList,
 		beforeUpload: (file) => {
-			setFileList([...fileList, file]);
+			const uploadFile: UploadFile = {
+				uid: `${Date.now()}-${file.name}`,
+				name: file.name,
+				status: 'done',
+				size: file.size,
+				type: file.type,
+				originFileObj: file,
+			};
+			setFileList([...fileList, uploadFile]);
 			return false; // Prevent automatic upload
 		},
-		onRemove: (file) => {
+		onRemove: (file: UploadFile) => {
 			setFileList(fileList.filter(f => f.uid !== file.uid));
 		},
 	};
@@ -92,14 +116,32 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 			}
 
 			// Upload files using the file service
-			const uploadPromises = fileList.map(async (file) => {
+			const uploadPromises = fileList.map(async (uploadFile: UploadFile) => {
+				// Type guard to safely extract File from UploadFile
+				const isFileInstance = (obj: unknown): obj is File => {
+					return obj instanceof File;
+				};
+
+				// Extract the actual File object
+				let file: File | undefined;
+
+				if (uploadFile.originFileObj) {
+					file = uploadFile.originFileObj as File;
+				} else if (isFileInstance(uploadFile)) {
+					file = uploadFile;
+				}
+
+				if (!file) {
+					throw new Error(`${uploadFile.name}: File object not found`);
+				}
+
 				// Validate file before upload
-				const validation = await fileService.validateFile(file as unknown as File);
+				const validation = await fileService.validateFile(file);
 				if (!validation.valid) {
 					throw new Error(`${file.name}: ${validation.error}`);
 				}
 
-				return fileService.uploadFile(file as unknown as File, uploadData);
+				return fileService.uploadFile(file, uploadData);
 			});
 
 			const results = await Promise.allSettled(uploadPromises);
@@ -122,8 +164,8 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 				message.success(t('files.uploadSuccess', 'Files uploaded successfully'));
 			}
 
-			queryClient.invalidateQueries(queryKeys.FOLDER_TREE);
-			queryClient.invalidateQueries(queryKeys.FILES);
+			queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
+			queryClient.invalidateQueries([queryKeys.FILES]);
 
 			setFileList([]);
 			form.resetFields();
@@ -158,6 +200,15 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 				layout="vertical"
 				style={{ marginTop: '24px' }}
 			>
+				{fileList.length > 0 && (
+					<Alert
+						message={`${fileList.length} file(s) selected`}
+						type="info"
+						showIcon
+						style={{ marginBottom: '16px' }}
+					/>
+				)}
+
 				<Form.Item>
 					<Dragger {...uploadProps}>
 						<p className="ant-upload-drag-icon">
@@ -167,8 +218,19 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 							{t('files.uploadText', 'Click or drag files to this area to upload')}
 						</p>
 						<p className="ant-upload-hint">
-							{t('files.uploadHint', 'Support for single or bulk upload. Strictly prohibit uploading company data or other banned files.')}
+							{t('files.uploadHint', 'Support for single or bulk upload.')}
 						</p>
+						{storageConfig && (
+							<div style={{ marginTop: '8px', textAlign: 'left' }}>
+								<Text type="secondary" style={{ fontSize: '12px' }}>
+									<strong>Max file size:</strong> {formatFileSize(storageConfig.maxFileSize)}
+								</Text>
+								<br />
+								<Text type="secondary" style={{ fontSize: '12px' }}>
+									<strong>Allowed types:</strong> Images, Documents (PDF, Word, Excel, PowerPoint), Audio, Video, Archives, and more
+								</Text>
+							</div>
+						)}
 					</Dragger>
 				</Form.Item>
 

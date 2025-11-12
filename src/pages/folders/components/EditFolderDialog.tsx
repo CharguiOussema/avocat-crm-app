@@ -66,8 +66,8 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 		{
 			onSuccess: () => {
 				message.success(t('folders.updateSuccess', 'Folder updated successfully'));
-				queryClient.invalidateQueries(queryKeys.FOLDER_TREE);
-				queryClient.invalidateQueries(queryKeys.FOLDERS);
+				queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
+				queryClient.invalidateQueries([queryKeys.FOLDERS]);
 				onSuccess();
 			},
 			onError: (error: unknown) => {
@@ -82,7 +82,7 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 							'Cannot update folder. Please refresh the page and try again. If the issue persists, contact support.')
 					);
 					// Force refresh the folder tree to ensure we have latest data
-					queryClient.invalidateQueries(queryKeys.FOLDER_TREE);
+					queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				} else if (errorMessage.includes('already exists')) {
 					message.error(
 						t('folders.nameExists', 'A folder with this name already exists in this location.')
@@ -95,7 +95,7 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 					message.error(
 						t('folders.folderNotFound', 'Folder not found. It may have been deleted.')
 					);
-					queryClient.invalidateQueries(queryKeys.FOLDER_TREE);
+					queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				} else {
 					message.error(handleApiError(error, 'update folder'));
 				}
