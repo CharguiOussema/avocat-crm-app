@@ -1,24 +1,32 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Button, Input, Breadcrumb, Space, Card, Row, Col, Typography, Spin, Alert } from 'antd';
+import { Button, Input, Breadcrumb, Space, Card, Row, Col, Typography, Spin, Alert, Select } from 'antd';
 import {
 	FolderAddOutlined,
 	UploadOutlined,
 	HomeOutlined,
 	FolderOutlined,
 	SearchOutlined,
+	FilterOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQuery } from 'react-query';
 import { useFetchFolderTree } from '../../hooks/useFetchFolderTree';
 import { FolderTreeResponseType } from '../../models/folder';
 import { FolderTree } from './components/FolderTree';
 import { CreateFolderDialog } from './components/CreateFolderDialog';
 import { UploadFileDialog } from './components/UploadFileDialog';
+import { clientService } from '../../services/ClientService';
+import { lawsuitService } from '../../services/LawsuitService';
+import { queryKeys } from '../../services/QueryClientManager';
 import { useApp } from '../../hooks';
 import { cn } from '../../utils/cn';
 import { getErrorMessage } from '../../utils/errorHandling';
 
 const { Title } = Typography;
+
+// Type for display filter options
+type DisplayFilterType = 'all' | 'folders' | 'files';
 
 export const Folders: React.FC = () => {
 	const { t } = useTranslation();
@@ -39,7 +47,36 @@ export const Folders: React.FC = () => {
 	const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState(searchFromUrl);
 
+	// Filter states
+	const [displayFilter, setDisplayFilter] = useState<DisplayFilterType>('all');
+	const [clientFilter, setClientFilter] = useState<string | undefined>(undefined);
+	const [lawsuitFilter, setLawsuitFilter] = useState<string | undefined>(undefined);
+
 	const { data: folderTreeResponse, isLoading, error, refetch } = useFetchFolderTree(currentFolderId);
+
+	// Fetch clients for filter dropdown
+	const { data: clientsData } = useQuery(
+		[queryKeys.CLIENTS, 'filter'],
+		async () => {
+			const response = await clientService.filter();
+			return response.data;
+		},
+		{
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		}
+	);
+
+	// Fetch lawsuits for filter dropdown
+	const { data: lawsuitsData } = useQuery(
+		[queryKeys.LAWSUITS, 'filter'],
+		async () => {
+			const response = await lawsuitService.filter();
+			return response.data;
+		},
+		{
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		}
+	);
 
 	// Extract folders and root files from the response
 	const folderTree = folderTreeResponse?.data?.folders || [];
@@ -81,30 +118,54 @@ export const Folders: React.FC = () => {
 		setUploadDialogOpen(false);
 	}, [refetch]);
 
-	// Client-side filtering for folders and files (tree API doesn't support search)
+	// Client-side filtering for folders and files with multiple filter criteria
 	const filteredTree = useMemo(() => {
-		if (!searchQuery) return folderTree;
+		// Return empty array if display filter is set to "files" only
+		if (displayFilter === 'files') return [];
 
 		const filterTree = (items: FolderTreeResponseType[]): FolderTreeResponseType[] => {
-			return items.filter(item => {
-				const nameMatch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-				const childrenMatch = item.children && filterTree(item.children).length > 0;
-				return nameMatch || childrenMatch;
-			}).map(item => ({
-				...item,
-				children: item.children ? filterTree(item.children) : undefined
-			}));
+			return items
+				.filter(item => {
+					// Search filter: match folder name
+					const nameMatch = !searchQuery || item.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+					// Client filter: match clientId if provided
+					const clientMatch = !clientFilter || item.clientId === clientFilter;
+
+					// Lawsuit filter: match lawsuitId if provided
+					const lawsuitMatch = !lawsuitFilter || item.lawsuitId === lawsuitFilter;
+
+					// Check if any children match the filters
+					const childrenMatch = item.children && filterTree(item.children).length > 0;
+
+					return (nameMatch || childrenMatch) && clientMatch && lawsuitMatch;
+				})
+				.map(item => ({
+					...item,
+					children: item.children ? filterTree(item.children) : undefined
+				}));
 		};
 
 		return filterTree(folderTree);
-	}, [folderTree, searchQuery]);
+	}, [folderTree, searchQuery, displayFilter, clientFilter, lawsuitFilter]);
 
 	const filteredRootFiles = useMemo(() => {
-		if (!searchQuery) return rootFiles;
-		return rootFiles.filter(file =>
-			file.originalName.toLowerCase().includes(searchQuery.toLowerCase())
-		);
-	}, [rootFiles, searchQuery]);
+		// Return empty array if display filter is set to "folders" only
+		if (displayFilter === 'folders') return [];
+
+		return rootFiles.filter(file => {
+			// Search filter: match file name
+			const nameMatch = !searchQuery || file.originalName.toLowerCase().includes(searchQuery.toLowerCase());
+
+			// Client filter: match clientId if provided
+			const clientMatch = !clientFilter || file.clientId === clientFilter;
+
+			// Lawsuit filter: match lawsuitId if provided
+			const lawsuitMatch = !lawsuitFilter || file.lawsuitId === lawsuitFilter;
+
+			return nameMatch && clientMatch && lawsuitMatch;
+		});
+	}, [rootFiles, searchQuery, displayFilter, clientFilter, lawsuitFilter]);
 
 	// Loading state
 	if (isLoading) {
@@ -166,7 +227,8 @@ export const Folders: React.FC = () => {
 			{/* Navigation and Search */}
 			<Card className='border-border'>
 				<Row gutter={[16, 16]} align='middle'>
-					<Col xs={24} md={12}>
+					{/* Breadcrumb Navigation */}
+					<Col xs={24} lg={24}>
 						<Breadcrumb>
 							{breadcrumbPath.map((item, index) => (
 								<Breadcrumb.Item key={item.id || 'root'}>
@@ -187,7 +249,9 @@ export const Folders: React.FC = () => {
 							))}
 						</Breadcrumb>
 					</Col>
-					<Col xs={24} md={12}>
+
+					{/* Search and Filters Row */}
+					<Col xs={24} sm={24} md={12} lg={10}>
 						<Input
 							placeholder={t('folders.searchPlaceholder', 'Search folders and files...')}
 							prefix={<SearchOutlined />}
@@ -195,6 +259,56 @@ export const Folders: React.FC = () => {
 							onChange={(e) => setSearchQuery(e.target.value)}
 							allowClear
 							size="large"
+						/>
+					</Col>
+
+					{/* Display Type Filter */}
+					<Col xs={8} sm={8} md={4} lg={4}>
+						<Select
+							value={displayFilter}
+							onChange={setDisplayFilter}
+							size="large"
+							style={{ width: '100%' }}
+							placeholder={t('folders.displayType', 'Type')}
+							options={[
+								{ value: 'all', label: t('folders.displayAll', 'All') },
+								{ value: 'folders', label: t('folders.displayFolders', 'Folders') },
+								{ value: 'files', label: t('folders.displayFiles', 'Files') },
+							]}
+						/>
+					</Col>
+
+					{/* Client Filter */}
+					<Col xs={8} sm={8} md={4} lg={5}>
+						<Select
+							value={clientFilter}
+							onChange={setClientFilter}
+							size="large"
+							style={{ width: '100%' }}
+							placeholder={t('folders.filterByClient', 'Client')}
+							allowClear
+							showSearch
+							filterOption={(input, option) =>
+								(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+							}
+							options={clientsData}
+						/>
+					</Col>
+
+					{/* Lawsuit Filter */}
+					<Col xs={8} sm={8} md={4} lg={5}>
+						<Select
+							value={lawsuitFilter}
+							onChange={setLawsuitFilter}
+							size="large"
+							style={{ width: '100%' }}
+							placeholder={t('folders.filterByLawsuit', 'Lawsuit')}
+							allowClear
+							showSearch
+							filterOption={(input, option) =>
+								(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+							}
+							options={lawsuitsData}
 						/>
 					</Col>
 				</Row>

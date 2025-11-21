@@ -562,7 +562,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 		);
 	};
 
-	const hasRootFiles = !currentFolderId && rootFiles && rootFiles.length > 0;
+	const hasRootFiles = rootFiles && rootFiles.length > 0;
 	const hasFolders = folders && folders.length > 0;
 
 	if (!hasFolders && !hasRootFiles) {
@@ -582,28 +582,40 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 	return (
 		<>
 			<div>
-				{/* Display root files when at root level */}
+				{/* Display folders first */}
+				{hasFolders && (
+					<div className='mb-4'>
+						{hasRootFiles && (
+							<Text
+								type='secondary'
+								className='text-xs ml-4 block mb-2'
+							>
+								{t("folders.subfolders", "Folders")}
+							</Text>
+						)}
+						<List
+							dataSource={folders}
+							renderItem={(folder) => renderFolder(folder)}
+						/>
+					</div>
+				)}
+
+				{/* Display files in the current folder */}
 				{hasRootFiles && (
 					<div className='mb-4'>
 						<Text
 							type='secondary'
 							className='text-xs ml-4 block mb-2'
 						>
-							{t("files.rootFiles", "Files in Root")}
+							{currentFolderId
+								? t("files.currentFolderFiles", "Files in this folder")
+								: t("files.rootFiles", "Files in Root")}
 						</Text>
 						<List
 							dataSource={rootFiles}
 							renderItem={(file) => renderRootFile(file)}
 						/>
 					</div>
-				)}
-
-				{/* Display folders */}
-				{hasFolders && (
-					<List
-						dataSource={folders}
-						renderItem={(folder) => renderFolder(folder)}
-					/>
 				)}
 			</div>
 
