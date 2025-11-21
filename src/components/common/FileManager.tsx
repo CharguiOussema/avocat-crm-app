@@ -7,14 +7,15 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Grid, List, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { fileService, type FileModel, type FileQueryParams, type FileUploadData } from '../../services';
+import { fileService, type FileQueryParams, type FileUploadData } from '../../services';
+import { FileCategory, type FileModelType } from '../../models/file/model';
 import { FileUpload } from './FileUpload';
 import { FileDisplay } from './FileDisplay';
 
 interface FileManagerProps {
   associatedEntity?: string;
   associatedEntityType?: string;
-  defaultCategory?: 'document' | 'image' | 'audio' | 'video' | 'other';
+  defaultCategory?: FileCategory;
   showUpload?: boolean;
   className?: string;
 }
@@ -27,26 +28,26 @@ export const FileManager: React.FC<FileManagerProps> = ({
   className = '',
 }) => {
   const { t } = useTranslation();
-  const [files, setFiles] = useState<FileModel[]>([]);
+  const [files, setFiles] = useState<FileModelType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showUploadArea, setShowUploadArea] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState<'all' | 'document' | 'image' | 'audio' | 'video' | 'other'>('all');
+  const [filterCategory, setFilterCategory] = useState<'all' | FileCategory>('all');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   const categories: Array<{
-    value: 'all' | 'document' | 'image' | 'audio' | 'video' | 'other';
+    value: 'all' | FileCategory;
     label: string;
   }> = [
     { value: 'all', label: t('common.fileManager.categories.all') },
-    { value: 'document', label: t('common.fileManager.categories.document') },
-    { value: 'image', label: t('common.fileManager.categories.image') },
-    { value: 'audio', label: t('common.fileManager.categories.audio') },
-    { value: 'video', label: t('common.fileManager.categories.video') },
-    { value: 'other', label: t('common.fileManager.categories.other') },
+    { value: FileCategory.DOCUMENT, label: t('common.fileManager.categories.document') },
+    { value: FileCategory.IMAGE, label: t('common.fileManager.categories.image') },
+    { value: FileCategory.AUDIO, label: t('common.fileManager.categories.audio') },
+    { value: FileCategory.VIDEO, label: t('common.fileManager.categories.video') },
+    { value: FileCategory.OTHER, label: t('common.fileManager.categories.other') },
   ] as const;
 
   const fetchFiles = async () => {
@@ -59,14 +60,19 @@ export const FileManager: React.FC<FileManagerProps> = ({
         limit: 12,
         ...(searchTerm && { search: searchTerm }),
         ...(filterCategory !== 'all' && {
-          category: filterCategory as 'document' | 'image' | 'audio' | 'video' | 'other'
+          category: filterCategory as FileCategory
         }),
         ...(associatedEntity && { associatedEntity }),
         ...(associatedEntityType && { associatedEntityType }),
       };
 
       const response = await fileService.getFiles(params);
-      setFiles(response.files);
+      // Map FileResponseType to FileModelType by adding isDeleted property
+      const filesWithDeleted = response.files.map(file => ({
+        ...file,
+        isDeleted: false
+      }));
+      setFiles(filesWithDeleted);
       setTotalPages(response.totalPages);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('common.fileManager.error.fetchFiles'));
@@ -79,7 +85,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
     fetchFiles();
   }, [page, searchTerm, filterCategory, associatedEntity, associatedEntityType]);
 
-  const handleUploadSuccess = (file: FileModel) => {
+  const handleUploadSuccess = (file: FileModelType) => {
     setFiles(prev => [file, ...prev]);
     setShowUploadArea(false);
   };
@@ -88,7 +94,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
     setError(error);
   };
 
-  const handleDeleteFile = async (file: FileModel) => {
+  const handleDeleteFile = async (file: FileModelType) => {
     if (!confirm(t('common.fileManager.delete.confirm'))) return;
 
     try {

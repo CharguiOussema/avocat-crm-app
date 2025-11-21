@@ -61,6 +61,12 @@ class FolderService {
 	// Calculate folder size
 	calculateSize = (id: string) =>
 		this.instance.post<{ size: number }>(`/api/folders/${id}/calculate-size`);
+
+	// Download folder as ZIP
+	download = (id: string) =>
+		this.instance.get(`/api/folders/${id}/download`, {
+			responseType: 'blob'
+		});
 }
 
 const folderService = new FolderService();

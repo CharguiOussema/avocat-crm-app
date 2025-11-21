@@ -7,14 +7,15 @@
 import React from 'react';
 import { Download, Eye, Trash2, Edit, FileText, Image, Music, Video, File } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { fileService, type FileModel } from '../../services';
+import { fileService } from '../../services';
+import { FileModelType } from '../../models/file/model';
 
 interface FileDisplayProps {
-  file: FileModel;
-  onDownload?: (file: FileModel) => void;
-  onView?: (file: FileModel) => void;
-  onEdit?: (file: FileModel) => void;
-  onDelete?: (file: FileModel) => void;
+  file: FileModelType;
+  onDownload?: (file: FileModelType) => void;
+  onView?: (file: FileModelType) => void;
+  onEdit?: (file: FileModelType) => void;
+  onDelete?: (file: FileModelType) => void;
   showActions?: boolean;
   compact?: boolean;
   className?: string;

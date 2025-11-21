@@ -7,10 +7,11 @@
 import React, { useState, useCallback } from 'react';
 import { Upload, X, FileText, Image, Music, Video, File } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { fileService, type FileUploadData, type FileModel } from '../../services';
+import { fileService, type FileUploadData } from '../../services';
+import { FileModelType } from '../../models/file/model';
 
 interface FileUploadProps {
-  onUploadSuccess?: (file: FileModel) => void;
+  onUploadSuccess?: (file: FileModelType) => void;
   onUploadError?: (error: string) => void;
   uploadData?: FileUploadData;
   maxFileSize?: number;
@@ -26,7 +27,7 @@ interface UploadProgress {
   progress: number;
   status: 'uploading' | 'success' | 'error';
   error?: string;
-  uploadedFile?: FileModel;
+  uploadedFile?: FileModelType;
 }
 
 export const FileUpload: React.FC<FileUploadProps> = ({

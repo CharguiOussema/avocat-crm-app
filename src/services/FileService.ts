@@ -6,9 +6,11 @@
 
 import { apiService } from './api';
 import { API_URL } from '../constants';
+import { FileModelType, FileCategory, FileStatus } from '../models/file/model';
+import { FileListResponseType } from '../models/file/response';
 
 export interface FileUploadData {
-  category?: 'document' | 'image' | 'audio' | 'video' | 'other';
+  category?: FileCategory;
   associatedEntity?: string;
   associatedEntityType?: string;
   isPublic?: boolean;
@@ -17,57 +19,17 @@ export interface FileUploadData {
   lawsuitId?: string;
 }
 
-export interface FileModel {
-  _id: string;
-  originalName: string;
-  fileName: string;
-  filePath: string;
-  mimeType: string;
-  fileSize: number;
-  category: 'document' | 'image' | 'audio' | 'video' | 'other';
-  status: 'uploading' | 'processing' | 'ready' | 'error';
-  uploadedBy: string;
-  associatedEntity?: string;
-  associatedEntityType?: string;
-  metadata?: {
-    width?: number;
-    height?: number;
-    duration?: number;
-    pages?: number;
-    format?: string;
-    channels?: number;
-    bitrate?: number;
-    [key: string]: string | number | boolean | undefined;
-  };
-  checksum?: string;
-  storageType: string;
-  isPublic: boolean;
-  company: string;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
-}
-
-export interface FileListResponse {
-  files: FileModel[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
 export interface FileQueryParams {
   page?: number;
   limit?: number;
   search?: string;
-  category?: 'document' | 'image' | 'audio' | 'video' | 'other';
+  category?: FileCategory;
   associatedEntity?: string;
   associatedEntityType?: string;
   mimeType?: string;
   uploadedBy?: string;
   isPublic?: boolean;
-  status?: string;
+  status?: FileStatus;
 }
 
 export interface StorageConfig {
@@ -109,7 +71,7 @@ export class FileService {
   /**
    * Upload a file to the server
    */
-  async uploadFile(file: File, data?: FileUploadData): Promise<FileModel> {
+  async uploadFile(file: File, data?: FileUploadData): Promise<FileModelType> {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -135,7 +97,7 @@ export class FileService {
       formData.append('lawsuitId', data.lawsuitId);
     }
 
-    return await apiService.request<FileModel>(
+    return await apiService.request<FileModelType>(
       'POST',
       '/api/files/upload',
       formData,
@@ -150,8 +112,8 @@ export class FileService {
   /**
    * Get all files with optional filtering
    */
-  async getFiles(params?: FileQueryParams): Promise<FileListResponse> {
-    return await apiService.request<FileListResponse>(
+  async getFiles(params?: FileQueryParams): Promise<FileListResponseType> {
+    return await apiService.request<FileListResponseType>(
       'GET',
       '/api/files',
       undefined,
@@ -162,8 +124,8 @@ export class FileService {
   /**
    * Get a specific file by ID
    */
-  async getFileById(id: string): Promise<FileModel> {
-    return await apiService.request<FileModel>(
+  async getFileById(id: string): Promise<FileModelType> {
+    return await apiService.request<FileModelType>(
       'GET',
       `/api/files/${id}`
     );
@@ -172,8 +134,8 @@ export class FileService {
   /**
    * Update file metadata
    */
-  async updateFile(id: string, data: Partial<FileUploadData>): Promise<FileModel> {
-    return await apiService.request<FileModel>(
+  async updateFile(id: string, data: Partial<FileUploadData>): Promise<FileModelType> {
+    return await apiService.request<FileModelType>(
       'PUT',
       `/api/files/${id}`,
       data
@@ -222,28 +184,28 @@ export class FileService {
   /**
    * Check if a file is an image based on its MIME type
    */
-  isImage(file: FileModel): boolean {
+  isImage(file: FileModelType): boolean {
     return file.mimeType.startsWith('image/');
   }
 
   /**
    * Check if a file is a document
    */
-  isDocument(file: FileModel): boolean {
-    return file.category === 'document';
+  isDocument(file: FileModelType): boolean {
+    return file.category === FileCategory.DOCUMENT;
   }
 
   /**
    * Check if a file is audio
    */
-  isAudio(file: FileModel): boolean {
+  isAudio(file: FileModelType): boolean {
     return file.mimeType.startsWith('audio/');
   }
 
   /**
    * Check if a file is video
    */
-  isVideo(file: FileModel): boolean {
+  isVideo(file: FileModelType): boolean {
     return file.mimeType.startsWith('video/');
   }
 
@@ -263,7 +225,7 @@ export class FileService {
   /**
    * Get file icon based on file type
    */
-  getFileIcon(file: FileModel): string {
+  getFileIcon(file: FileModelType): string {
     if (this.isImage(file)) return '🖼️';
     if (this.isDocument(file)) return '📄';
     if (this.isAudio(file)) return '🎵';

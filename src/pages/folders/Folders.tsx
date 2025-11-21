@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Input, Breadcrumb, Space, Card, Row, Col } from 'antd';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Button, Input, Breadcrumb, Space, Card, Row, Col, Typography, Spin, Alert } from 'antd';
 import {
 	FolderAddOutlined,
 	UploadOutlined,
@@ -8,50 +8,81 @@ import {
 	SearchOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useFetchFolderTree } from '../../hooks/useFetchFolderTree';
 import { FolderTreeResponseType } from '../../models/folder';
 import { FolderTree } from './components/FolderTree';
 import { CreateFolderDialog } from './components/CreateFolderDialog';
 import { UploadFileDialog } from './components/UploadFileDialog';
+import { useApp } from '../../hooks';
+import { cn } from '../../utils/cn';
+import { getErrorMessage } from '../../utils/errorHandling';
+
+const { Title } = Typography;
 
 export const Folders: React.FC = () => {
 	const { t } = useTranslation();
-	const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(undefined);
+	const { isRTL } = useApp();
+	const navigate = useNavigate();
+	const location = useLocation();
+
+	// URL sync: Read folder ID and search from URL query params
+	const searchParams = new URLSearchParams(location.search);
+	const folderIdFromUrl = searchParams.get('folder') || undefined;
+	const searchFromUrl = searchParams.get('search') || '';
+
+	const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(folderIdFromUrl);
 	const [breadcrumbPath, setBreadcrumbPath] = useState<Array<{ id: string | undefined; name: string }>>([
 		{ id: undefined, name: 'Root' }
 	]);
 	const [createDialogOpen, setCreateDialogOpen] = useState(false);
 	const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-	const [searchQuery, setSearchQuery] = useState('');
+	const [searchQuery, setSearchQuery] = useState(searchFromUrl);
 
-	const { data: folderTreeResponse, isLoading, refetch } = useFetchFolderTree(currentFolderId);
+	const { data: folderTreeResponse, isLoading, error, refetch } = useFetchFolderTree(currentFolderId);
 
 	// Extract folders and root files from the response
 	const folderTree = folderTreeResponse?.data?.folders || [];
 	const rootFiles = folderTreeResponse?.data?.rootFiles || [];
 
-	const handleFolderClick = (folder: FolderTreeResponseType) => {
+	// URL sync: Update URL when currentFolderId or searchQuery changes
+	useEffect(() => {
+		const params = new URLSearchParams();
+		if (currentFolderId) {
+			params.set('folder', currentFolderId);
+		}
+		if (searchQuery) {
+			params.set('search', searchQuery);
+		}
+		const newUrl = params.toString() ? `?${params.toString()}` : '';
+		navigate(`/folders${newUrl}`, { replace: true });
+	}, [currentFolderId, searchQuery, navigate]);
+
+	const handleFolderClick = useCallback((folder: FolderTreeResponseType) => {
 		setCurrentFolderId(folder._id);
-		setBreadcrumbPath([...breadcrumbPath, { id: folder._id, name: folder.name }]);
-	};
+		setBreadcrumbPath(prev => [...prev, { id: folder._id, name: folder.name }]);
+	}, []);
 
-	const handleBreadcrumbClick = (index: number) => {
-		const newPath = breadcrumbPath.slice(0, index + 1);
-		setBreadcrumbPath(newPath);
-		setCurrentFolderId(newPath[newPath.length - 1].id);
-	};
+	const handleBreadcrumbClick = useCallback((index: number) => {
+		setBreadcrumbPath(prev => {
+			const newPath = prev.slice(0, index + 1);
+			setCurrentFolderId(newPath[newPath.length - 1].id);
+			return newPath;
+		});
+	}, []);
 
-	const handleFolderCreated = () => {
+	const handleFolderCreated = useCallback(() => {
 		refetch();
 		setCreateDialogOpen(false);
-	};
+	}, [refetch]);
 
-	const handleFileUploaded = () => {
+	const handleFileUploaded = useCallback(() => {
 		refetch();
 		setUploadDialogOpen(false);
-	};
+	}, [refetch]);
 
-	const filteredTree = React.useMemo(() => {
+	// Client-side filtering for folders and files (tree API doesn't support search)
+	const filteredTree = useMemo(() => {
 		if (!searchQuery) return folderTree;
 
 		const filterTree = (items: FolderTreeResponseType[]): FolderTreeResponseType[] => {
@@ -68,79 +99,109 @@ export const Folders: React.FC = () => {
 		return filterTree(folderTree);
 	}, [folderTree, searchQuery]);
 
-	const filteredRootFiles = React.useMemo(() => {
+	const filteredRootFiles = useMemo(() => {
 		if (!searchQuery) return rootFiles;
 		return rootFiles.filter(file =>
 			file.originalName.toLowerCase().includes(searchQuery.toLowerCase())
 		);
 	}, [rootFiles, searchQuery]);
 
+	// Loading state
+	if (isLoading) {
+		return (
+			<div className='flex justify-center items-center min-h-[400px]'>
+				<Spin size='large' />
+			</div>
+		);
+	}
+
+	// Error state
+	if (error) {
+		return (
+			<Alert
+				message={t('folders.error.title', 'Error Loading Folders')}
+				description={getErrorMessage(error)}
+				type='error'
+				showIcon
+				className='m-4'
+			/>
+		);
+	}
+
 	return (
-		<div style={{ padding: '24px' }}>
+		<div className='space-y-6'>
 			{/* Header */}
-			<Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
-				<Col xs={24} lg={16}>
-					<h1 style={{ margin: 0, fontSize: '24px', fontWeight: 600 }}>
-						<FolderOutlined style={{ marginRight: '12px' }} />
+			<div
+				className={cn(
+					"flex items-center justify-between",
+					isRTL ? "flex-row-reverse" : "flex-row"
+				)}
+			>
+				<div>
+					<Title level={2} className='!mb-2 text-card-foreground'>
+						<FolderOutlined className='mr-3' />
 						{t('folders.title', 'Folders & Files')}
-					</h1>
-				</Col>
-				<Col xs={24} lg={8} style={{ textAlign: 'right' }}>
-					<Space wrap>
-						<Button
-							type="primary"
-							icon={<FolderAddOutlined />}
-							onClick={() => setCreateDialogOpen(true)}
-						>
-							{t('folders.createFolder', 'New Folder')}
-						</Button>
-						<Button
-							icon={<UploadOutlined />}
-							onClick={() => setUploadDialogOpen(true)}
-						>
-							{t('folders.uploadFile', 'Upload File')}
-						</Button>
-					</Space>
-				</Col>
-			</Row>
+					</Title>
+					<p className='text-muted-foreground'>
+						{t('folders.subtitle', 'Manage your documents and files')}
+					</p>
+				</div>
+				<Space>
+					<Button
+						type="primary"
+						icon={<FolderAddOutlined />}
+						onClick={() => setCreateDialogOpen(true)}
+					>
+						{t('folders.createFolder', 'New Folder')}
+					</Button>
+					<Button
+						icon={<UploadOutlined />}
+						onClick={() => setUploadDialogOpen(true)}
+					>
+						{t('folders.uploadFile', 'Upload File')}
+					</Button>
+				</Space>
+			</div>
 
-			{/* Breadcrumb Navigation */}
-			<Card style={{ marginBottom: '16px' }}>
-				<Breadcrumb>
-					{breadcrumbPath.map((item, index) => (
-						<Breadcrumb.Item key={item.id || 'root'}>
-							<span
-								onClick={() => handleBreadcrumbClick(index)}
-								style={{ cursor: 'pointer' }}
-							>
-								{index === 0 ? (
-									<>
-										<HomeOutlined style={{ marginRight: '4px' }} />
-										{item.name}
-									</>
-								) : (
-									item.name
-								)}
-							</span>
-						</Breadcrumb.Item>
-					))}
-				</Breadcrumb>
-			</Card>
-
-			{/* Search Bar */}
-			<Card style={{ marginBottom: '16px' }}>
-				<Input
-					placeholder={t('folders.searchPlaceholder', 'Search folders and files...')}
-					prefix={<SearchOutlined />}
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					allowClear
-					size="large"
-				/>
+			{/* Navigation and Search */}
+			<Card className='border-border'>
+				<Row gutter={[16, 16]} align='middle'>
+					<Col xs={24} md={12}>
+						<Breadcrumb>
+							{breadcrumbPath.map((item, index) => (
+								<Breadcrumb.Item key={item.id || 'root'}>
+									<span
+										onClick={() => handleBreadcrumbClick(index)}
+										className='cursor-pointer hover:text-primary'
+									>
+										{index === 0 ? (
+											<>
+												<HomeOutlined className='mr-1' />
+												{item.name}
+											</>
+										) : (
+											item.name
+										)}
+									</span>
+								</Breadcrumb.Item>
+							))}
+						</Breadcrumb>
+					</Col>
+					<Col xs={24} md={12}>
+						<Input
+							placeholder={t('folders.searchPlaceholder', 'Search folders and files...')}
+							prefix={<SearchOutlined />}
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							allowClear
+							size="large"
+						/>
+					</Col>
+				</Row>
 			</Card>
 
 			{/* Folder Tree */}
-			<Card loading={isLoading}>
+			<Card className='border-border'>
 				<FolderTree
 					folders={filteredTree}
 					rootFiles={filteredRootFiles}

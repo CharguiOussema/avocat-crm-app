@@ -9,7 +9,7 @@ export { lawsuitService } from './LawsuitService';
 export { fileService } from './FileService';
 
 // Export file service types
-export type { FileModel, FileUploadData, FileQueryParams, StorageConfig } from './FileService';
+export type { FileUploadData, FileQueryParams, StorageConfig } from './FileService';
 
 // Export utility classes
 export { QueryBuilder } from './QueryBuilder';
