@@ -54,7 +54,7 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 		(data: FolderCreateRequestType) => folderService.create(data),
 		{
 			onSuccess: () => {
-				message.success(t('folders.createSuccess', 'Folder created successfully'));
+				message.success(t('folders.createSuccess'));
 				queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				queryClient.invalidateQueries([queryKeys.FOLDERS]);
 				form.resetFields();
@@ -68,18 +68,17 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 
 				if (errorMessage.includes('does not belong to your company')) {
 					message.error(
-						t('folders.companyMismatch',
-							'Cannot create folder here. Please refresh the page and try again. If the issue persists, contact support.')
+						t('folders.companyMismatch')
 					);
 					// Force refresh the folder tree to ensure we have latest data
 					queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				} else if (errorMessage.includes('already exists')) {
 					message.error(
-						t('folders.nameExists', 'A folder with this name already exists in this location.')
+						t('folders.nameExists')
 					);
 				} else if (errorMessage.includes('Parent folder')) {
 					message.error(
-						t('folders.parentNotFound', 'Parent folder not found. Please refresh and try again.')
+						t('folders.parentNotFound')
 					);
 					queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				} else {
@@ -98,7 +97,7 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 
 			// Validate that name is a non-empty string
 			if (!trimmedName || typeof trimmedName !== 'string') {
-				message.error(t('folders.folderNameRequired', 'Please enter a folder name'));
+				message.error(t('folders.folderNameRequired'));
 				return;
 			}
 
@@ -118,7 +117,7 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 				} catch (error) {
 					logError(error, 'Failed to verify parent folder');
 					message.error(
-						t('folders.invalidParent', 'Cannot create folder: Parent folder is invalid or inaccessible. Please refresh and try again.')
+						t('folders.invalidParent')
 					);
 					return;
 				}
@@ -151,13 +150,13 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 
 	return (
 		<Modal
-			title={t('folders.createFolder', 'Create New Folder')}
+			title={t('folders.createFolder')}
 			open={open}
 			onOk={handleSubmit}
 			onCancel={handleCancel}
 			confirmLoading={createMutation.isLoading}
-			okText={t('common.create', 'Create')}
-			cancelText={t('common.cancel', 'Cancel')}
+			okText={t('ui.create')}
+			cancelText={t('ui.cancel')}
 		>
 			<Form
 				form={form}
@@ -166,23 +165,23 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 			>
 				<Form.Item
 					name="name"
-					label={t('folders.folderName', 'Folder Name')}
+					label={t('folders.folderName')}
 					rules={[
 						{
 							required: true,
-							message: t('folders.folderNameRequired', 'Please enter a folder name'),
+							message: t('folders.folderNameRequired'),
 						},
 						{
 							validator: (_rule, value) => {
 								if (!value) {
-									return Promise.reject(new Error(t('folders.folderNameRequired', 'Please enter a folder name')));
+									return Promise.reject(new Error(t('folders.folderNameRequired')));
 								}
 								const trimmedValue = value.trim();
 								if (trimmedValue.length === 0) {
-									return Promise.reject(new Error(t('folders.folderNameWhitespace', 'Folder name cannot be empty')));
+									return Promise.reject(new Error(t('folders.folderNameWhitespace')));
 								}
 								if (trimmedValue.length > 255) {
-									return Promise.reject(new Error(t('folders.folderNameMax', 'Folder name cannot exceed 255 characters')));
+									return Promise.reject(new Error(t('folders.folderNameMax')));
 								}
 								return Promise.resolve();
 							},
@@ -190,7 +189,7 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 					]}
 				>
 					<Input
-						placeholder={t('folders.folderNamePlaceholder', 'Enter folder name')}
+						placeholder={t('folders.folderNamePlaceholder')}
 						autoFocus
 						maxLength={255}
 						allowClear
@@ -199,10 +198,10 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 
 				<Form.Item
 					name="clientId"
-					label={t('folders.associateClient', 'Associate with Client (Optional)')}
+					label={t('folders.associateClient')}
 				>
 					<Select
-						placeholder={t('folders.selectClient', 'Select a client')}
+						placeholder={t('folders.selectClient')}
 						allowClear
 						showSearch
 						filterOption={(input, option) =>
@@ -214,10 +213,10 @@ export const CreateFolderDialog: React.FC<CreateFolderDialogProps> = ({
 
 				<Form.Item
 					name="lawsuitId"
-					label={t('folders.associateLawsuit', 'Associate with Lawsuit (Optional)')}
+					label={t('folders.associateLawsuit')}
 				>
 					<Select
-						placeholder={t('folders.selectLawsuit', 'Select a lawsuit')}
+						placeholder={t('folders.selectLawsuit')}
 						allowClear
 						showSearch
 						filterOption={(input, option) =>

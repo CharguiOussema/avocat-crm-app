@@ -53,4 +53,5 @@ export type FolderTreeResponseType = FolderResponseType & {
 export type FolderTreeWithRootFilesResponseType = {
   folders: FolderTreeResponseType[];
   rootFiles: FolderTreeFileType[];
+  totalRootStorage: number; // Total storage size of root directory in bytes
 };
