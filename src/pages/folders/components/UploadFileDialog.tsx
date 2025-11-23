@@ -93,7 +93,7 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 
 	const handleSubmit = async () => {
 		if (fileList.length === 0) {
-			message.warning(t('files.noFilesSelected', 'Please select at least one file'));
+			message.warning(t('files.noFilesSelected'));
 			return;
 		}
 
@@ -157,11 +157,11 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 				// Some failed
 				message.warning(
 					t('files.uploadPartialSuccess',
-					  `Uploaded ${successes.length} of ${fileList.length} files. ${failures.length} failed.`)
+					  { success: successes.length, total: fileList.length, failed: failures.length })
 				);
 			} else {
 				// All succeeded
-				message.success(t('files.uploadSuccess', 'Files uploaded successfully'));
+				message.success(t('files.uploadSuccess'));
 			}
 
 			queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
@@ -186,13 +186,13 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 
 	return (
 		<Modal
-			title={t('files.uploadFiles', 'Upload Files')}
+			title={t('files.uploadFiles')}
 			open={open}
 			onOk={handleSubmit}
 			onCancel={handleCancel}
 			confirmLoading={uploading}
-			okText={t('common.upload', 'Upload')}
-			cancelText={t('common.cancel', 'Cancel')}
+			okText={t('common.fileManager.upload')}
+			cancelText={t('ui.cancel')}
 			width={600}
 		>
 			<Form
@@ -202,7 +202,7 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 			>
 				{fileList.length > 0 && (
 					<Alert
-						message={`${fileList.length} file(s) selected`}
+						message={t('files.filesSelected', { count: fileList.length })}
 						type="info"
 						showIcon
 						style={{ marginBottom: '16px' }}
@@ -215,10 +215,10 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 							<InboxOutlined />
 						</p>
 						<p className="ant-upload-text">
-							{t('files.uploadText', 'Click or drag files to this area to upload')}
+							{t('files.uploadText')}
 						</p>
 						<p className="ant-upload-hint">
-							{t('files.uploadHint', 'Support for single or bulk upload.')}
+							{t('files.uploadHint')}
 						</p>
 						{storageConfig && (
 							<div style={{ marginTop: '8px', textAlign: 'left' }}>
@@ -236,10 +236,10 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 
 				<Form.Item
 					name="clientId"
-					label={t('files.associateClient', 'Associate with Client (Optional)')}
+					label={t('files.associateClient')}
 				>
 					<Select
-						placeholder={t('files.selectClient', 'Select a client')}
+						placeholder={t('files.selectClient')}
 						allowClear
 						showSearch
 						filterOption={(input, option) =>
@@ -251,10 +251,10 @@ export const UploadFileDialog: React.FC<UploadFileDialogProps> = ({
 
 				<Form.Item
 					name="lawsuitId"
-					label={t('files.associateLawsuit', 'Associate with Lawsuit (Optional)')}
+					label={t('files.associateLawsuit')}
 				>
 					<Select
-						placeholder={t('files.selectLawsuit', 'Select a lawsuit')}
+						placeholder={t('files.selectLawsuit')}
 						allowClear
 						showSearch
 						filterOption={(input, option) =>

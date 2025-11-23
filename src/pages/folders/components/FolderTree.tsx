@@ -18,7 +18,6 @@ import {
 	VideoCameraOutlined,
 	AudioOutlined,
 	EyeOutlined,
-	CalculatorOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { useTranslation } from "react-i18next";
@@ -95,7 +94,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 		{
 			onSuccess: () => {
 				message.success(
-					t("folders.deleteSuccess", "Folder deleted successfully")
+					t("folders.deleteSuccess")
 				);
 				queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				queryClient.invalidateQueries([queryKeys.FOLDERS]);
@@ -105,7 +104,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 				const errorMessage =
 					error?.response?.data?.message ||
 					error?.message ||
-					t("folders.deleteError", "Failed to delete folder");
+					t("folders.deleteError");
 				message.error(errorMessage);
 				console.error("Delete folder error:", error);
 			},
@@ -116,7 +115,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 		(fileId: string) => fileService.deleteFile(fileId),
 		{
 			onSuccess: () => {
-				message.success(t("files.deleteSuccess", "File deleted successfully"));
+				message.success(t("files.deleteSuccess"));
 				queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				queryClient.invalidateQueries([queryKeys.FILES]);
 				onRefresh();
@@ -125,7 +124,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 				const errorMessage =
 					error?.response?.data?.message ||
 					error?.message ||
-					t("files.deleteError", "Failed to delete file");
+					t("files.deleteError");
 				message.error(errorMessage);
 				console.error("Delete file error:", error);
 			},
@@ -134,28 +133,28 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 
 	const handleDeleteFolder = (folder: FolderTreeResponseType) => {
 		Modal.confirm({
-			title: t("folders.confirmDelete", "Delete Folder"),
+			title: t("folders.confirmDelete"),
 			content: t(
 				"folders.confirmDeleteMessage",
-				`Are you sure you want to delete "${folder.name}"? This folder must be empty to be deleted.`
+				{ name: folder.name }
 			),
-			okText: t("common.delete", "Delete"),
+			okText: t("ui.delete"),
 			okType: "danger",
-			cancelText: t("common.cancel", "Cancel"),
+			cancelText: t("ui.cancel"),
 			onOk: () => deleteFolderMutation.mutate(folder._id),
 		});
 	};
 
 	const handleDeleteFile = (file: { _id: string; originalName: string }) => {
 		Modal.confirm({
-			title: t("files.confirmDelete", "Delete File"),
+			title: t("files.confirmDelete"),
 			content: t(
 				"files.confirmDeleteMessage",
-				`Are you sure you want to delete "${file.originalName}"?`
+				{ name: file.originalName }
 			),
-			okText: t("common.delete", "Delete"),
+			okText: t("ui.delete"),
 			okType: "danger",
-			cancelText: t("common.cancel", "Cancel"),
+			cancelText: t("ui.cancel"),
 			onOk: () => deleteFileMutation.mutate(file._id),
 		});
 	};
@@ -166,7 +165,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 	}) => {
 		try {
 			message.loading({
-				content: t("files.downloading", "Downloading..."),
+				content: t("files.downloading"),
 				key: "download",
 			});
 
@@ -180,14 +179,14 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 			downloadFile(blob, file.originalName);
 
 			message.success({
-				content: t("files.downloadSuccess", "File downloaded successfully"),
+				content: t("files.downloadSuccess"),
 				key: "download",
 			});
 		} catch (error: any) {
 			const errorMessage =
 				error?.response?.data?.message ||
 				error?.message ||
-				t("files.downloadError", "Failed to download file");
+				t("files.downloadError");
 			message.error({ content: errorMessage, key: "download" });
 			console.error("Download error:", error);
 		}
@@ -196,7 +195,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 	const handleDownloadFolder = async (folder: FolderTreeResponseType) => {
 		try {
 			message.loading({
-				content: t("folders.downloading", "Downloading folder..."),
+				content: t("folders.downloading"),
 				key: "downloadFolder",
 			});
 
@@ -208,49 +207,16 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 			downloadFile(response.data, fileName);
 
 			message.success({
-				content: t("folders.downloadSuccess", "Folder downloaded successfully"),
+				content: t("folders.downloadSuccess"),
 				key: "downloadFolder",
 			});
 		} catch (error: any) {
 			const errorMessage =
 				error?.response?.data?.message ||
 				error?.message ||
-				t("folders.downloadError", "Failed to download folder");
+				t("folders.downloadError");
 			message.error({ content: errorMessage, key: "downloadFolder" });
 			console.error("Folder download error:", error);
-		}
-	};
-
-	const handleCalculateSize = async (folder: FolderTreeResponseType) => {
-		try {
-			message.loading({
-				content: t("folders.calculatingSize", "Calculating folder size..."),
-				key: "calculateSize",
-			});
-
-			// Calculate folder size recursively
-			const result = await folderService.calculateSize(folder._id);
-
-			// Refresh the folder tree to show updated size
-			queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
-			queryClient.invalidateQueries([queryKeys.FOLDERS]);
-			onRefresh();
-
-			message.success({
-				content: t(
-					"folders.calculateSizeSuccess",
-					`Folder size calculated: ${formatFileSize(result.data.size)}`
-				),
-				key: "calculateSize",
-				duration: 3,
-			});
-		} catch (error: any) {
-			const errorMessage =
-				error?.response?.data?.message ||
-				error?.message ||
-				t("folders.calculateSizeError", "Failed to calculate folder size");
-			message.error({ content: errorMessage, key: "calculateSize" });
-			console.error("Calculate size error:", error);
 		}
 	};
 
@@ -259,26 +225,20 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 			{
 				key: "open",
 				icon: <FolderOpenOutlined />,
-				label: t("folders.open", "Open"),
+				label: t("folders.open"),
 				onClick: () => onFolderClick(folder),
 			},
 			{
 				key: "edit",
 				icon: <EditOutlined />,
-				label: t("common.edit", "Edit"),
+				label: t("ui.edit"),
 				onClick: () => setEditFolder(folder),
 			},
 			{
 				key: "download",
 				icon: <DownloadOutlined />,
-				label: t("folders.download", "Download as ZIP"),
+				label: t("folders.download"),
 				onClick: () => handleDownloadFolder(folder),
-			},
-			{
-				key: "calculateSize",
-				icon: <CalculatorOutlined />,
-				label: t("folders.calculateSize", "Calculate Size"),
-				onClick: () => handleCalculateSize(folder),
 			},
 			{
 				type: "divider",
@@ -286,7 +246,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 			{
 				key: "delete",
 				icon: <DeleteOutlined />,
-				label: t("common.delete", "Delete"),
+				label: t("ui.delete"),
 				danger: true,
 				onClick: () => handleDeleteFolder(folder),
 			},
@@ -308,7 +268,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 			menuItems.push({
 				key: "preview",
 				icon: <EyeOutlined />,
-				label: t("files.preview", "Preview"),
+				label: t("files.preview"),
 				onClick: () => handlePreviewFile(file),
 			});
 		}
@@ -317,7 +277,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 		menuItems.push({
 			key: "download",
 			icon: <DownloadOutlined />,
-			label: t("files.download", "Download"),
+			label: t("files.download"),
 			onClick: () => handleDownloadFile(file),
 		});
 
@@ -330,7 +290,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 		menuItems.push({
 			key: "delete",
 			icon: <DeleteOutlined />,
-			label: t("common.delete", "Delete"),
+			label: t("ui.delete"),
 			danger: true,
 			onClick: () => handleDeleteFile(file),
 		});
@@ -570,10 +530,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 			<div style={{ textAlign: "center", padding: "48px 0" }}>
 				<FolderOutlined style={{ fontSize: "64px", color: "#d9d9d9" }} />
 				<div style={{ marginTop: "16px", color: "#8c8c8c" }}>
-					{t(
-						"folders.empty",
-						"No folders or files found. Create your first folder or upload a file to get started."
-					)}
+					{t("folders.empty")}
 				</div>
 			</div>
 		);
@@ -590,7 +547,7 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 								type='secondary'
 								className='text-xs ml-4 block mb-2'
 							>
-								{t("folders.subfolders", "Folders")}
+								{t("folders.subfolders")}
 							</Text>
 						)}
 						<List
@@ -608,8 +565,8 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
 							className='text-xs ml-4 block mb-2'
 						>
 							{currentFolderId
-								? t("files.currentFolderFiles", "Files in this folder")
-								: t("files.rootFiles", "Files in Root")}
+								? t("files.currentFolderFiles")
+								: t("files.rootFiles")}
 						</Text>
 						<List
 							dataSource={rootFiles}

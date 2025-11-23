@@ -6,7 +6,6 @@ import {
 	HomeOutlined,
 	FolderOutlined,
 	SearchOutlined,
-	FilterOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -22,6 +21,7 @@ import { queryKeys } from '../../services/QueryClientManager';
 import { useApp } from '../../hooks';
 import { cn } from '../../utils/cn';
 import { getErrorMessage } from '../../utils/errorHandling';
+import { formatFileSize } from '../../utils/file.utils';
 
 const { Title } = Typography;
 
@@ -41,7 +41,7 @@ export const Folders: React.FC = () => {
 
 	const [currentFolderId, setCurrentFolderId] = useState<string | undefined>(folderIdFromUrl);
 	const [breadcrumbPath, setBreadcrumbPath] = useState<Array<{ id: string | undefined; name: string }>>([
-		{ id: undefined, name: 'Root' }
+		{ id: undefined, name: t('navigation.dashboard', 'Root') }
 	]);
 	const [createDialogOpen, setCreateDialogOpen] = useState(false);
 	const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -78,9 +78,10 @@ export const Folders: React.FC = () => {
 		}
 	);
 
-	// Extract folders and root files from the response
+	// Extract folders, root files, and total storage from the response
 	const folderTree = folderTreeResponse?.data?.folders || [];
 	const rootFiles = folderTreeResponse?.data?.rootFiles || [];
+	const totalRootStorage = folderTreeResponse?.data?.totalRootStorage || 0;
 
 	// URL sync: Update URL when currentFolderId or searchQuery changes
 	useEffect(() => {
@@ -180,7 +181,7 @@ export const Folders: React.FC = () => {
 	if (error) {
 		return (
 			<Alert
-				message={t('folders.error.title', 'Error Loading Folders')}
+				message={t('folders.error.title')}
 				description={getErrorMessage(error)}
 				type='error'
 				showIcon
@@ -201,10 +202,15 @@ export const Folders: React.FC = () => {
 				<div>
 					<Title level={2} className='!mb-2 text-card-foreground'>
 						<FolderOutlined className='mr-3' />
-						{t('folders.title', 'Folders & Files')}
+						{t('folders.title')}
 					</Title>
 					<p className='text-muted-foreground'>
-						{t('folders.subtitle', 'Manage your documents and files')}
+						{t('folders.subtitle')}
+						{!currentFolderId && totalRootStorage > 0 && (
+							<span className='ml-2 font-medium text-primary'>
+								• {t('folders.totalStorage')}: {formatFileSize(totalRootStorage)}
+							</span>
+						)}
 					</p>
 				</div>
 				<Space>
@@ -213,13 +219,13 @@ export const Folders: React.FC = () => {
 						icon={<FolderAddOutlined />}
 						onClick={() => setCreateDialogOpen(true)}
 					>
-						{t('folders.createFolder', 'New Folder')}
+						{t('folders.createFolder')}
 					</Button>
 					<Button
 						icon={<UploadOutlined />}
 						onClick={() => setUploadDialogOpen(true)}
 					>
-						{t('folders.uploadFile', 'Upload File')}
+						{t('folders.uploadFile')}
 					</Button>
 				</Space>
 			</div>
@@ -253,7 +259,7 @@ export const Folders: React.FC = () => {
 					{/* Search and Filters Row */}
 					<Col xs={24} sm={24} md={12} lg={10}>
 						<Input
-							placeholder={t('folders.searchPlaceholder', 'Search folders and files...')}
+							placeholder={t('folders.searchPlaceholder')}
 							prefix={<SearchOutlined />}
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
@@ -269,11 +275,11 @@ export const Folders: React.FC = () => {
 							onChange={setDisplayFilter}
 							size="large"
 							style={{ width: '100%' }}
-							placeholder={t('folders.displayType', 'Type')}
+							placeholder={t('folders.displayType')}
 							options={[
-								{ value: 'all', label: t('folders.displayAll', 'All') },
-								{ value: 'folders', label: t('folders.displayFolders', 'Folders') },
-								{ value: 'files', label: t('folders.displayFiles', 'Files') },
+								{ value: 'all', label: t('folders.displayAll') },
+								{ value: 'folders', label: t('folders.displayFolders') },
+								{ value: 'files', label: t('folders.displayFiles') },
 							]}
 						/>
 					</Col>
@@ -285,7 +291,7 @@ export const Folders: React.FC = () => {
 							onChange={setClientFilter}
 							size="large"
 							style={{ width: '100%' }}
-							placeholder={t('folders.filterByClient', 'Client')}
+							placeholder={t('folders.filterByClient')}
 							allowClear
 							showSearch
 							filterOption={(input, option) =>
@@ -302,7 +308,7 @@ export const Folders: React.FC = () => {
 							onChange={setLawsuitFilter}
 							size="large"
 							style={{ width: '100%' }}
-							placeholder={t('folders.filterByLawsuit', 'Lawsuit')}
+							placeholder={t('folders.filterByLawsuit')}
 							allowClear
 							showSearch
 							filterOption={(input, option) =>

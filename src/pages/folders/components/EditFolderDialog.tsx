@@ -65,7 +65,7 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 			folderService.update(data.id, data.updates),
 		{
 			onSuccess: () => {
-				message.success(t('folders.updateSuccess', 'Folder updated successfully'));
+				message.success(t('folders.updateSuccess'));
 				queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				queryClient.invalidateQueries([queryKeys.FOLDERS]);
 				onSuccess();
@@ -78,22 +78,21 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 
 				if (errorMessage.includes('does not belong to your company')) {
 					message.error(
-						t('folders.companyMismatch',
-							'Cannot update folder. Please refresh the page and try again. If the issue persists, contact support.')
+						t('folders.companyMismatch')
 					);
 					// Force refresh the folder tree to ensure we have latest data
 					queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				} else if (errorMessage.includes('already exists')) {
 					message.error(
-						t('folders.nameExists', 'A folder with this name already exists in this location.')
+						t('folders.nameExists')
 					);
 				} else if (errorMessage.includes('circular reference')) {
 					message.error(
-						t('folders.circularReference', 'Cannot move folder: This would create a circular reference.')
+						t('folders.circularReference')
 					);
 				} else if (errorMessage.includes('not found')) {
 					message.error(
-						t('folders.folderNotFound', 'Folder not found. It may have been deleted.')
+						t('folders.folderNotFound')
 					);
 					queryClient.invalidateQueries([queryKeys.FOLDER_TREE]);
 				} else {
@@ -112,7 +111,7 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 
 			// Validate that if name is provided, it's a non-empty string
 			if (values.name && (!trimmedName || trimmedName.length === 0)) {
-				message.error(t('folders.folderNameWhitespace', 'Folder name cannot be empty'));
+				message.error(t('folders.folderNameWhitespace'));
 				return;
 			}
 
@@ -137,7 +136,7 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 
 			// If no changes, show message
 			if (Object.keys(cleanedUpdates).length === 0) {
-				message.info(t('folders.noChanges', 'No changes to save'));
+				message.info(t('folders.noChanges'));
 				return;
 			}
 
@@ -160,13 +159,13 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 
 	return (
 		<Modal
-			title={t('folders.editFolder', 'Edit Folder')}
+			title={t('folders.editFolder')}
 			open={open}
 			onOk={handleSubmit}
 			onCancel={handleCancel}
 			confirmLoading={updateMutation.isLoading}
-			okText={t('common.save', 'Save')}
-			cancelText={t('common.cancel', 'Cancel')}
+			okText={t('ui.save')}
+			cancelText={t('ui.cancel')}
 		>
 			<Form
 				form={form}
@@ -175,23 +174,23 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 			>
 				<Form.Item
 					name="name"
-					label={t('folders.folderName', 'Folder Name')}
+					label={t('folders.folderName')}
 					rules={[
 						{
 							required: true,
-							message: t('folders.folderNameRequired', 'Please enter a folder name'),
+							message: t('folders.folderNameRequired'),
 						},
 						{
 							validator: (_rule, value) => {
 								if (!value) {
-									return Promise.reject(new Error(t('folders.folderNameRequired', 'Please enter a folder name')));
+									return Promise.reject(new Error(t('folders.folderNameRequired')));
 								}
 								const trimmedValue = value.trim();
 								if (trimmedValue.length === 0) {
-									return Promise.reject(new Error(t('folders.folderNameWhitespace', 'Folder name cannot be empty')));
+									return Promise.reject(new Error(t('folders.folderNameWhitespace')));
 								}
 								if (trimmedValue.length > 255) {
-									return Promise.reject(new Error(t('folders.folderNameMax', 'Folder name cannot exceed 255 characters')));
+									return Promise.reject(new Error(t('folders.folderNameMax')));
 								}
 								return Promise.resolve();
 							},
@@ -199,7 +198,7 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 					]}
 				>
 					<Input
-						placeholder={t('folders.folderNamePlaceholder', 'Enter folder name')}
+						placeholder={t('folders.folderNamePlaceholder')}
 						maxLength={255}
 						allowClear
 					/>
@@ -207,10 +206,10 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 
 				<Form.Item
 					name="clientId"
-					label={t('folders.associateClient', 'Associate with Client (Optional)')}
+					label={t('folders.associateClient')}
 				>
 					<Select
-						placeholder={t('folders.selectClient', 'Select a client')}
+						placeholder={t('folders.selectClient')}
 						allowClear
 						showSearch
 						filterOption={(input, option) =>
@@ -222,10 +221,10 @@ export const EditFolderDialog: React.FC<EditFolderDialogProps> = ({
 
 				<Form.Item
 					name="lawsuitId"
-					label={t('folders.associateLawsuit', 'Associate with Lawsuit (Optional)')}
+					label={t('folders.associateLawsuit')}
 				>
 					<Select
-						placeholder={t('folders.selectLawsuit', 'Select a lawsuit')}
+						placeholder={t('folders.selectLawsuit')}
 						allowClear
 						showSearch
 						filterOption={(input, option) =>
