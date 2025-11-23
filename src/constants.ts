@@ -6,7 +6,7 @@ export type ConfigType = {
 
 // Environment-specific configurations
 const DEV_CONFIG: ConfigType = {
-	API_URL: "http://localhost:3001",
+	API_URL: "http://localhost:3002",
 	CRM_URL: "http://localhost:5174",
 };
 

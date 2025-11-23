@@ -45,6 +45,10 @@ export const queryKeys = {
   FILES: 'files',
   FILE_DETAILS: 'file-details',
 
+  // Payment-related queries
+  PAYMENTS: 'payments',
+  PAYMENT_DETAILS: 'payment-details',
+
   // Filter queries
   FILTERS: 'filters',
 } as const;

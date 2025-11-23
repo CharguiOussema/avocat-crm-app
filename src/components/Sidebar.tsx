@@ -14,7 +14,8 @@ import {
   SettingOutlined,
   CloseOutlined,
   AuditOutlined,
-  ClockCircleOutlined
+  ClockCircleOutlined,
+  DollarOutlined
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -24,6 +25,7 @@ const navigationItems = [
   { key: 'clients', icon: UserOutlined, href: '/clients', label: 'navigation.clients' },
   { key: 'users', icon: TeamOutlined, href: '/users', label: 'navigation.users' },
   { key: 'lawsuits', icon: AuditOutlined, href: '/lawsuits', label: 'navigation.lawsuits' },
+  { key: 'payments', icon: DollarOutlined, href: '/payments', label: 'navigation.payments' },
   { key: 'folders', icon: FolderOpenOutlined, href: '/folders', label: 'navigation.folders' },
   { key: 'events', icon: ClockCircleOutlined, href: '/events', label: 'navigation.events' },
   { key: 'cases', icon: FileTextOutlined, href: '/cases', label: 'navigation.cases' },
@@ -85,6 +87,9 @@ export const Sidebar: React.FC = () => {
     }
     if (path.startsWith('/lawsuits')) {
       return ['lawsuits'];
+    }
+    if (path.startsWith('/payments')) {
+      return ['payments'];
     }
     if (path.startsWith('/folders')) {
       return ['folders'];
