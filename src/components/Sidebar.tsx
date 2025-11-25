@@ -7,10 +7,7 @@ import {
   HomeOutlined,
   UserOutlined,
   TeamOutlined,
-  FileTextOutlined,
   FolderOpenOutlined,
-  CalendarOutlined,
-  BarChartOutlined,
   SettingOutlined,
   CloseOutlined,
   AuditOutlined,
@@ -28,10 +25,6 @@ const navigationItems = [
   { key: 'payments', icon: DollarOutlined, href: '/payments', label: 'navigation.payments' },
   { key: 'folders', icon: FolderOpenOutlined, href: '/folders', label: 'navigation.folders' },
   { key: 'events', icon: ClockCircleOutlined, href: '/events', label: 'navigation.events' },
-  { key: 'cases', icon: FileTextOutlined, href: '/cases', label: 'navigation.cases' },
-  { key: 'documents', icon: FolderOpenOutlined, href: '/documents', label: 'navigation.documents' },
-  { key: 'calendar', icon: CalendarOutlined, href: '/calendar', label: 'navigation.calendar' },
-  { key: 'reports', icon: BarChartOutlined, href: '/reports', label: 'navigation.reports' },
   { key: 'settings', icon: SettingOutlined, href: '/settings', label: 'navigation.settings' },
 ];
 

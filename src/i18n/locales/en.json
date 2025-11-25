@@ -10,10 +10,6 @@
     "lawsuits": "Lawsuits",
     "folders": "Folders",
     "events": "Events",
-    "cases": "Cases",
-    "documents": "Documents",
-    "calendar": "Calendar",
-    "reports": "Reports",
     "settings": "Settings"
   },
   "dashboard": {
@@ -570,46 +566,6 @@
     "pagination": {
       "showTotal": "{{start}}-{{end}} of {{total}} events"
     }
-  },
-  "cases": {
-    "title": "Title",
-    "client": "Client",
-    "status": "Status",
-    "priority": "Priority",
-    "progress": "Progress",
-    "created": "Created",
-    "add": "Add Case"
-  },
-  "documents": {
-    "name": "Name",
-    "type": "Type",
-    "size": "Size",
-    "case": "Case",
-    "uploadedBy": "Uploaded By",
-    "uploadedAt": "Uploaded At",
-    "upload": "Upload Document"
-  },
-  "calendar": {
-    "addEvent": "Add Event",
-    "todayEvents": "Today's Events",
-    "upcomingEvents": "Upcoming Events",
-    "noEvents": "No events today"
-  },
-  "reports": {
-    "totalCases": "Total Cases",
-    "activeCases": "Active Cases",
-    "closedCases": "Closed Cases",
-    "winRate": "Win Rate",
-    "month": "Month",
-    "cases": "Cases",
-    "revenue": "Revenue",
-    "export": "Export Report",
-    "monthlyPerformance": "Monthly Performance",
-    "quickStats": "Quick Stats",
-    "caseCompletion": "Case Completion",
-    "clientSatisfaction": "Client Satisfaction",
-    "billableHours": "Billable Hours",
-    "caseTypes": "Case Types"
   },
   "settings": {
     "subtitle": "Manage your application preferences and data",
