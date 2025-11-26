@@ -4,15 +4,14 @@
  * Date: 11/22/2025
  */
 
-import { Space, Tooltip, Button, Tag } from "antd";
+import { Tooltip, Button, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import { PaymentItemResponseType } from "../../models/payment";
 import { PAYMENT_TYPE } from "../../models/consts";
 
 interface PaymentTableColumnsProps {
 	t: (key: string, options?: Record<string, unknown>) => string;
-	onEdit: (paymentId: string) => void;
 	onDelete: (paymentId: string, description: string) => void;
 }
 
@@ -32,7 +31,6 @@ const getPaymentTypeColor = (type: PAYMENT_TYPE): string => {
 
 export const usePaymentTableColumns = ({
 	t,
-	onEdit,
 	onDelete,
 }: PaymentTableColumnsProps): ColumnsType<PaymentItemResponseType> => {
 	const columns: ColumnsType<PaymentItemResponseType> = [
@@ -113,29 +111,19 @@ export const usePaymentTableColumns = ({
 			),
 		},
 		{
-			title: t("payments.table.actions"),
+			title: t("common.table.actions"),
 			key: "actions",
-			width: 120,
-			render: (_text: string, record: PaymentItemResponseType) => (
-				<Space size='small'>
-					<Tooltip title={t("ui.edit")}>
-						<Button
-							type='text'
-							icon={<EditOutlined />}
-							onClick={() => onEdit(record._id)}
-							className='text-primary hover:bg-primary/10'
-						/>
-					</Tooltip>
-					<Tooltip title={t("ui.delete")}>
-						<Button
-							type='text'
-							danger
-							icon={<DeleteOutlined />}
-							onClick={() => onDelete(record._id, record.description)}
-							className='text-destructive hover:bg-destructive/10'
-						/>
-					</Tooltip>
-				</Space>
+			width: 100,
+			render: (_text: unknown, record: PaymentItemResponseType) => (
+				<Tooltip title={t("ui.delete")}>
+					<Button
+						type='text'
+						danger
+						icon={<DeleteOutlined />}
+						onClick={() => onDelete(record._id, record.description)}
+						className='text-destructive hover:bg-destructive/10'
+					/>
+				</Tooltip>
 			),
 		},
 	];

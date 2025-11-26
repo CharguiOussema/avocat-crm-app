@@ -2,6 +2,7 @@ import { Space, Button, Tag, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { ClientPaymentItemResponseType } from "../../models/clientPayment";
+import { PaymentItemResponseType } from "../../models/payment";
 import { TFunction } from "i18next";
 import moment from "moment";
 
@@ -54,7 +55,7 @@ export const useClientPaymentTableColumns = ({
 		{
 			title: t("payments.table.progress"),
 			key: "progress",
-			render: (_: unknown, record: ClientPaymentItemResponseType) => {
+			render: (_text: unknown, record: ClientPaymentItemResponseType) => {
 				const percentage = record.targetPrice > 0
 					? Math.min((record.total / record.targetPrice) * 100, 100)
 					: 0;
@@ -70,7 +71,7 @@ export const useClientPaymentTableColumns = ({
 			title: t("payments.table.paymentsCount"),
 			dataIndex: "payments",
 			key: "paymentsCount",
-			render: (payments: unknown[]) => (
+			render: (payments: PaymentItemResponseType[]) => (
 				<Tag color="blue">{payments.length} {t("payments.table.paymentsLabel")}</Tag>
 			),
 		},
@@ -85,7 +86,7 @@ export const useClientPaymentTableColumns = ({
 			key: "actions",
 			fixed: "right",
 			width: 150,
-			render: (_: unknown, record: ClientPaymentItemResponseType) => (
+			render: (_text: unknown, record: ClientPaymentItemResponseType) => (
 				<Space size="small">
 					<Tooltip title={t("common.actions.view")}>
 						<Button

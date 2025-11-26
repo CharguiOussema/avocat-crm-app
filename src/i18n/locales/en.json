@@ -8,6 +8,7 @@
     "clients": "Clients",
     "users": "Users",
     "lawsuits": "Lawsuits",
+    "payments": "Payments",
     "folders": "Folders",
     "events": "Events",
     "cases": "Cases",
@@ -314,6 +315,14 @@
     "unexpectedError": "An unexpected error occurred",
     "pagination": {
       "total": "{{start}}-{{end}} of {{total}} items"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "table": {
+      "actions": "Actions"
     },
     "fileManager": {
       "title": "File Manager",
@@ -977,6 +986,10 @@
       "button": "Add Payment",
       "title": "Add New Payment",
       "subtitle": "Add a payment to this client payment"
+    },
+    "edit": {
+      "title": "Edit Payment",
+      "subtitle": "Update payment information"
     },
     "create": {
       "success": "Payment created successfully",

@@ -10,7 +10,6 @@ import {
 	message,
 	Descriptions,
 	Table,
-	Tag,
 	Form,
 	Input,
 	Select,
@@ -33,10 +32,9 @@ import { queryKeys } from "../../services/QueryClientManager";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
 import { getErrorMessage, logError } from "../../utils/errorHandling";
+import { usePaymentTableColumns } from "./PaymentTableColumns";
 import moment from "moment";
 import { PAYMENT_TYPE } from "../../models/consts";
-import type { ColumnsType } from "antd/es/table";
-import { PaymentItemResponseType } from "../../models/payment";
 
 const { Title } = Typography;
 const { confirm } = Modal;
@@ -142,54 +140,11 @@ export const ClientPaymentDetail: React.FC = () => {
 		[id, t, queryClient, form]
 	);
 
-	// Payment table columns
-	const paymentColumns: ColumnsType<PaymentItemResponseType> = [
-		{
-			title: t("payments.table.description"),
-			dataIndex: "description",
-			key: "description",
-		},
-		{
-			title: t("payments.table.type"),
-			dataIndex: "type",
-			key: "type",
-			render: (type: PAYMENT_TYPE) => {
-				const colorMap = {
-					[PAYMENT_TYPE.CASH]: "green",
-					[PAYMENT_TYPE.CHECK]: "blue",
-					[PAYMENT_TYPE.BANK_TRANSFER]: "purple",
-				};
-				return <Tag color={colorMap[type]}>{t(`payments.type.${type.toLowerCase()}`)}</Tag>;
-			},
-		},
-		{
-			title: t("payments.table.price"),
-			dataIndex: "price",
-			key: "price",
-			render: (price: number) => (
-				<span className="font-medium text-green-600">{price.toLocaleString()} TND</span>
-			),
-		},
-		{
-			title: t("payments.table.createdAt"),
-			dataIndex: "createdAt",
-			key: "createdAt",
-			render: (createdAt: string) => moment(createdAt).format("DD/MM/YYYY HH:mm"),
-		},
-		{
-			title: t("common.table.actions"),
-			key: "actions",
-			width: 100,
-			render: (_: unknown, record: PaymentItemResponseType) => (
-				<Button
-					type="text"
-					danger
-					icon={<DeleteOutlined />}
-					onClick={() => handleDeletePayment(record._id, record.description)}
-				/>
-			),
-		},
-	];
+	// Payment table columns using the hook
+	const paymentColumns = usePaymentTableColumns({
+		t,
+		onDelete: handleDeletePayment,
+	});
 
 	// Loading state
 	if (isLoading) {

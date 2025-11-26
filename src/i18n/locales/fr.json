@@ -8,6 +8,7 @@
     "clients": "Clients",
     "users": "Utilisateurs",
     "lawsuits": "Litiges",
+    "payments": "Paiements",
     "folders": "Dossiers",
     "events": "Événements",
     "cases": "Dossiers",
@@ -314,6 +315,14 @@
     "unexpectedError": "Une erreur inattendue s'est produite",
     "pagination": {
       "total": "{{start}}-{{end}} sur {{total}} éléments"
+    },
+    "actions": {
+      "view": "Voir",
+      "edit": "Modifier",
+      "delete": "Supprimer"
+    },
+    "table": {
+      "actions": "Actions"
     },
     "fileManager": {
       "title": "Gestionnaire de Fichiers",
@@ -935,6 +944,10 @@
       "title": "Ajouter un Nouveau Paiement",
       "subtitle": "Ajouter un paiement à ce paiement client"
     },
+    "edit": {
+      "title": "Modifier le Paiement",
+      "subtitle": "Mettre à jour les informations du paiement"
+    },
     "create": {
       "success": "Paiement client créé avec succès",
       "error": "Échec de la création du paiement client",
@@ -959,7 +972,9 @@
       },
       "description": {
         "label": "Description",
-        "placeholder": "Entrer une description (optionnel)"
+        "placeholder": "Entrer une description (optionnel)",
+        "required": "La description est requise",
+        "minLength": "La description doit contenir au moins 2 caractères"
       },
       "client": {
         "label": "Client",
