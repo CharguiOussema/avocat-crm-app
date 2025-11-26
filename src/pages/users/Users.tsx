@@ -1,22 +1,21 @@
 /*
  * Developer: Claude Code
  * Company: Avocat Project
- * Date: 24/9/2024
+ * Date: 11/26/2025
  */
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
 	Typography,
 	Card,
-	Table,
 	Button,
 	Space,
 	Alert,
-	Spin,
 	Modal,
 	message,
 	Row,
 	Col,
+	Checkbox,
 } from "antd";
 import {
 	PlusOutlined,
@@ -25,18 +24,19 @@ import {
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
-import { useFetchUsers } from "../../hooks/useFetchUsers";
+import { useInfiniteUsers } from "../../hooks/useInfiniteUsers";
 import { userService } from "../../services/UserService";
 import { queryKeys } from "../../services/QueryClientManager";
-import { QueryBuilder } from "../../services/QueryBuilder";
 import { useNavigate } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 import { USER_ROLES } from "../../models/consts";
-import { useApp, useAuth } from "../../hooks";
+import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
-import { useUserTableColumns } from "./UserTableColumns";
+import { getErrorMessage, logError } from "../../utils/errorHandling";
 import { SearchInput } from "../../components/common/SearchInput";
 import { RoleFilter } from "./RoleFilter";
+import { UserCard } from "./UserCard";
+import { UserCardSkeleton } from "./UserCardSkeleton";
 
 const { Title } = Typography;
 const { confirm } = Modal;
@@ -44,36 +44,18 @@ const { confirm } = Modal;
 interface QueryParams extends Record<string, unknown> {
 	search?: string;
 	roles?: string | string[];
-	page?: number;
-	limit?: number;
 }
 
 export const Users: React.FC = () => {
 	const { t } = useTranslation();
-
-	// Utility function to extract error message with proper typing
-	const getErrorMessage = (error: unknown): string => {
-		if (error instanceof Error) {
-			return error.message;
-		}
-		if (typeof error === "string") {
-			return error;
-		}
-		if (error && typeof error === "object" && "message" in error) {
-			return String((error as { message: unknown }).message);
-		}
-		return t("common.unexpectedError");
-	};
 	const { isRTL } = useApp();
-	const { user: currentUser } = useAuth();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
-	const {
-		search = "",
-		roles = "",
-		page = 1,
-		limit = 10,
-	} = useQueryParams<QueryParams>();
+	const { search = "", roles = "" } = useQueryParams<QueryParams>();
+
+	const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+	const [selectedRoles, setSelectedRoles] = useState<USER_ROLES[]>([]);
+	const loadMoreRef = useRef<HTMLDivElement>(null);
 
 	// Role display names using i18n
 	const getRoleDisplayName = useCallback(
@@ -92,20 +74,10 @@ export const Users: React.FC = () => {
 		[t]
 	);
 
-	// Get available roles for filtering based on current user
-	const getAvailableRoles = useCallback(() => {
-		const roles = [USER_ROLES.USER_ADMIN, USER_ROLES.USER_AGENT];
-
-		// Only superAdmin can see and filter by superAdmin role
-		if (currentUser?.roles.includes(USER_ROLES.SUPER_ADMIN)) {
-			roles.unshift(USER_ROLES.SUPER_ADMIN);
-		}
-
-		return roles;
-	}, [currentUser]);
-
-	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-	const [selectedRoles, setSelectedRoles] = useState<USER_ROLES[]>([]);
+	// Get available roles for filtering
+	const getAvailableRoles = useCallback((): USER_ROLES[] => {
+		return [USER_ROLES.SUPER_ADMIN, USER_ROLES.USER_ADMIN, USER_ROLES.USER_AGENT];
+	}, []);
 
 	// Parse roles from URL parameter
 	const parseRolesFromUrl = useCallback((rolesParam?: string | string[]): USER_ROLES[] => {
@@ -126,8 +98,40 @@ export const Users: React.FC = () => {
 		return rolesList.length > 0 ? rolesList.join(',') : undefined;
 	}, []);
 
-	const { response } = useFetchUsers();
-	const { data, error, isLoading, isFetching } = response;
+	// Use infinite scroll hook
+	const rolesParam = Array.isArray(roles) ? roles.join(',') : roles;
+	const {
+		data,
+		error,
+		isLoading,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useInfiniteUsers({ search, roles: rolesParam, limit: 20 });
+
+	// Intersection Observer for infinite scroll
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const first = entries[0];
+				if (first.isIntersecting && hasNextPage && !isFetchingNextPage) {
+					fetchNextPage();
+				}
+			},
+			{ threshold: 0.1 }
+		);
+
+		const currentRef = loadMoreRef.current;
+		if (currentRef) {
+			observer.observe(currentRef);
+		}
+
+		return () => {
+			if (currentRef) {
+				observer.unobserve(currentRef);
+			}
+		};
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
 	// Update selected roles when URL roles parameter changes
 	useEffect(() => {
@@ -136,59 +140,51 @@ export const Users: React.FC = () => {
 	}, [roles, parseRolesFromUrl]);
 
 	// Handle search input change
-	const handleSearchChange = useCallback((value: string) => {
-		const rolesParam = Array.isArray(roles) ? roles.join(',') : roles;
-		const searchParams = QueryBuilder.generateSearchParams()
-			.setPage(1)
-			.setLimit(limit)
-			.setQueryParam("search", value || undefined)
-			.setQueryParam("roles", rolesParam || undefined).search;
+	const handleSearchChange = useCallback(
+		(value: string) => {
+			const searchParams = new URLSearchParams();
+			if (value) {
+				searchParams.set("search", value);
+			}
+			if (rolesParam) {
+				searchParams.set("roles", rolesParam);
+			}
+			navigate({
+				search: searchParams.toString(),
+			});
+			// Reset selection when searching
+			setSelectedUserIds([]);
+		},
+		[navigate, rolesParam]
+	);
 
-		navigate({
-			search: searchParams,
-		});
-	}, [limit, roles, navigate]);
-
-	// Handle role filter change (immediate)
-	const handleRoleFilterChange = useCallback((checkedRoles: USER_ROLES[]) => {
-		const searchParams = QueryBuilder.generateSearchParams()
-			.setPage(1) // Reset to first page when filtering
-			.setLimit(limit)
-			.setQueryParam("search", search || undefined)
-			.setQueryParam("roles", rolesToUrlParam(checkedRoles)).search;
-
-		navigate({
-			search: searchParams,
-		});
-	}, [search, limit, navigate, rolesToUrlParam]);
+	// Handle role filter change
+	const handleRoleFilterChange = useCallback(
+		(checkedRoles: USER_ROLES[]) => {
+			const searchParams = new URLSearchParams();
+			if (search) {
+				searchParams.set("search", search);
+			}
+			const rolesUrlParam = rolesToUrlParam(checkedRoles);
+			if (rolesUrlParam) {
+				searchParams.set("roles", rolesUrlParam);
+			}
+			navigate({
+				search: searchParams.toString(),
+			});
+			// Reset selection when filtering
+			setSelectedUserIds([]);
+		},
+		[search, navigate, rolesToUrlParam]
+	);
 
 	// Clear all filters
 	const clearFilters = useCallback(() => {
-		const searchParams = QueryBuilder.generateSearchParams()
-			.setPage(1)
-			.setLimit(limit).search;
-
 		navigate({
-			search: searchParams,
+			search: "",
 		});
-	}, [limit, navigate]);
-
-	// Handle table pagination change
-	const handleTableChange = useCallback(
-		(pagination: { pageSize?: number; current?: number }) => {
-			const rolesParam = Array.isArray(roles) ? roles.join(',') : roles;
-			const searchParams = QueryBuilder.generateSearchParams()
-				.setLimit(pagination.pageSize || limit)
-				.setPage(pagination.current || page)
-				.setQueryParam("search", search || undefined)
-				.setQueryParam("roles", rolesParam || undefined).search;
-
-			navigate({
-				search: searchParams,
-			});
-		},
-		[limit, page, search, roles, navigate]
-	);
+		setSelectedUserIds([]);
+	}, [navigate]);
 
 	// Handle user deletion
 	const handleDelete = useCallback(
@@ -207,7 +203,7 @@ export const Users: React.FC = () => {
 						// Invalidate and refetch users data
 						queryClient.invalidateQueries(queryKeys.USERS);
 					} catch (error) {
-						console.error("Error deleting user:", error);
+						logError(error, "Error deleting user");
 						message.error(t("users.delete.error"));
 					}
 				},
@@ -218,7 +214,7 @@ export const Users: React.FC = () => {
 
 	// Handle bulk deletion
 	const handleBulkDelete = useCallback(() => {
-		if (selectedRowKeys.length === 0) {
+		if (selectedUserIds.length === 0) {
 			message.warning(t("users.bulk.noSelection"));
 			return;
 		}
@@ -227,27 +223,27 @@ export const Users: React.FC = () => {
 			title: t("users.bulk.delete.title"),
 			icon: <ExclamationCircleOutlined />,
 			content: t("users.bulk.delete.confirm", {
-				count: selectedRowKeys.length,
+				count: selectedUserIds.length,
 			}),
 			okText: t("ui.delete"),
 			okType: "danger",
 			cancelText: t("ui.cancel"),
 			onOk: async () => {
 				try {
-					await userService.bulkDelete(selectedRowKeys as string[]);
+					await userService.bulkDelete(selectedUserIds);
 					message.success(
-						t("users.bulk.delete.success", { count: selectedRowKeys.length })
+						t("users.bulk.delete.success", { count: selectedUserIds.length })
 					);
-					setSelectedRowKeys([]);
+					setSelectedUserIds([]);
 					// Invalidate and refetch users data
 					queryClient.invalidateQueries(queryKeys.USERS);
 				} catch (error) {
-					console.error("Error bulk deleting users:", error);
+					logError(error, "Error bulk deleting users");
 					message.error(t("users.bulk.delete.error"));
 				}
 			},
 		});
-	}, [selectedRowKeys, t, queryClient]);
+	}, [selectedUserIds, t, queryClient]);
 
 	// Navigate to add user page
 	const handleAddUser = useCallback(() => {
@@ -262,30 +258,31 @@ export const Users: React.FC = () => {
 		[navigate]
 	);
 
-	// Table columns configuration using custom hook
-	const columns = useUserTableColumns({
-		t,
-		getRoleDisplayName,
-		onEdit: handleEditUser,
-		onDelete: handleDelete,
-	});
+	// Handle card selection
+	const handleCardSelect = useCallback((userId: string, selected: boolean) => {
+		setSelectedUserIds((prev) => {
+			if (selected) {
+				return [...prev, userId];
+			} else {
+				return prev.filter((id) => id !== userId);
+			}
+		});
+	}, []);
 
-	// Row selection configuration
-	const rowSelection = {
-		selectedRowKeys,
-		onChange: (newSelectedRowKeys: React.Key[]) => {
-			setSelectedRowKeys(newSelectedRowKeys);
+	// Handle select all
+	const handleSelectAll = useCallback(
+		(checked: boolean) => {
+			if (checked && data?.pages) {
+				const allUserIds = data.pages.flatMap((page) =>
+					page.docs.map((user) => user._id)
+				);
+				setSelectedUserIds(allUserIds);
+			} else {
+				setSelectedUserIds([]);
+			}
 		},
-	};
-
-	// Loading state
-	if (isLoading) {
-		return (
-			<div className='flex justify-center items-center min-h-[400px]'>
-				<Spin size='large' />
-			</div>
-		);
-	}
+		[data]
+	);
 
 	// Error state
 	if (error) {
@@ -300,28 +297,32 @@ export const Users: React.FC = () => {
 		);
 	}
 
-	const users = data?.data?.docs || [];
-	const total = data?.data?.totalDocs || 0;
+	// Flatten all pages into a single array of users
+	const users = data?.pages.flatMap((page) => page.docs) || [];
+	const totalUsers = data?.pages[0]?.totalDocs || 0;
+	const allSelected = users.length > 0 && selectedUserIds.length === users.length;
 
 	return (
-		<div className='space-y-6'>
+		<div className='space-y-6 pb-8'>
 			{/* Header */}
 			<div
 				className={cn(
-					"flex items-center justify-between",
-					isRTL ? "flex-row-reverse" : "flex-row"
+					"flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
+					isRTL ? "sm:flex-row-reverse" : "sm:flex-row"
 				)}
 			>
 				<div>
 					<Title level={2} className='!mb-2 text-card-foreground'>
 						{t("users.title")}
 					</Title>
-					<p className='text-muted-foreground'>{t("users.subtitle")}</p>
+					<p className='text-muted-foreground'>
+						{t("users.subtitle")} ({totalUsers})
+					</p>
 				</div>
-				<Space>
-					{selectedRowKeys.length > 0 && (
+				<Space wrap>
+					{selectedUserIds.length > 0 && (
 						<Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
-							{t("users.bulk.delete.button", { count: selectedRowKeys.length })}
+							{t("users.bulk.delete.button", { count: selectedUserIds.length })}
 						</Button>
 					)}
 					<Button
@@ -336,7 +337,7 @@ export const Users: React.FC = () => {
 
 			{/* Filters */}
 			<Card className='border-border'>
-				<Row gutter={16} align='middle'>
+				<Row gutter={[16, 16]} align='middle'>
 					<Col xs={24} sm={12} lg={8}>
 						<SearchInput
 							value={search}
@@ -354,39 +355,98 @@ export const Users: React.FC = () => {
 						/>
 					</Col>
 					<Col xs={24} sm={24} lg={10}>
-						<Space className='w-full justify-end'>
+						<div
+							className={cn(
+								"flex flex-wrap items-center gap-3 justify-end",
+								isRTL ? "flex-row-reverse" : "flex-row"
+							)}
+						>
+							{users.length > 0 && (
+								<Checkbox
+									checked={allSelected}
+									indeterminate={
+										selectedUserIds.length > 0 &&
+										selectedUserIds.length < users.length
+									}
+									onChange={(e) => handleSelectAll(e.target.checked)}
+								>
+									{t("users.selectAll")} ({selectedUserIds.length}/{users.length})
+								</Checkbox>
+							)}
 							<Button onClick={clearFilters}>{t("users.filter.clear")}</Button>
-						</Space>
+						</div>
 					</Col>
 				</Row>
 			</Card>
 
-			{/* Users Table */}
-			<Card className='border-border'>
-				<Table
-					rowSelection={rowSelection}
-					columns={columns}
-					dataSource={users}
-					rowKey='_id'
-					pagination={{
-						current: page,
-						pageSize: limit,
-						total,
-						showSizeChanger: true,
-						showQuickJumper: true,
-						showTotal: (total, range) =>
-							t("common.pagination.total", {
-								start: range[0],
-								end: range[1],
-								total,
-							}),
-					}}
-					onChange={handleTableChange}
-					loading={isFetching}
-					scroll={{ x: 800 }}
-					className='users-table'
-				/>
-			</Card>
+			{/* Users Grid */}
+			<div className='min-h-[400px]'>
+				{isLoading ? (
+					// Initial loading skeletons
+					<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+						{Array.from({ length: 8 }).map((_, index) => (
+							<UserCardSkeleton key={index} />
+						))}
+					</div>
+				) : users.length === 0 ? (
+					// Empty state
+					<Card className='border-border'>
+						<div className='flex flex-col items-center justify-center py-12 text-center'>
+							<div className='text-6xl mb-4 text-muted-foreground'>👥</div>
+							<Title level={4} className='!mb-2 text-card-foreground'>
+								{search || roles ? t("users.empty.search") : t("users.empty.title")}
+							</Title>
+							<p className='text-muted-foreground mb-4'>
+								{search || roles
+									? t("users.empty.searchDescription")
+									: t("users.empty.description")}
+							</p>
+							{!search && !roles && (
+								<Button
+									type='primary'
+									icon={<PlusOutlined />}
+									onClick={handleAddUser}
+								>
+									{t("users.add.button")}
+								</Button>
+							)}
+						</div>
+					</Card>
+				) : (
+					<>
+						{/* Responsive Grid */}
+						<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+							{users.map((user) => (
+								<UserCard
+									key={user._id}
+									user={user}
+									onEdit={handleEditUser}
+									onDelete={handleDelete}
+									getRoleDisplayName={getRoleDisplayName}
+									selected={selectedUserIds.includes(user._id)}
+									onSelect={handleCardSelect}
+								/>
+							))}
+						</div>
+
+						{/* Load more trigger */}
+						<div ref={loadMoreRef} className='mt-8 text-center'>
+							{isFetchingNextPage && (
+								<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4'>
+									{Array.from({ length: 4 }).map((_, index) => (
+										<UserCardSkeleton key={`loading-${index}`} />
+									))}
+								</div>
+							)}
+							{!hasNextPage && users.length > 0 && (
+								<p className='text-muted-foreground py-4'>
+									{t("users.pagination.endOfList")}
+								</p>
+							)}
+						</div>
+					</>
+				)}
+			</div>
 		</div>
 	);
 };

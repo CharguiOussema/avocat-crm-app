@@ -1,5 +1,5 @@
 import { ConfigProvider, App as AntdApp, theme as antdTheme } from "antd";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { AppProvider } from "./contexts/AppContext";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -14,10 +14,6 @@ import { Lawsuits, AddEditLawsuit } from "./pages/lawsuits";
 import { ClientPayments, AddEditClientPayment, ClientPaymentDetail } from "./pages/payments";
 import { Folders } from "./pages/folders";
 import { Events } from "./pages/events/Events";
-import { Cases } from "./pages/cases";
-import { Documents } from "./pages/documents";
-import { Calendar } from "./pages/calendar";
-import { Reports } from "./pages/reports";
 import {
 	Settings,
 	MonProfil,
@@ -115,10 +111,6 @@ const AppContent = () => {
 											<Route path='/payments/:id/edit' element={<AddEditClientPayment />} />
 											<Route path='/folders' element={<Folders />} />
 											<Route path='/events' element={<Events />} />
-											<Route path='/cases' element={<Cases />} />
-											<Route path='/documents' element={<Documents />} />
-											<Route path='/calendar' element={<Calendar />} />
-											<Route path='/reports' element={<Reports />} />
 											<Route path='/settings' element={<Settings />}>
 												<Route index element={<MonProfil />} />
 												<Route path='mon-profil' element={<MonProfil />} />
@@ -127,6 +119,8 @@ const AppContent = () => {
 												<Route path='lawsuit-stage' element={<LawsuitStage />} />
 												<Route path='type-lawsuit' element={<TypeLawsuit />} />
 											</Route>
+											{/* Catch-all route - redirect any non-existent path to dashboard */}
+											<Route path='*' element={<Navigate to='/' replace />} />
 										</Routes>
 									</Layout>
 								</ProtectedRoute>

@@ -30,6 +30,7 @@ interface LawsuitFiltersProps {
 	onFilterChange: (filterName: string, value: string | undefined) => void;
 	onClearFilters: () => void;
 	getStatusDisplayName: (status: LAWSUIT_STATUS) => string;
+	children?: React.ReactNode;
 }
 
 export const LawsuitFilters: React.FC<LawsuitFiltersProps> = ({
@@ -47,6 +48,7 @@ export const LawsuitFilters: React.FC<LawsuitFiltersProps> = ({
 	onFilterChange,
 	onClearFilters,
 	getStatusDisplayName,
+	children,
 }) => {
 	const { t } = useTranslation();
 
@@ -159,6 +161,7 @@ export const LawsuitFilters: React.FC<LawsuitFiltersProps> = ({
 					</Col>
 					<Col xs={24} sm={8} md={12} lg={16}>
 						<Space className='w-full justify-end'>
+							{children}
 							<Button onClick={onClearFilters}>{t("lawsuits.filter.clear")}</Button>
 						</Space>
 					</Col>

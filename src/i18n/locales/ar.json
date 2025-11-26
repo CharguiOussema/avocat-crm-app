@@ -11,10 +11,6 @@
     "payments": "المدفوعات",
     "folders": "المجلدات",
     "events": "الأحداث",
-    "cases": "القضايا",
-    "documents": "الوثائق",
-    "calendar": "التقويم",
-    "reports": "التقارير",
     "settings": "الإعدادات"
   },
   "dashboard": {
@@ -140,7 +136,17 @@
       "update": "تحديث العميل"
     },
     "pagination": {
-      "showTotal": "{{start}}-{{end}} من {{total}} عميل"
+      "showTotal": "{{start}}-{{end}} من {{total}} عميل",
+      "endOfList": "لا يوجد المزيد من العملاء لتحميلها"
+    },
+    "card": {
+      "createdBy": "أنشأه"
+    },
+    "empty": {
+      "title": "لم يتم العثور على عملاء",
+      "description": "ابدأ بإضافة عميلك الأول",
+      "search": "لا يوجد عملاء يطابقون بحثك",
+      "searchDescription": "حاول تعديل معايير البحث"
     },
     "legacy": {
       "title": "العملاء",
@@ -579,46 +585,6 @@
     "pagination": {
       "showTotal": "{{start}}-{{end}} من {{total}} حدث"
     }
-  },
-  "cases": {
-    "title": "العنوان",
-    "client": "العميل",
-    "status": "الحالة",
-    "priority": "الأولوية",
-    "progress": "التقدم",
-    "created": "تاريخ الإنشاء",
-    "add": "إضافة قضية"
-  },
-  "documents": {
-    "name": "الاسم",
-    "type": "النوع",
-    "size": "الحجم",
-    "case": "القضية",
-    "uploadedBy": "رفع بواسطة",
-    "uploadedAt": "تاريخ الرفع",
-    "upload": "رفع وثيقة"
-  },
-  "calendar": {
-    "addEvent": "إضافة حدث",
-    "todayEvents": "أحداث اليوم",
-    "upcomingEvents": "الأحداث القادمة",
-    "noEvents": "لا توجد أحداث اليوم"
-  },
-  "reports": {
-    "totalCases": "إجمالي القضايا",
-    "activeCases": "القضايا النشطة",
-    "closedCases": "القضايا المغلقة",
-    "winRate": "معدل الفوز",
-    "month": "الشهر",
-    "cases": "القضايا",
-    "revenue": "الإيرادات",
-    "export": "تصدير التقرير",
-    "monthlyPerformance": "الأداء الشهري",
-    "quickStats": "الإحصائيات السريعة",
-    "caseCompletion": "إنجاز القضايا",
-    "clientSatisfaction": "رضا العملاء",
-    "billableHours": "الساعات القابلة للفوترة",
-    "caseTypes": "أنواع القضايا"
   },
   "settings": {
     "subtitle": "إدارة تفضيلات التطبيق والبيانات",

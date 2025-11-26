@@ -11,10 +11,6 @@
     "payments": "Paiements",
     "folders": "Dossiers",
     "events": "Événements",
-    "cases": "Dossiers",
-    "documents": "Documents",
-    "calendar": "Calendrier",
-    "reports": "Rapports",
     "settings": "Paramètres"
   },
   "dashboard": {
@@ -140,7 +136,17 @@
       "update": "Mettre à Jour le Client"
     },
     "pagination": {
-      "showTotal": "{{start}}-{{end}} sur {{total}} clients"
+      "showTotal": "{{start}}-{{end}} sur {{total}} clients",
+      "endOfList": "Plus de clients à charger"
+    },
+    "card": {
+      "createdBy": "Créé par"
+    },
+    "empty": {
+      "title": "Aucun client trouvé",
+      "description": "Commencez par ajouter votre premier client",
+      "search": "Aucun client ne correspond à votre recherche",
+      "searchDescription": "Essayez d'ajuster vos critères de recherche"
     },
     "legacy": {
       "title": "Clients",
@@ -579,46 +585,6 @@
     "pagination": {
       "showTotal": "{{start}}-{{end}} sur {{total}} événements"
     }
-  },
-  "cases": {
-    "title": "Titre",
-    "client": "Client",
-    "status": "Statut",
-    "priority": "Priorité",
-    "progress": "Progrès",
-    "created": "Créé",
-    "add": "Ajouter un Dossier"
-  },
-  "documents": {
-    "name": "Nom",
-    "type": "Type",
-    "size": "Taille",
-    "case": "Dossier",
-    "uploadedBy": "Téléchargé par",
-    "uploadedAt": "Téléchargé le",
-    "upload": "Télécharger un Document"
-  },
-  "calendar": {
-    "addEvent": "Ajouter un Événement",
-    "todayEvents": "Événements d'Aujourd'hui",
-    "upcomingEvents": "Événements à Venir",
-    "noEvents": "Aucun événement aujourd'hui"
-  },
-  "reports": {
-    "totalCases": "Dossiers Totaux",
-    "activeCases": "Dossiers Actifs",
-    "closedCases": "Dossiers Fermés",
-    "winRate": "Taux de Victoire",
-    "month": "Mois",
-    "cases": "Dossiers",
-    "revenue": "Revenus",
-    "export": "Exporter le Rapport",
-    "monthlyPerformance": "Performance Mensuelle",
-    "quickStats": "Statistiques Rapides",
-    "caseCompletion": "Achèvement des Dossiers",
-    "clientSatisfaction": "Satisfaction Client",
-    "billableHours": "Heures Facturables",
-    "caseTypes": "Types de Dossiers"
   },
   "settings": {
     "subtitle": "Gérez vos préférences d'application et vos données",
