@@ -5,8 +5,8 @@ import { config } from "process";
 
 // Configuration
 const DEV_CONFIG = {
-	API_URL: "http://localhost:3002",
-	CRM_URL: "http://localhost:5174",
+	API_URL: "http://localhost:3001",
+	CRM_URL: "http://localhost:5173",
 };
 
 async function generateModelTypes() {
