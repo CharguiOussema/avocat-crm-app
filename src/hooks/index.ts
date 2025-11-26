@@ -7,6 +7,7 @@ export { useFetch, usePost, usePut, useDelete, useLogin } from './useFetch';
 
 // Export custom fetch hooks
 export { useFetchClients } from './useFetchClients';
+export { useInfiniteClients } from './useInfiniteClients';
 export { useFetchUsers } from './useFetchUsers';
 export { useFetchLawsuits } from './useFetchLawsuits';
 

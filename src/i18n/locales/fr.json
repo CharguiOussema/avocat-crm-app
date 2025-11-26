@@ -135,7 +135,17 @@
       "update": "Mettre à Jour le Client"
     },
     "pagination": {
-      "showTotal": "{{start}}-{{end}} sur {{total}} clients"
+      "showTotal": "{{start}}-{{end}} sur {{total}} clients",
+      "endOfList": "Plus de clients à charger"
+    },
+    "card": {
+      "createdBy": "Créé par"
+    },
+    "empty": {
+      "title": "Aucun client trouvé",
+      "description": "Commencez par ajouter votre premier client",
+      "search": "Aucun client ne correspond à votre recherche",
+      "searchDescription": "Essayez d'ajuster vos critères de recherche"
     },
     "legacy": {
       "title": "Clients",

@@ -1,22 +1,21 @@
 /*
  * Developer: Claude Code
  * Company: Avocat Project
- * Date: 3/10/2025
+ * Date: 11/25/2025
  */
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
 	Typography,
 	Card,
-	Table,
 	Button,
 	Space,
 	Alert,
-	Spin,
 	Modal,
 	message,
 	Row,
 	Col,
+	Checkbox,
 } from "antd";
 import {
 	PlusOutlined,
@@ -25,25 +24,23 @@ import {
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
-import { useFetchClients } from "../../hooks/useFetchClients";
+import { useInfiniteClients } from "../../hooks/useInfiniteClients";
 import { clientService } from "../../services/ClientService";
 import { queryKeys } from "../../services/QueryClientManager";
-import { QueryBuilder } from "../../services/QueryBuilder";
 import { useNavigate } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
 import { getErrorMessage, logError } from "../../utils/errorHandling";
-import { useClientTableColumns } from "./ClientTableColumns";
 import { SearchInput } from "../../components/common/SearchInput";
+import { ClientCard } from "./ClientCard";
+import { ClientCardSkeleton } from "./ClientCardSkeleton";
 
 const { Title } = Typography;
 const { confirm } = Modal;
 
 interface QueryParams extends Record<string, unknown> {
 	search?: string;
-	page?: number;
-	limit?: number;
 }
 
 export const Clients: React.FC = () => {
@@ -51,54 +48,68 @@ export const Clients: React.FC = () => {
 	const { isRTL } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
+	const { search = "" } = useQueryParams<QueryParams>();
+
+	const [selectedClientIds, setSelectedClientIds] = useState<string[]>([]);
+	const loadMoreRef = useRef<HTMLDivElement>(null);
+
+	// Use infinite scroll hook
 	const {
-		search = "",
-		page = 1,
-		limit = 10,
-	} = useQueryParams<QueryParams>();
+		data,
+		error,
+		isLoading,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useInfiniteClients({ search, limit: 20 });
 
-	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+	// Intersection Observer for infinite scroll
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const first = entries[0];
+				if (first.isIntersecting && hasNextPage && !isFetchingNextPage) {
+					fetchNextPage();
+				}
+			},
+			{ threshold: 0.1 }
+		);
 
-	const { response } = useFetchClients();
-	const { data, error, isLoading, isFetching } = response;
+		const currentRef = loadMoreRef.current;
+		if (currentRef) {
+			observer.observe(currentRef);
+		}
+
+		return () => {
+			if (currentRef) {
+				observer.unobserve(currentRef);
+			}
+		};
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
 	// Handle search input change
-	const handleSearchChange = useCallback((value: string) => {
-		const searchParams = QueryBuilder.generateSearchParams()
-			.setPage(1)
-			.setLimit(limit)
-			.setQueryParam("search", value || undefined).search;
-
-		navigate({
-			search: searchParams,
-		});
-	}, [limit, navigate]);
+	const handleSearchChange = useCallback(
+		(value: string) => {
+			const searchParams = new URLSearchParams();
+			if (value) {
+				searchParams.set("search", value);
+			}
+			navigate({
+				search: searchParams.toString(),
+			});
+			// Reset selection when searching
+			setSelectedClientIds([]);
+		},
+		[navigate]
+	);
 
 	// Clear all filters
 	const clearFilters = useCallback(() => {
-		const searchParams = QueryBuilder.generateSearchParams()
-			.setPage(1)
-			.setLimit(limit).search;
-
 		navigate({
-			search: searchParams,
+			search: "",
 		});
-	}, [limit, navigate]);
-
-	// Handle table pagination change
-	const handleTableChange = useCallback(
-		(pagination: { pageSize?: number; current?: number }) => {
-			const searchParams = QueryBuilder.generateSearchParams()
-				.setLimit(pagination.pageSize || limit)
-				.setPage(pagination.current || page)
-				.setQueryParam("search", search || undefined).search;
-
-			navigate({
-				search: searchParams,
-			});
-		},
-		[limit, page, search, navigate]
-	);
+		setSelectedClientIds([]);
+	}, [navigate]);
 
 	// Handle client deletion
 	const handleDelete = useCallback(
@@ -128,7 +139,7 @@ export const Clients: React.FC = () => {
 
 	// Handle bulk deletion
 	const handleBulkDelete = useCallback(() => {
-		if (selectedRowKeys.length === 0) {
+		if (selectedClientIds.length === 0) {
 			message.warning(t("clients.bulk.noSelection"));
 			return;
 		}
@@ -137,18 +148,18 @@ export const Clients: React.FC = () => {
 			title: t("clients.bulk.delete.title"),
 			icon: <ExclamationCircleOutlined />,
 			content: t("clients.bulk.delete.confirm", {
-				count: selectedRowKeys.length,
+				count: selectedClientIds.length,
 			}),
 			okText: t("ui.delete"),
 			okType: "danger",
 			cancelText: t("ui.cancel"),
 			onOk: async () => {
 				try {
-					await clientService.bulkDelete(selectedRowKeys as string[]);
+					await clientService.bulkDelete(selectedClientIds);
 					message.success(
-						t("clients.bulk.delete.success", { count: selectedRowKeys.length })
+						t("clients.bulk.delete.success", { count: selectedClientIds.length })
 					);
-					setSelectedRowKeys([]);
+					setSelectedClientIds([]);
 					// Invalidate and refetch clients data
 					queryClient.invalidateQueries(queryKeys.CLIENTS);
 				} catch (error) {
@@ -157,7 +168,7 @@ export const Clients: React.FC = () => {
 				}
 			},
 		});
-	}, [selectedRowKeys, t, queryClient]);
+	}, [selectedClientIds, t, queryClient]);
 
 	// Navigate to add client page
 	const handleAddClient = useCallback(() => {
@@ -172,29 +183,31 @@ export const Clients: React.FC = () => {
 		[navigate]
 	);
 
-	// Table columns configuration using custom hook
-	const columns = useClientTableColumns({
-		t,
-		onEdit: handleEditClient,
-		onDelete: handleDelete,
-	});
+	// Handle card selection
+	const handleCardSelect = useCallback((clientId: string, selected: boolean) => {
+		setSelectedClientIds((prev) => {
+			if (selected) {
+				return [...prev, clientId];
+			} else {
+				return prev.filter((id) => id !== clientId);
+			}
+		});
+	}, []);
 
-	// Row selection configuration
-	const rowSelection = {
-		selectedRowKeys,
-		onChange: (newSelectedRowKeys: React.Key[]) => {
-			setSelectedRowKeys(newSelectedRowKeys);
+	// Handle select all
+	const handleSelectAll = useCallback(
+		(checked: boolean) => {
+			if (checked && data?.pages) {
+				const allClientIds = data.pages.flatMap((page) =>
+					page.docs.map((client) => client._id)
+				);
+				setSelectedClientIds(allClientIds);
+			} else {
+				setSelectedClientIds([]);
+			}
 		},
-	};
-
-	// Loading state
-	if (isLoading) {
-		return (
-			<div className='flex justify-center items-center min-h-[400px]'>
-				<Spin size='large' />
-			</div>
-		);
-	}
+		[data]
+	);
 
 	// Error state
 	if (error) {
@@ -209,28 +222,32 @@ export const Clients: React.FC = () => {
 		);
 	}
 
-	const clients = data?.data?.docs || [];
-	const total = data?.data?.totalDocs || 0;
+	// Flatten all pages into a single array of clients
+	const clients = data?.pages.flatMap((page) => page.docs) || [];
+	const totalClients = data?.pages[0]?.totalDocs || 0;
+	const allSelected = clients.length > 0 && selectedClientIds.length === clients.length;
 
 	return (
-		<div className='space-y-6'>
+		<div className='space-y-6 pb-8'>
 			{/* Header */}
 			<div
 				className={cn(
-					"flex items-center justify-between",
-					isRTL ? "flex-row-reverse" : "flex-row"
+					"flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
+					isRTL ? "sm:flex-row-reverse" : "sm:flex-row"
 				)}
 			>
 				<div>
 					<Title level={2} className='!mb-2 text-card-foreground'>
 						{t("clients.title")}
 					</Title>
-					<p className='text-muted-foreground'>{t("clients.subtitle")}</p>
+					<p className='text-muted-foreground'>
+						{t("clients.subtitle")} ({totalClients})
+					</p>
 				</div>
-				<Space>
-					{selectedRowKeys.length > 0 && (
+				<Space wrap>
+					{selectedClientIds.length > 0 && (
 						<Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
-							{t("clients.bulk.delete.button", { count: selectedRowKeys.length })}
+							{t("clients.bulk.delete.button", { count: selectedClientIds.length })}
 						</Button>
 					)}
 					<Button
@@ -245,7 +262,7 @@ export const Clients: React.FC = () => {
 
 			{/* Filters */}
 			<Card className='border-border'>
-				<Row gutter={16} align='middle'>
+				<Row gutter={[16, 16]} align='middle'>
 					<Col xs={24} sm={12} lg={8}>
 						<SearchInput
 							value={search}
@@ -253,39 +270,98 @@ export const Clients: React.FC = () => {
 							placeholder={t("clients.search.placeholder")}
 						/>
 					</Col>
-					<Col xs={24} sm={24} lg={16}>
-						<Space className='w-full justify-end'>
+					<Col xs={24} sm={12} lg={16}>
+						<div
+							className={cn(
+								"flex flex-wrap items-center gap-3 justify-end",
+								isRTL ? "flex-row-reverse" : "flex-row"
+							)}
+						>
+							{clients.length > 0 && (
+								<Checkbox
+									checked={allSelected}
+									indeterminate={
+										selectedClientIds.length > 0 &&
+										selectedClientIds.length < clients.length
+									}
+									onChange={(e) => handleSelectAll(e.target.checked)}
+								>
+									Select All ({selectedClientIds.length}/{clients.length})
+								</Checkbox>
+							)}
 							<Button onClick={clearFilters}>{t("clients.filter.clear")}</Button>
-						</Space>
+						</div>
 					</Col>
 				</Row>
 			</Card>
 
-			{/* Clients Table */}
-			<Card className='border-border'>
-				<Table
-					rowSelection={rowSelection}
-					columns={columns}
-					dataSource={clients}
-					rowKey='_id'
-					pagination={{
-						current: page,
-						pageSize: limit,
-						total,
-						showSizeChanger: true,
-						showQuickJumper: true,
-						showTotal: (total, range) =>
-							t("common.pagination.total", {
-								start: range[0],
-								end: range[1],
-								total,
-							}),
-					}}
-					onChange={handleTableChange}
-					loading={isFetching}
-					className='clients-table'
-				/>
-			</Card>
+			{/* Clients Grid */}
+			<div className='min-h-[400px]'>
+				{isLoading ? (
+					// Initial loading skeletons
+					<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+						{Array.from({ length: 8 }).map((_, index) => (
+							<ClientCardSkeleton key={index} />
+						))}
+					</div>
+				) : clients.length === 0 ? (
+					// Empty state
+					<Card className='border-border'>
+						<div className='flex flex-col items-center justify-center py-12 text-center'>
+							<div className='text-6xl mb-4 text-muted-foreground'>📋</div>
+							<Title level={4} className='!mb-2 text-card-foreground'>
+								{search ? t("clients.empty.search") : t("clients.empty.title")}
+							</Title>
+							<p className='text-muted-foreground mb-4'>
+								{search
+									? t("clients.empty.searchDescription")
+									: t("clients.empty.description")}
+							</p>
+							{!search && (
+								<Button
+									type='primary'
+									icon={<PlusOutlined />}
+									onClick={handleAddClient}
+								>
+									{t("clients.add.button")}
+								</Button>
+							)}
+						</div>
+					</Card>
+				) : (
+					<>
+						{/* Responsive Grid */}
+						<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+							{clients.map((client) => (
+								<ClientCard
+									key={client._id}
+									client={client}
+									onEdit={handleEditClient}
+									onDelete={handleDelete}
+									selected={selectedClientIds.includes(client._id)}
+									onSelect={handleCardSelect}
+								/>
+							))}
+						</div>
+
+						{/* Load more trigger */}
+						<div ref={loadMoreRef} className='mt-8 text-center'>
+							{isFetchingNextPage && (
+								<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4'>
+									{Array.from({ length: 4 }).map((_, index) => (
+										<ClientCardSkeleton key={`loading-${index}`} />
+									))}
+								</div>
+							)}
+							{!hasNextPage && clients.length > 0 && (
+								<p className='text-muted-foreground py-4'>
+									{t("clients.pagination.endOfList")}
+								</p>
+							)}
+						</div>
+					</>
+				)}
+			</div>
 		</div>
 	);
 };

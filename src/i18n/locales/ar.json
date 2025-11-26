@@ -135,7 +135,17 @@
       "update": "تحديث العميل"
     },
     "pagination": {
-      "showTotal": "{{start}}-{{end}} من {{total}} عميل"
+      "showTotal": "{{start}}-{{end}} من {{total}} عميل",
+      "endOfList": "لا يوجد المزيد من العملاء لتحميلها"
+    },
+    "card": {
+      "createdBy": "أنشأه"
+    },
+    "empty": {
+      "title": "لم يتم العثور على عملاء",
+      "description": "ابدأ بإضافة عميلك الأول",
+      "search": "لا يوجد عملاء يطابقون بحثك",
+      "searchDescription": "حاول تعديل معايير البحث"
     },
     "legacy": {
       "title": "العملاء",

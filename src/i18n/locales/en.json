@@ -135,7 +135,17 @@
       "update": "Update Client"
     },
     "pagination": {
-      "showTotal": "{{start}}-{{end}} of {{total}} clients"
+      "showTotal": "{{start}}-{{end}} of {{total}} clients",
+      "endOfList": "No more clients to load"
+    },
+    "card": {
+      "createdBy": "Created by"
+    },
+    "empty": {
+      "title": "No clients found",
+      "description": "Get started by adding your first client",
+      "search": "No clients match your search",
+      "searchDescription": "Try adjusting your search criteria"
     },
     "legacy": {
       "title": "Clients",
