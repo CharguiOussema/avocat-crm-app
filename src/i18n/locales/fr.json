@@ -865,5 +865,137 @@
     "associateLawsuit": "Associer à un Litige (Optionnel)",
     "selectLawsuit": "Sélectionner un litige",
     "filesSelected": "{{count}} fichier(s) sélectionné(s)"
+  },
+  "payments": {
+    "title": "Paiements",
+    "subtitle": "Gérez les paiements clients et suivez la progression",
+    "empty": "Aucun paiement trouvé",
+    "addClientPayment": {
+      "button": "Nouveau Paiement Client",
+      "title": "Créer un Paiement Client",
+      "subtitle": "Créer un nouveau paiement client et suivre les versements"
+    },
+    "editClientPayment": {
+      "title": "Modifier le Paiement Client",
+      "subtitle": "Mettre à jour les informations du paiement client"
+    },
+    "detail": {
+      "subtitle": "Voir et gérer les paiements",
+      "information": "Informations du Paiement Client",
+      "paymentsList": "Paiements",
+      "title": "Titre",
+      "client": "Client",
+      "description": "Description",
+      "lawsuit": "Litige",
+      "targetPrice": "Prix Cible",
+      "total": "Total Payé",
+      "progress": "Progression",
+      "createdAt": "Créé le",
+      "noPayments": "Aucun paiement trouvé pour ce paiement client",
+      "backToList": "Retour à la Liste"
+    },
+    "table": {
+      "title": "Titre",
+      "client": "Client",
+      "targetPrice": "Prix Cible",
+      "total": "Total Payé",
+      "progress": "Progression",
+      "paymentsCount": "Nombre de Paiements",
+      "paymentsLabel": "paiements",
+      "createdAt": "Créé le",
+      "type": "Type",
+      "price": "Prix",
+      "description": "Description"
+    },
+    "clientPayments": {
+      "tableTitle": "Paiements Client"
+    },
+    "search": {
+      "placeholder": "Rechercher par titre, client..."
+    },
+    "filter": {
+      "client": "Filtrer par Client",
+      "lawsuit": "Filtrer par Litige",
+      "apply": "Appliquer les Filtres",
+      "clear": "Effacer les Filtres"
+    },
+    "delete": {
+      "title": "Supprimer le Paiement",
+      "confirm": "Êtes-vous sûr de vouloir supprimer le paiement \"{{description}}\" ?",
+      "success": "Le paiement \"{{description}}\" a été supprimé avec succès",
+      "error": "Échec de la suppression du paiement"
+    },
+    "deleteClientPayment": {
+      "title": "Supprimer le Paiement Client",
+      "confirm": "Êtes-vous sûr de vouloir supprimer \"{{title}}\" ? Tous les paiements associés seront également supprimés.",
+      "success": "\"{{title}}\" a été supprimé avec succès"
+    },
+    "add": {
+      "button": "Ajouter un Paiement",
+      "title": "Ajouter un Nouveau Paiement",
+      "subtitle": "Ajouter un paiement à ce paiement client"
+    },
+    "create": {
+      "success": "Paiement client créé avec succès",
+      "error": "Échec de la création du paiement client",
+      "paymentSuccess": "Paiement ajouté avec succès",
+      "paymentError": "Échec de l'ajout du paiement"
+    },
+    "update": {
+      "success": "Paiement client mis à jour avec succès",
+      "error": "Échec de la mise à jour du paiement client"
+    },
+    "error": {
+      "title": "Échec du Chargement des Paiements",
+      "fetchFailed": "Impossible de récupérer les données de paiement",
+      "notFound": "Paiement introuvable"
+    },
+    "form": {
+      "title": {
+        "label": "Titre",
+        "placeholder": "Entrer le titre du paiement",
+        "required": "Le titre est requis",
+        "minLength": "Le titre doit contenir au moins 2 caractères"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Entrer une description (optionnel)"
+      },
+      "client": {
+        "label": "Client",
+        "placeholder": "Sélectionner un client",
+        "required": "Le client est requis"
+      },
+      "lawsuit": {
+        "label": "Litige (Optionnel)",
+        "placeholder": "Sélectionner un litige"
+      },
+      "targetPrice": {
+        "label": "Prix Cible",
+        "placeholder": "Entrer le prix cible",
+        "min": "Le prix cible doit être supérieur ou égal à 0"
+      },
+      "type": {
+        "label": "Type de Paiement",
+        "placeholder": "Sélectionner le type de paiement",
+        "required": "Le type de paiement est requis"
+      },
+      "price": {
+        "label": "Montant",
+        "placeholder": "Entrer le montant du paiement",
+        "required": "Le montant est requis",
+        "min": "Le montant doit être supérieur à 0"
+      },
+      "clientPayment": {
+        "label": "Paiement Client",
+        "placeholder": "Sélectionner un paiement client",
+        "required": "Le paiement client est requis"
+      }
+    },
+    "type": {
+      "cash": "Espèces",
+      "check": "Chèque",
+      "bank_transfer": "Virement Bancaire"
+    }
   }
 }

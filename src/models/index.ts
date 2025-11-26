@@ -11,4 +11,5 @@ export * from "./file";
 export * from "./folder";
 export * from "./event";
 export * from "./payment";
+export * from "./clientPayment";
 export * from "./consts";

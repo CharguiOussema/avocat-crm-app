@@ -49,6 +49,10 @@ export const queryKeys = {
   PAYMENTS: 'payments',
   PAYMENT_DETAILS: 'payment-details',
 
+  // Client Payment-related queries
+  CLIENT_PAYMENTS: 'clientPayments',
+  CLIENT_PAYMENT_DETAILS: 'clientPayment-details',
+
   // Filter queries
   FILTERS: 'filters',
 } as const;

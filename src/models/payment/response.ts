@@ -5,7 +5,6 @@
  */
 
 import { UserItemResponseType } from "../user";
-import { ClientItemResponseType } from "../client";
 import { PaymentModelType } from "./model";
 
 export type PaymentItemResponseType = Pick<
@@ -14,11 +13,10 @@ export type PaymentItemResponseType = Pick<
   | "description"
   | "type"
   | "price"
-  | "lawsuit"
+  | "clientPayment"
   | "updatedAt"
   | "createdAt"
 > & {
   createdBy: UserItemResponseType;
   updatedBy: UserItemResponseType;
-  client: ClientItemResponseType;
 };

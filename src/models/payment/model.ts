@@ -11,8 +11,7 @@ export type PaymentModelType = {
   description: string;
   type: PAYMENT_TYPE;
   price: number;
-  client: string;
-  lawsuit: string | null;
+  clientPayment: string;
   company: string;
   createdAt: string;
   updatedAt: string;

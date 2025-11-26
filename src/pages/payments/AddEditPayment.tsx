@@ -27,8 +27,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { paymentService } from "../../services/PaymentService";
-import { clientService } from "../../services/ClientService";
-import { lawsuitService } from "../../services/LawsuitService";
+import { clientPaymentService } from "../../services/ClientPaymentService";
 import { queryKeys } from "../../services/QueryClientManager";
 import {
 	CreatePaymentBodyRequest,
@@ -46,8 +45,7 @@ interface FormValues {
 	description: string;
 	type: PAYMENT_TYPE;
 	price: number;
-	client: string;
-	lawsuit?: string;
+	clientPayment: string;
 }
 
 export const AddEditPayment: React.FC = () => {
@@ -64,26 +62,16 @@ export const AddEditPayment: React.FC = () => {
 
 	const isEditMode = !!id;
 
-	// Fetch clients for dropdown
-	const { data: clientsData, isLoading: isLoadingClients } = useQuery(
-		[queryKeys.CLIENTS, "filter"],
-		() => clientService.filter(),
+	// Fetch client payments for dropdown
+	const { data: clientPaymentsData, isLoading: isLoadingClientPayments } = useQuery(
+		[queryKeys.CLIENT_PAYMENTS, "all"],
+		() => clientPaymentService.getAll({ limit: 1000, page: 1 }),
 		{
 			staleTime: 5 * 60 * 1000, // 5 minutes
 		}
 	);
 
-	// Fetch lawsuits for dropdown
-	const { data: lawsuitsData, isLoading: isLoadingLawsuits } = useQuery(
-		[queryKeys.LAWSUITS, "filter"],
-		() => lawsuitService.filter(),
-		{
-			staleTime: 5 * 60 * 1000, // 5 minutes
-		}
-	);
-
-	const clients = clientsData?.data || [];
-	const lawsuits = lawsuitsData?.data || [];
+	const clientPayments = clientPaymentsData?.data?.docs || [];
 
 	// Fetch payment data for edit mode
 	useEffect(() => {
@@ -101,8 +89,7 @@ export const AddEditPayment: React.FC = () => {
 						description: payment.description,
 						type: payment.type,
 						price: payment.price,
-						client: payment.client._id,
-						lawsuit: payment.lawsuit || undefined,
+						clientPayment: payment.clientPayment,
 					});
 				})
 				.catch((err) => {
@@ -129,8 +116,7 @@ export const AddEditPayment: React.FC = () => {
 					description: values.description,
 					type: values.type,
 					price: values.price,
-					client: values.client,
-					lawsuit: values.lawsuit || null,
+					clientPayment: values.clientPayment,
 				};
 
 				if (isEditMode && id) {
@@ -307,52 +293,36 @@ export const AddEditPayment: React.FC = () => {
 							</Form.Item>
 						</Col>
 
-						{/* Client */}
+						{/* Client Payment */}
 						<Col xs={24} lg={12}>
 							<Form.Item
-								label={t("payments.form.client.label")}
-								name='client'
+								label={t("payments.form.clientPayment.label")}
+								name='clientPayment'
 								rules={[
 									{
 										required: true,
-										message: t("payments.form.client.required"),
+										message: t("payments.form.clientPayment.required"),
 									},
 								]}
 							>
 								<Select
-									placeholder={t("payments.form.client.placeholder")}
-									loading={isLoadingClients}
+									placeholder={t("payments.form.clientPayment.placeholder")}
+									loading={isLoadingClientPayments}
 									showSearch
-									filterOption={(input, option) =>
-										(option?.label ?? "")
-											.toLowerCase()
-											.includes(input.toLowerCase())
-									}
-									options={clients}
-									disabled={isLoadingClients}
-								/>
-							</Form.Item>
-						</Col>
-
-						{/* Lawsuit (Optional) */}
-						<Col xs={24} lg={12}>
-							<Form.Item
-								label={t("payments.form.lawsuit.label")}
-								name='lawsuit'
-							>
-								<Select
-									placeholder={t("payments.form.lawsuit.placeholder")}
-									loading={isLoadingLawsuits}
-									showSearch
-									allowClear
-									filterOption={(input, option) =>
-										(option?.label ?? "")
-											.toLowerCase()
-											.includes(input.toLowerCase())
-									}
-									options={lawsuits}
-									disabled={isLoadingLawsuits}
-								/>
+									filterOption={(input, option) => {
+										const title = clientPayments.find((cp) => cp._id === option?.value)?.title || "";
+										const clientName = clientPayments.find((cp) => cp._id === option?.value)?.client.fullName || "";
+										const searchText = `${title} ${clientName}`.toLowerCase();
+										return searchText.includes(input.toLowerCase());
+									}}
+									disabled={isLoadingClientPayments}
+								>
+									{clientPayments.map((cp) => (
+										<Select.Option key={cp._id} value={cp._id}>
+											{cp.title} - {cp.client.fullName}
+										</Select.Option>
+									))}
+								</Select>
 							</Form.Item>
 						</Col>
 					</Row>

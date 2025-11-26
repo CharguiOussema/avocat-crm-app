@@ -7,6 +7,8 @@ export { clientService } from './ClientService';
 export { companyService } from './CompanyService';
 export { lawsuitService } from './LawsuitService';
 export { fileService } from './FileService';
+export { paymentService } from './PaymentService';
+export { clientPaymentService } from './ClientPaymentService';
 
 // Export file service types
 export type { FileUploadData, FileQueryParams, StorageConfig } from './FileService';

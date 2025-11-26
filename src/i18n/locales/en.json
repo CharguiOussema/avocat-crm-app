@@ -865,5 +865,130 @@
     "associateLawsuit": "Associate with Lawsuit (Optional)",
     "selectLawsuit": "Select a lawsuit",
     "filesSelected": "{{count}} file(s) selected"
+  },
+  "payments": {
+    "title": "Payments",
+    "subtitle": "Manage client payments and track progress",
+    "empty": "No payments found",
+    "addClientPayment": {
+      "button": "New Client Payment",
+      "title": "Create Client Payment",
+      "subtitle": "Set up a new payment tracking for a client"
+    },
+    "editClientPayment": {
+      "title": "Edit Client Payment",
+      "subtitle": "Update client payment information"
+    },
+    "detail": {
+      "subtitle": "View and manage payments",
+      "information": "Client Payment Information",
+      "paymentsList": "Payments",
+      "title": "Title",
+      "client": "Client",
+      "description": "Description",
+      "targetPrice": "Target Price",
+      "total": "Total Paid",
+      "progress": "Progress",
+      "createdAt": "Created At"
+    },
+    "table": {
+      "title": "Title",
+      "client": "Client",
+      "targetPrice": "Target Price",
+      "total": "Total Paid",
+      "progress": "Progress",
+      "paymentsCount": "Payments",
+      "paymentsLabel": "payments",
+      "createdAt": "Created",
+      "description": "Description",
+      "type": "Payment Type",
+      "price": "Amount"
+    },
+    "clientPayments": {
+      "tableTitle": "Client Payments"
+    },
+    "type": {
+      "cash": "Cash",
+      "check": "Check",
+      "bank_transfer": "Bank Transfer"
+    },
+    "form": {
+      "title": {
+        "label": "Title",
+        "placeholder": "Enter payment title",
+        "required": "Title is required",
+        "minLength": "Title must be at least 2 characters"
+      },
+      "client": {
+        "label": "Client",
+        "placeholder": "Select client",
+        "required": "Client is required"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Enter description (optional)",
+        "required": "Description is required",
+        "minLength": "Description must be at least 2 characters"
+      },
+      "targetPrice": {
+        "label": "Target Price",
+        "placeholder": "0",
+        "min": "Must be a positive number"
+      },
+      "lawsuit": {
+        "label": "Related Lawsuit",
+        "placeholder": "Select lawsuit (optional)"
+      },
+      "type": {
+        "label": "Payment Type",
+        "placeholder": "Select payment type",
+        "required": "Payment type is required"
+      },
+      "price": {
+        "label": "Amount",
+        "placeholder": "Enter amount",
+        "required": "Amount is required",
+        "min": "Amount must be greater than 0"
+      },
+      "clientPayment": {
+        "label": "Client Payment",
+        "placeholder": "Select client payment",
+        "required": "Client payment is required"
+      }
+    },
+    "search": {
+      "placeholder": "Search by title, client, description..."
+    },
+    "filter": {
+      "clear": "Clear Filters"
+    },
+    "delete": {
+      "title": "Delete Payment",
+      "confirm": "Are you sure you want to delete the payment \"{{description}}\"?",
+      "success": "Payment \"{{description}}\" has been deleted successfully",
+      "error": "Failed to delete payment"
+    },
+    "deleteClientPayment": {
+      "title": "Delete Client Payment",
+      "confirm": "Are you sure you want to delete \"{{title}}\"? All associated payments will also be deleted.",
+      "success": "\"{{title}}\" has been deleted successfully"
+    },
+    "add": {
+      "button": "Add Payment",
+      "title": "Add New Payment",
+      "subtitle": "Add a payment to this client payment"
+    },
+    "create": {
+      "success": "Payment created successfully",
+      "error": "Failed to create payment"
+    },
+    "update": {
+      "success": "Payment updated successfully",
+      "error": "Failed to update payment"
+    },
+    "error": {
+      "title": "Failed to Load Payments",
+      "notFound": "Payment not found"
+    }
   }
 }

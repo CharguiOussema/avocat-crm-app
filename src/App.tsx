@@ -11,7 +11,7 @@ import { Dashboard } from "./pages/dashboard";
 import { Clients, AddEditClient } from "./pages/clients";
 import { Users, AddEditUser } from "./pages/users";
 import { Lawsuits, AddEditLawsuit } from "./pages/lawsuits";
-import { Payments, AddEditPayment } from "./pages/payments";
+import { ClientPayments, AddEditClientPayment, ClientPaymentDetail } from "./pages/payments";
 import { Folders } from "./pages/folders";
 import { Events } from "./pages/events/Events";
 import { Cases } from "./pages/cases";
@@ -109,9 +109,10 @@ const AppContent = () => {
 											<Route path='/lawsuits' element={<Lawsuits />} />
 											<Route path='/lawsuits/add' element={<AddEditLawsuit />} />
 											<Route path='/lawsuits/:id/edit' element={<AddEditLawsuit />} />
-											<Route path='/payments' element={<Payments />} />
-											<Route path='/payments/add' element={<AddEditPayment />} />
-											<Route path='/payments/:id/edit' element={<AddEditPayment />} />
+											<Route path='/payments' element={<ClientPayments />} />
+											<Route path='/payments/add' element={<AddEditClientPayment />} />
+											<Route path='/payments/:id' element={<ClientPaymentDetail />} />
+											<Route path='/payments/:id/edit' element={<AddEditClientPayment />} />
 											<Route path='/folders' element={<Folders />} />
 											<Route path='/events' element={<Events />} />
 											<Route path='/cases' element={<Cases />} />

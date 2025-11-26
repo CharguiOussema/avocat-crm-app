@@ -8,7 +8,7 @@ import { PaymentModelType } from "./model";
 
 export type CreatePaymentBodyRequest = Pick<
   PaymentModelType,
-  "description" | "type" | "price" | "client" | "lawsuit"
+  "description" | "type" | "price" | "clientPayment"
 >;
 export type UpdatePaymentBodyRequest = Pick<PaymentModelType, "_id"> &
   CreatePaymentBodyRequest;

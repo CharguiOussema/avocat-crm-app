@@ -865,5 +865,137 @@
     "associateLawsuit": "ربط بدعوى قضائية (اختياري)",
     "selectLawsuit": "اختر دعوى قضائية",
     "filesSelected": "{{count}} ملف (ملفات) محددة"
+  },
+  "payments": {
+    "title": "المدفوعات",
+    "subtitle": "إدارة مدفوعات العملاء وتتبع التقدم",
+    "empty": "لم يتم العثور على دفعات",
+    "addClientPayment": {
+      "button": "دفعة عميل جديدة",
+      "title": "إنشاء دفعة عميل",
+      "subtitle": "إنشاء دفعة عميل جديدة وتتبع الدفعات"
+    },
+    "editClientPayment": {
+      "title": "تعديل دفعة العميل",
+      "subtitle": "تحديث معلومات دفعة العميل"
+    },
+    "detail": {
+      "subtitle": "عرض وإدارة الدفعات",
+      "information": "معلومات دفعة العميل",
+      "paymentsList": "الدفعات",
+      "title": "العنوان",
+      "client": "العميل",
+      "description": "الوصف",
+      "lawsuit": "الدعوى القضائية",
+      "targetPrice": "السعر المستهدف",
+      "total": "إجمالي المدفوع",
+      "progress": "التقدم",
+      "createdAt": "تاريخ الإنشاء",
+      "noPayments": "لم يتم العثور على دفعات لدفعة العميل هذه",
+      "backToList": "العودة إلى القائمة"
+    },
+    "table": {
+      "title": "العنوان",
+      "client": "العميل",
+      "targetPrice": "السعر المستهدف",
+      "total": "إجمالي المدفوع",
+      "progress": "التقدم",
+      "paymentsCount": "عدد الدفعات",
+      "paymentsLabel": "دفعات",
+      "createdAt": "تاريخ الإنشاء",
+      "type": "النوع",
+      "price": "السعر",
+      "description": "الوصف"
+    },
+    "clientPayments": {
+      "tableTitle": "دفعات العميل"
+    },
+    "search": {
+      "placeholder": "البحث بالعنوان، العميل..."
+    },
+    "filter": {
+      "client": "تصفية حسب العميل",
+      "lawsuit": "تصفية حسب الدعوى القضائية",
+      "apply": "تطبيق المرشحات",
+      "clear": "مسح المرشحات"
+    },
+    "delete": {
+      "title": "حذف الدفعة",
+      "confirm": "هل أنت متأكد من حذف الدفعة \"{{description}}\"؟",
+      "success": "تم حذف الدفعة \"{{description}}\" بنجاح",
+      "error": "فشل في حذف الدفعة"
+    },
+    "deleteClientPayment": {
+      "title": "حذف دفعة العميل",
+      "confirm": "هل أنت متأكد من حذف \"{{title}}\"؟ سيتم حذف جميع الدفعات المرتبطة أيضاً.",
+      "success": "تم حذف \"{{title}}\" بنجاح"
+    },
+    "add": {
+      "button": "إضافة دفعة",
+      "title": "إضافة دفعة جديدة",
+      "subtitle": "إضافة دفعة إلى دفعة العميل هذه"
+    },
+    "create": {
+      "success": "تم إنشاء دفعة العميل بنجاح",
+      "error": "فشل في إنشاء دفعة العميل",
+      "paymentSuccess": "تمت إضافة الدفعة بنجاح",
+      "paymentError": "فشل في إضافة الدفعة"
+    },
+    "update": {
+      "success": "تم تحديث دفعة العميل بنجاح",
+      "error": "فشل في تحديث دفعة العميل"
+    },
+    "error": {
+      "title": "فشل في تحميل المدفوعات",
+      "fetchFailed": "تعذر جلب بيانات الدفع",
+      "notFound": "لم يتم العثور على الدفعة"
+    },
+    "form": {
+      "title": {
+        "label": "العنوان",
+        "placeholder": "أدخل عنوان الدفعة",
+        "required": "العنوان مطلوب",
+        "minLength": "يجب أن يحتوي العنوان على حرفين على الأقل"
+      },
+      "description": {
+        "label": "الوصف",
+        "placeholder": "أدخل الوصف (اختياري)"
+      },
+      "client": {
+        "label": "العميل",
+        "placeholder": "اختر عميلاً",
+        "required": "العميل مطلوب"
+      },
+      "lawsuit": {
+        "label": "الدعوى القضائية (اختياري)",
+        "placeholder": "اختر دعوى قضائية"
+      },
+      "targetPrice": {
+        "label": "السعر المستهدف",
+        "placeholder": "أدخل السعر المستهدف",
+        "min": "يجب أن يكون السعر المستهدف أكبر من أو يساوي 0"
+      },
+      "type": {
+        "label": "نوع الدفع",
+        "placeholder": "اختر نوع الدفع",
+        "required": "نوع الدفع مطلوب"
+      },
+      "price": {
+        "label": "المبلغ",
+        "placeholder": "أدخل مبلغ الدفعة",
+        "required": "المبلغ مطلوب",
+        "min": "يجب أن يكون المبلغ أكبر من 0"
+      },
+      "clientPayment": {
+        "label": "دفعة العميل",
+        "placeholder": "اختر دفعة عميل",
+        "required": "دفعة العميل مطلوبة"
+      }
+    },
+    "type": {
+      "cash": "نقداً",
+      "check": "شيك",
+      "bank_transfer": "تحويل بنكي"
+    }
   }
 }
