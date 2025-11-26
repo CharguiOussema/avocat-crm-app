@@ -24,6 +24,7 @@ interface EventFiltersProps {
 	onSearchChange: (value: string) => void;
 	onFilterChange: (filterName: string, value: string | undefined) => void;
 	onClearFilters: () => void;
+	children?: React.ReactNode;
 }
 
 export const EventFilters: React.FC<EventFiltersProps> = ({
@@ -35,6 +36,7 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
 	onSearchChange,
 	onFilterChange,
 	onClearFilters,
+	children,
 }) => {
 	const { t } = useTranslation();
 
@@ -104,7 +106,8 @@ export const EventFilters: React.FC<EventFiltersProps> = ({
 				</Col>
 
 				<Col xs={24} sm={12} md={24} lg={6}>
-					<div className='flex justify-end'>
+					<div className='flex justify-end gap-3'>
+						{children}
 						<Button onClick={onClearFilters} size='large'>
 							{t("events.filter.clear")}
 						</Button>

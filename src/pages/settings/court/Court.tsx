@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+/*
+ * Developer: Claude Code
+ * Company: Avocat Project
+ * Date: 11/26/2025
+ */
+
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   Card,
-  Table,
   Button,
   Space,
   Modal,
@@ -9,32 +14,35 @@ import {
   Input,
   message,
   Typography,
-  Popconfirm,
-  Tooltip,
+  Checkbox,
+  Alert,
 } from 'antd';
 import {
   PlusOutlined,
-  EditOutlined,
   DeleteOutlined,
   HomeOutlined,
   SearchOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQueryClient } from 'react-query';
 import { courtService } from '../../../services/CourtService';
 import { queryKeys } from '../../../services/QueryClientManager';
 import { useApp } from '../../../hooks';
-import { usePagination } from '../../../hooks/usePagination';
 import {
   CourtModelType,
   CreateCourtBodyRequest,
   UpdateCourtBodyRequest,
 } from '../../../models/court';
 import { cn } from '../../../utils/cn';
-import type { ColumnsType } from 'antd/es/table';
+import { useInfiniteCourts } from '../../../hooks/useInfiniteCourts';
+import { CourtCard } from './CourtCard';
+import { CourtCardSkeleton } from './CourtCardSkeleton';
+import { getErrorMessage, logError } from '../../../utils/errorHandling';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { Search } = Input;
+const { confirm } = Modal;
 
 interface CourtFormValues {
   name: string;
@@ -50,46 +58,67 @@ export const Court: React.FC = () => {
   const [editingCourt, setEditingCourt] = useState<CourtModelType | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const { pagination, handleTableChange, setPagination } = usePagination(1, 10);
+  const [selectedCourtIds, setSelectedCourtIds] = useState<string[]>([]);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // Fetch courts data
+  // Use infinite scroll hook
   const {
-    data: courtsData,
+    data,
+    error,
     isLoading,
-  } = useQuery(
-    [queryKeys.COURTS, pagination.current, pagination.pageSize, searchText],
-    () =>
-      courtService.getAll({
-        page: pagination.current,
-        limit: pagination.pageSize,
-        search: searchText || undefined,
-      }),
-    {
-      keepPreviousData: true,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteCourts({
+    search: searchText,
+    limit: 20,
+  });
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (first.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
-  );
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Handle search
-  const handleSearch = (value: string) => {
+  const handleSearch = useCallback((value: string) => {
     setSearchText(value);
-    setPagination({ ...pagination, current: 1 });
-  };
+    setSelectedCourtIds([]);
+  }, []);
 
   // Open modal for create
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     setEditingCourt(null);
     form.resetFields();
     setIsModalVisible(true);
-  };
+  }, [form]);
 
   // Open modal for edit
-  const handleEdit = (court: CourtModelType) => {
+  const handleEdit = useCallback((court: CourtModelType) => {
     setEditingCourt(court);
     form.setFieldsValue({
       name: court.name,
     });
     setIsModalVisible(true);
-  };
+  }, [form]);
 
   // Handle modal submit
   const handleSubmit = async (values: CourtFormValues) => {
@@ -120,7 +149,7 @@ export const Court: React.FC = () => {
       setIsModalVisible(false);
       form.resetFields();
     } catch (error) {
-      console.error('Error saving court:', error);
+      logError(error, 'Error saving court');
       message.error(
         editingCourt
           ? t('settings.court.updateError')
@@ -132,75 +161,104 @@ export const Court: React.FC = () => {
   };
 
   // Handle delete
-  const handleDelete = async (court: CourtModelType) => {
-    try {
-      await courtService.delete(court._id);
-      message.success(t('settings.court.deleteSuccess'));
-      queryClient.invalidateQueries(queryKeys.COURTS);
-    } catch (error) {
-      console.error('Error deleting court:', error);
-      message.error(t('settings.court.deleteError'));
-    }
-  };
+  const handleDelete = useCallback((court: CourtModelType) => {
+    confirm({
+      title: t('settings.court.deleteConfirm'),
+      icon: <ExclamationCircleOutlined />,
+      content: t('settings.court.deleteConfirmDescription', { name: court.name }),
+      okText: t('ui.yes'),
+      cancelText: t('ui.no'),
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          await courtService.delete(court._id);
+          message.success(t('settings.court.deleteSuccess'));
+          queryClient.invalidateQueries(queryKeys.COURTS);
+        } catch (error) {
+          logError(error, 'Error deleting court');
+          message.error(t('settings.court.deleteError'));
+        }
+      },
+    });
+  }, [t, queryClient]);
 
-  // Table columns
-  const columns: ColumnsType<CourtModelType> = [
-    {
-      title: t('settings.court.table.name'),
-      dataIndex: 'name',
-      key: 'name',
-      ellipsis: true,
-      render: (text: string) => (
-        <Text strong className="text-card-foreground">
-          {text}
-        </Text>
-      ),
+  // Handle bulk deletion
+  const handleBulkDelete = useCallback(() => {
+    if (selectedCourtIds.length === 0) {
+      message.warning(t('settings.court.bulk.noSelection'));
+      return;
+    }
+
+    confirm({
+      title: t('settings.court.bulk.delete.title'),
+      icon: <ExclamationCircleOutlined />,
+      content: t('settings.court.bulk.delete.confirm', {
+        count: selectedCourtIds.length,
+      }),
+      okText: t('ui.delete'),
+      okType: 'danger',
+      cancelText: t('ui.cancel'),
+      onOk: async () => {
+        try {
+          await Promise.all(
+            selectedCourtIds.map((id) => courtService.delete(id))
+          );
+          message.success(
+            t('settings.court.bulk.delete.success', { count: selectedCourtIds.length })
+          );
+          setSelectedCourtIds([]);
+          queryClient.invalidateQueries(queryKeys.COURTS);
+        } catch (error) {
+          logError(error, 'Error bulk deleting courts');
+          message.error(t('settings.court.bulk.delete.error'));
+        }
+      },
+    });
+  }, [selectedCourtIds, t, queryClient]);
+
+  // Handle card selection
+  const handleCardSelect = useCallback((courtId: string, selected: boolean) => {
+    setSelectedCourtIds((prev) => {
+      if (selected) {
+        return [...prev, courtId];
+      } else {
+        return prev.filter((id) => id !== courtId);
+      }
+    });
+  }, []);
+
+  // Handle select all
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      if (checked && data?.pages) {
+        const allCourtIds = data.pages.flatMap((page) =>
+          page.docs.map((court) => court._id)
+        );
+        setSelectedCourtIds(allCourtIds);
+      } else {
+        setSelectedCourtIds([]);
+      }
     },
-    {
-      title: t('settings.court.table.createdAt'),
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      width: 200,
-      render: (date: string) => (
-        <Text className="text-muted-foreground">
-          {new Date(date).toLocaleDateString()}
-        </Text>
-      ),
-    },
-    {
-      title: t('settings.court.table.actions'),
-      key: 'actions',
-      width: 120,
-      align: 'center',
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title={t('ui.edit')}>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => handleEdit(record)}
-              className="text-blue-600 hover:text-blue-700"
-            />
-          </Tooltip>
-          <Popconfirm
-            title={t('settings.court.deleteConfirm')}
-            description={t('settings.court.deleteConfirmDescription', { name: record.name })}
-            onConfirm={() => handleDelete(record)}
-            okText={t('ui.yes')}
-            cancelText={t('ui.no')}
-          >
-            <Tooltip title={t('ui.delete')}>
-              <Button
-                type="text"
-                icon={<DeleteOutlined />}
-                className="text-red-600 hover:text-red-700"
-              />
-            </Tooltip>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+    [data]
+  );
+
+  // Error state
+  if (error) {
+    return (
+      <Alert
+        message={t('settings.court.error.title')}
+        description={getErrorMessage(error, t('common.unexpectedError'))}
+        type='error'
+        showIcon
+        className='m-4'
+      />
+    );
+  }
+
+  // Flatten all pages into a single array of courts
+  const courts = data?.pages.flatMap((page) => page.docs) || [];
+  const totalCourts = data?.pages[0]?.totalDocs || 0;
+  const allSelected = courts.length > 0 && selectedCourtIds.length === courts.length;
 
   return (
     <div className="space-y-6">
@@ -211,7 +269,7 @@ export const Court: React.FC = () => {
             {t('settings.court.title')}
           </Title>
           <p className="text-muted-foreground">
-            {t('settings.court.subtitle')}
+            {t('settings.court.subtitle')} ({totalCourts})
           </p>
         </div>
 
@@ -232,12 +290,12 @@ export const Court: React.FC = () => {
             </Title>
           </div>
 
-          <Space className="w-full sm:w-auto">
+          <Space className="w-full sm:w-auto" wrap>
             <Search
               placeholder={t('settings.court.searchPlaceholder')}
               allowClear
               onSearch={handleSearch}
-              style={{ width: 300 }}
+              style={{ width: 250 }}
               enterButton={<SearchOutlined />}
             />
             <Button
@@ -251,29 +309,96 @@ export const Court: React.FC = () => {
           </Space>
         </div>
 
-        {/* Table */}
-        <Table
-          columns={columns}
-          dataSource={courtsData?.data.docs}
-          rowKey="_id"
-          loading={isLoading}
-          pagination={{
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: courtsData?.data.totalDocs,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) =>
-              t('settings.court.table.showTotal', {
-                start: range[0],
-                end: range[1],
-                total,
-              }),
-          }}
-          onChange={handleTableChange}
-          scroll={{ x: true }}
-          className="border-border"
-        />
+        {/* Selection Actions */}
+        {courts.length > 0 && (
+          <div className="mb-4 flex justify-between items-center">
+            <Checkbox
+              checked={allSelected}
+              indeterminate={
+                selectedCourtIds.length > 0 &&
+                selectedCourtIds.length < courts.length
+              }
+              onChange={(e) => handleSelectAll(e.target.checked)}
+            >
+              {t('settings.court.selectAll')} ({selectedCourtIds.length}/{courts.length})
+            </Checkbox>
+            {selectedCourtIds.length > 0 && (
+              <Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
+                {t('settings.court.bulk.delete.button', { count: selectedCourtIds.length })}
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* Courts Grid */}
+        <div className='min-h-[400px]'>
+          {isLoading ? (
+            // Initial loading skeletons
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <CourtCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : courts.length === 0 ? (
+            // Empty state
+            <Card className='border-border'>
+              <div className='flex flex-col items-center justify-center py-12 text-center'>
+                <div className='text-6xl mb-4 text-muted-foreground'>🏛️</div>
+                <Title level={4} className='!mb-2 text-card-foreground'>
+                  {searchText
+                    ? t('settings.court.empty.search')
+                    : t('settings.court.empty.title')}
+                </Title>
+                <p className='text-muted-foreground mb-4'>
+                  {searchText
+                    ? t('settings.court.empty.searchDescription')
+                    : t('settings.court.empty.description')}
+                </p>
+                {!searchText && (
+                  <Button
+                    type='primary'
+                    icon={<PlusOutlined />}
+                    onClick={handleCreate}
+                  >
+                    {t('settings.court.addCourt')}
+                  </Button>
+                )}
+              </div>
+            </Card>
+          ) : (
+            <>
+              {/* Responsive Grid */}
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+                {courts.map((court) => (
+                  <CourtCard
+                    key={court._id}
+                    court={court}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    selected={selectedCourtIds.includes(court._id)}
+                    onSelect={handleCardSelect}
+                  />
+                ))}
+              </div>
+
+              {/* Load more trigger */}
+              <div ref={loadMoreRef} className='mt-8 text-center'>
+                {isFetchingNextPage && (
+                  <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4'>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <CourtCardSkeleton key={`loading-${index}`} />
+                    ))}
+                  </div>
+                )}
+                {!hasNextPage && courts.length > 0 && (
+                  <p className='text-muted-foreground py-4'>
+                    {t('settings.court.pagination.endOfList')}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </Card>
 
       {/* Create/Edit Modal */}
