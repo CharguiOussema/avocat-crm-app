@@ -24,6 +24,10 @@ export type CreateUserBodyRequest = Pick<
 export type UpdateUserBodyRequest = Pick<UserModelType, "_id"> &
   CreateUserBodyRequest;
 export type LoginBodyRequest = Pick<UserModelType, "email" | "password">;
+export type ChangePasswordBodyRequest = {
+  currentPassword: string;
+  newPassword: string;
+};
 export type GetAllUsersQueryRequest = {
   search?: string;
   roles?: string;

@@ -24,7 +24,7 @@ import { userService } from '../../../services/UserService';
 import { documentService } from '../../../services/DocumentService';
 import { queryKeys } from '../../../services/QueryClientManager';
 import { useApp, useAuth } from '../../../hooks';
-import { UpdateUserBodyRequest } from '../../../models/user';
+import { ChangePasswordBodyRequest, UpdateUserBodyRequest } from '../../../models/user';
 import { cn } from '../../../utils/cn';
 import type { AvatarEntity } from '../../../services/AvatarService';
 
@@ -141,18 +141,12 @@ export const MonProfil: React.FC = () => {
     setPasswordLoading(true);
 
     try {
-      const updateData: UpdateUserBodyRequest = {
-        _id: currentUser._id,
-        fullName: currentUser.fullName,
-        email: currentUser.email,
-        phoneNumber: currentUser.phoneNumber,
-        cin: currentUser.cin,
-        roles: currentUser.roles,
-        password: values.newPassword,
-        avatar: currentUser.avatar,
+      const changePasswordData: ChangePasswordBodyRequest = {
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
       };
 
-      await userService.update(updateData);
+      await userService.changePassword(changePasswordData);
 
       message.success(t('settings.password.changeSuccess'));
       passwordForm.resetFields();

@@ -1,4 +1,5 @@
 import {
+	ChangePasswordBodyRequest,
 	CreateUserBodyRequest,
 	LoginBodyRequest,
 	UpdateUserBodyRequest,
@@ -50,6 +51,11 @@ class UserService {
 	// !example of update
 	update = (body: UpdateUserBodyRequest) => {
 		return this.instance.put<UserItemResponseType>("/api/users", body);
+	};
+
+	// !change password
+	changePassword = (body: ChangePasswordBodyRequest) => {
+		return this.instance.put<void>("/api/users/changePassword", body);
 	};
 
 	// !example of delete

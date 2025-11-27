@@ -53,22 +53,22 @@ interface FormValues {
 	phoneNumber?: string;
 }
 
+// Utility function to extract error message with proper typing
+const getErrorMessage = (error: unknown, fallbackMessage: string): string => {
+	if (error instanceof Error) {
+		return error.message;
+	}
+	if (typeof error === "string") {
+		return error;
+	}
+	if (error && typeof error === "object" && "message" in error) {
+		return String((error as { message: unknown }).message);
+	}
+	return fallbackMessage;
+};
+
 export const AddEditUser: React.FC = () => {
 	const { t } = useTranslation();
-
-	// Utility function to extract error message with proper typing
-	const getErrorMessage = (error: unknown): string => {
-		if (error instanceof Error) {
-			return error.message;
-		}
-		if (typeof error === "string") {
-			return error;
-		}
-		if (error && typeof error === "object" && "message" in error) {
-			return String((error as { message: unknown }).message);
-		}
-		return t("common.unexpectedError");
-	};
 	const { isRTL } = useApp();
 	const { user: currentUser } = useAuth();
 	const navigate = useNavigate();
@@ -118,12 +118,13 @@ export const AddEditUser: React.FC = () => {
 				})
 				.catch((err) => {
 					console.error("Error fetching user:", err);
-					setError(getErrorMessage(err));
+					setError(getErrorMessage(err, t("common.unexpectedError")));
 				})
 				.finally(() => {
 					setFetchingUser(false);
 				});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isEditMode, id, form]);
 
 	// Handle avatar selection
@@ -165,7 +166,7 @@ export const AddEditUser: React.FC = () => {
 			}
 
 			if (isEditMode && userData) {
-				// Update user
+				// Update user - password changes are handled in user profile settings
 				const updateData: UpdateUserBodyRequest = {
 					_id: userData._id,
 					fullName: values.fullName.trim(),
@@ -173,7 +174,7 @@ export const AddEditUser: React.FC = () => {
 					roles: values.roles,
 					cin: values.cin?.trim() || null,
 					phoneNumber: values.phoneNumber?.trim() || null,
-					password: values.password || "", // Only required if provided
+					password: "", // Password changes handled in profile settings
 					avatar: avatarDocumentId || userData.avatar, // Use new avatar ID or keep existing
 				};
 
@@ -210,7 +211,7 @@ export const AddEditUser: React.FC = () => {
 				`Error ${isEditMode ? "updating" : "creating"} user:`,
 				error
 			);
-			const errorMessage = getErrorMessage(error);
+			const errorMessage = getErrorMessage(error, t("common.unexpectedError"));
 			setError(errorMessage);
 			message.error(
 				isEditMode ? t("users.update.error") : t("users.create.error")
@@ -484,50 +485,43 @@ export const AddEditUser: React.FC = () => {
 								</Row>
 							</div>
 
-							{/* Security Information */}
-							<div>
-								<h3 className='text-lg font-semibold text-card-foreground mb-4'>
-									{t("users.form.security.title")}
-								</h3>
-								<Row gutter={16}>
-									<Col xs={24} lg={12}>
-										<Form.Item
-											name='password'
-											label={t("users.form.password.label")}
-											rules={[{ validator: validatePassword }]}
-										>
-											<Input.Password
-												placeholder={
-													isEditMode
-														? t("users.form.password.placeholderEdit")
-														: t("users.form.password.placeholder")
-												}
-												size='large'
-											/>
-										</Form.Item>
-									</Col>
-									<Col xs={24} lg={12}>
-										<Form.Item
-											name='confirmPassword'
-											label={t("users.form.confirmPassword.label")}
-											dependencies={["password"]}
-											rules={[{ validator: validateConfirmPassword }]}
-										>
-											<Input.Password
-												placeholder={t(
-													"users.form.confirmPassword.placeholder"
-												)}
-												size='large'
-											/>
-										</Form.Item>
-									</Col>
-								</Row>
-								{isEditMode && (
-									<p className='text-sm text-muted-foreground'>
-										{t("users.form.password.editNote")}
-									</p>
-								)}
-							</div>
+							{/* Security Information - Only for new users */}
+							{!isEditMode && (
+								<div>
+									<h3 className='text-lg font-semibold text-card-foreground mb-4'>
+										{t("users.form.security.title")}
+									</h3>
+									<Row gutter={16}>
+										<Col xs={24} lg={12}>
+											<Form.Item
+												name='password'
+												label={t("users.form.password.label")}
+												rules={[{ validator: validatePassword }]}
+											>
+												<Input.Password
+													placeholder={t("users.form.password.placeholder")}
+													size='large'
+												/>
+											</Form.Item>
+										</Col>
+										<Col xs={24} lg={12}>
+											<Form.Item
+												name='confirmPassword'
+												label={t("users.form.confirmPassword.label")}
+												dependencies={["password"]}
+												rules={[{ validator: validateConfirmPassword }]}
+											>
+												<Input.Password
+													placeholder={t(
+														"users.form.confirmPassword.placeholder"
+													)}
+													size='large'
+												/>
+											</Form.Item>
+										</Col>
+									</Row>
+								</div>
+							)}
 						</div>
 					</div>
 
