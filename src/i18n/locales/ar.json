@@ -671,6 +671,7 @@
       "searchPlaceholder": "البحث في المحاكم...",
       "addCourt": "إضافة محكمة",
       "editCourt": "تعديل المحكمة",
+      "selectAll": "تحديد الكل",
       "table": {
         "name": "اسم المحكمة",
         "createdAt": "تاريخ الإنشاء",
@@ -690,7 +691,29 @@
       "updateError": "فشل في تحديث المحكمة",
       "deleteError": "فشل في حذف المحكمة",
       "deleteConfirm": "حذف المحكمة",
-      "deleteConfirmDescription": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء."
+      "deleteConfirmDescription": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
+      "pagination": {
+        "endOfList": "لقد وصلت إلى نهاية القائمة"
+      },
+      "bulk": {
+        "noSelection": "يرجى تحديد المحاكم للحذف",
+        "delete": {
+          "title": "حذف المحاكم",
+          "confirm": "هل أنت متأكد من حذف {{count}} محكمة؟ لا يمكن التراجع عن هذا الإجراء.",
+          "button": "حذف ({{count}})",
+          "success": "تم حذف {{count}} محكمة بنجاح",
+          "error": "فشل في حذف المحاكم المحددة"
+        }
+      },
+      "empty": {
+        "title": "لا توجد محاكم بعد",
+        "description": "ابدأ بإضافة أول محكمة إلى النظام",
+        "search": "لم يتم العثور على محاكم",
+        "searchDescription": "حاول تعديل معايير البحث"
+      },
+      "error": {
+        "title": "خطأ في تحميل المحاكم"
+      }
     },
     "lawsuitStage": {
       "title": "إدارة مراحل الدعاوى",
@@ -718,7 +741,19 @@
       "updateError": "فشل في تحديث مرحلة الدعوى",
       "deleteError": "فشل في حذف مرحلة الدعوى",
       "deleteConfirm": "حذف مرحلة الدعوى",
-      "deleteConfirmDescription": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء."
+      "deleteConfirmDescription": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
+      "pagination": {
+        "endOfList": "لقد وصلت إلى نهاية القائمة"
+      },
+      "empty": {
+        "title": "لا توجد مراحل دعوى بعد",
+        "description": "ابدأ بإضافة أول مرحلة دعوى إلى النظام",
+        "search": "لم يتم العثور على مراحل دعوى",
+        "searchDescription": "حاول تعديل معايير البحث"
+      },
+      "error": {
+        "title": "خطأ في تحميل مراحل الدعوى"
+      }
     },
     "typeLawsuit": {
       "title": "إدارة أنواع الدعاوى",
@@ -746,7 +781,19 @@
       "updateError": "فشل في تحديث نوع الدعوى",
       "deleteError": "فشل في حذف نوع الدعوى",
       "deleteConfirm": "حذف نوع الدعوى",
-      "deleteConfirmDescription": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء."
+      "deleteConfirmDescription": "هل أنت متأكد من حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
+      "pagination": {
+        "endOfList": "لقد وصلت إلى نهاية القائمة"
+      },
+      "empty": {
+        "title": "لا توجد أنواع دعوى بعد",
+        "description": "ابدأ بإضافة أول نوع دعوى إلى النظام",
+        "search": "لم يتم العثور على أنواع دعوى",
+        "searchDescription": "حاول تعديل معايير البحث"
+      },
+      "error": {
+        "title": "خطأ في تحميل أنواع الدعوى"
+      }
     }
   },
   "error": {

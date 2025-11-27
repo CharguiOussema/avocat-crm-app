@@ -5,7 +5,7 @@
  */
 
 import React from "react";
-import { Card, Button, Space, Typography, Tooltip, Avatar } from "antd";
+import { Card, Button, Typography, Tooltip, Avatar } from "antd";
 import {
 	EditOutlined,
 	DeleteOutlined,
@@ -16,115 +16,100 @@ import { useApp } from "../../../hooks";
 import { cn } from "../../../utils/cn";
 import { useTranslation } from "react-i18next";
 
-const { Text, Paragraph } = Typography;
-
-// Helper function to format date
-const formatDate = (dateString: string): string => {
-	const date = new Date(dateString);
-	const day = date.getDate().toString().padStart(2, "0");
-	const month = date.toLocaleString("en", { month: "short" });
-	const year = date.getFullYear();
-	return `${day} ${month} ${year}`;
-};
+const { Title } = Typography;
 
 interface CourtCardProps {
 	court: CourtModelType;
 	onEdit: (court: CourtModelType) => void;
 	onDelete: (court: CourtModelType) => void;
-	selected?: boolean;
-	onSelect?: (courtId: string, selected: boolean) => void;
 }
 
 export const CourtCard: React.FC<CourtCardProps> = ({
 	court,
 	onEdit,
 	onDelete,
-	selected = false,
-	onSelect,
 }) => {
 	const { t } = useTranslation();
 	const { isRTL } = useApp();
 
-	const handleCardClick = (e: React.MouseEvent) => {
-		// Prevent selection when clicking action buttons
-		if (
-			(e.target as HTMLElement).closest(".card-actions") ||
-			(e.target as HTMLElement).closest(".ant-btn")
-		) {
-			return;
-		}
-		if (onSelect) {
-			onSelect(court._id, !selected);
-		}
+	const handleEdit = (e: React.MouseEvent<HTMLElement>) => {
+		e.stopPropagation();
+		onEdit(court);
+	};
+
+	const handleDelete = (e: React.MouseEvent<HTMLElement>) => {
+		e.stopPropagation();
+		onDelete(court);
 	};
 
 	return (
 		<Card
 			className={cn(
-				"court-card hover:shadow-lg transition-all duration-200 cursor-pointer h-full",
-				selected && "ring-2 ring-primary shadow-md",
+				"court-card hover:shadow-lg transition-all duration-200",
+				"flex flex-col h-full min-h-[120px]",
 				"border-border"
 			)}
-			onClick={handleCardClick}
-			styles={{ body: { padding: "20px" } }}
+			styles={{ body: { padding: "20px", display: "flex", flexDirection: "column", height: "100%" } }}
 		>
-			{/* Header with Icon, Name and Actions */}
-			<div
-				className={cn(
-					"flex items-start justify-between",
-					isRTL ? "flex-row-reverse" : "flex-row"
-				)}
-			>
+			{/* Card Content */}
+			<div className="flex flex-col gap-4 h-full">
+				{/* Header with Icon and Name */}
 				<div
 					className={cn(
-						"flex items-center gap-3 flex-1 min-w-0",
+						"flex items-start gap-3 flex-1",
 						isRTL ? "flex-row-reverse" : "flex-row"
 					)}
 				>
 					<Avatar
-						size={40}
+						size={48}
 						icon={<HomeOutlined />}
 						className="flex-shrink-0 bg-primary/10 text-primary"
 					/>
 					<div className="flex-1 min-w-0">
-						<Paragraph
-							className="!mb-1 text-base font-semibold text-card-foreground"
-							ellipsis={{ rows: 1, tooltip: true }}
+						<Title
+							level={5}
+							className={cn(
+								"!mb-0 !text-base font-semibold text-card-foreground break-words",
+								isRTL ? "text-right" : "text-left"
+							)}
+							style={{
+								wordBreak: "break-word",
+								overflowWrap: "break-word",
+								hyphens: "auto"
+							}}
 						>
 							{court.name}
-						</Paragraph>
-						<Text type="secondary" className="text-xs">
-							{formatDate(court.createdAt)}
-						</Text>
+						</Title>
 					</div>
 				</div>
 
 				{/* Action Buttons */}
-				<Space size="small" className="card-actions flex-shrink-0">
+				<div
+					className={cn(
+						"flex justify-end gap-2 card-actions pt-2 border-t border-border",
+						isRTL ? "flex-row-reverse" : "flex-row"
+					)}
+				>
 					<Tooltip title={t("ui.edit")}>
 						<Button
 							type="text"
+							size="small"
 							icon={<EditOutlined />}
-							onClick={(e) => {
-								e.stopPropagation();
-								onEdit(court);
-							}}
-							className="hover:text-primary"
+							onClick={handleEdit}
+							className="hover:text-primary hover:bg-primary/10"
 						/>
 					</Tooltip>
 					<Tooltip title={t("ui.delete")}>
 						<Button
 							type="text"
+							size="small"
 							danger
 							icon={<DeleteOutlined />}
-							onClick={(e) => {
-								e.stopPropagation();
-								onDelete(court);
-							}}
-							className="hover:text-destructive"
+							onClick={handleDelete}
+							className="hover:text-destructive hover:bg-destructive/10"
 						/>
 					</Tooltip>
-				</Space>
+				</div>
 			</div>
 		</Card>
 	);

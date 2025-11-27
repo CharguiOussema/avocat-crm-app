@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+/*
+ * Developer: Claude Code
+ * Company: Avocat Project
+ * Date: 11/27/2025
+ */
+
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   Card,
-  Table,
   Button,
   Space,
   Modal,
@@ -9,32 +14,33 @@ import {
   Input,
   message,
   Typography,
-  Popconfirm,
-  Tooltip,
+  Alert,
 } from 'antd';
 import {
   PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
   ApartmentOutlined,
   SearchOutlined,
+  ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQueryClient } from 'react-query';
 import { typeLawsuitService } from '../../../services/TypeLawsuitService';
 import { queryKeys } from '../../../services/QueryClientManager';
 import { useApp } from '../../../hooks';
-import { usePagination } from '../../../hooks/usePagination';
 import {
   TypeLawsuitModelType,
   CreateTypeLawsuitBodyRequest,
   UpdateTypeLawsuitBodyRequest,
 } from '../../../models/typeLawsuit';
 import { cn } from '../../../utils/cn';
-import type { ColumnsType } from 'antd/es/table';
+import { useInfiniteTypeLawsuits } from '../../../hooks/useInfiniteTypeLawsuits';
+import { TypeLawsuitCard } from './TypeLawsuitCard';
+import { TypeLawsuitCardSkeleton } from './TypeLawsuitCardSkeleton';
+import { getErrorMessage, logError } from '../../../utils/errorHandling';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { Search } = Input;
+const { confirm } = Modal;
 
 interface TypeLawsuitFormValues {
   name: string;
@@ -50,46 +56,65 @@ export const TypeLawsuit: React.FC = () => {
   const [editingType, setEditingType] = useState<TypeLawsuitModelType | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const { pagination, handleTableChange, setPagination } = usePagination(1, 10);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // Fetch type lawsuit data
+  // Use infinite scroll hook
   const {
-    data: typesData,
+    data,
+    error,
     isLoading,
-  } = useQuery(
-    [queryKeys.TYPE_LAWSUITS, pagination.current, pagination.pageSize, searchText],
-    () =>
-      typeLawsuitService.getAll({
-        page: pagination.current,
-        limit: pagination.pageSize,
-        search: searchText || undefined,
-      }),
-    {
-      keepPreviousData: true,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteTypeLawsuits({
+    search: searchText,
+    limit: 20,
+  });
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (first.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
-  );
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Handle search
-  const handleSearch = (value: string) => {
+  const handleSearch = useCallback((value: string) => {
     setSearchText(value);
-    setPagination({ ...pagination, current: 1 });
-  };
+  }, []);
 
   // Open modal for create
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     setEditingType(null);
     form.resetFields();
     setIsModalVisible(true);
-  };
+  }, [form]);
 
   // Open modal for edit
-  const handleEdit = (type: TypeLawsuitModelType) => {
+  const handleEdit = useCallback((type: TypeLawsuitModelType) => {
     setEditingType(type);
     form.setFieldsValue({
       name: type.name,
     });
     setIsModalVisible(true);
-  };
+  }, [form]);
 
   // Handle modal submit
   const handleSubmit = async (values: TypeLawsuitFormValues) => {
@@ -120,7 +145,7 @@ export const TypeLawsuit: React.FC = () => {
       setIsModalVisible(false);
       form.resetFields();
     } catch (error) {
-      console.error('Error saving type lawsuit:', error);
+      logError(error, 'Error saving type lawsuit');
       message.error(
         editingType
           ? t('settings.typeLawsuit.updateError')
@@ -132,75 +157,43 @@ export const TypeLawsuit: React.FC = () => {
   };
 
   // Handle delete
-  const handleDelete = async (type: TypeLawsuitModelType) => {
-    try {
-      await typeLawsuitService.delete(type._id);
-      message.success(t('settings.typeLawsuit.deleteSuccess'));
-      queryClient.invalidateQueries(queryKeys.TYPE_LAWSUITS);
-    } catch (error) {
-      console.error('Error deleting type lawsuit:', error);
-      message.error(t('settings.typeLawsuit.deleteError'));
-    }
-  };
+  const handleDelete = useCallback((type: TypeLawsuitModelType) => {
+    confirm({
+      title: t('settings.typeLawsuit.deleteConfirm'),
+      icon: <ExclamationCircleOutlined />,
+      content: t('settings.typeLawsuit.deleteConfirmDescription', { name: type.name }),
+      okText: t('ui.yes'),
+      cancelText: t('ui.no'),
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          await typeLawsuitService.delete(type._id);
+          message.success(t('settings.typeLawsuit.deleteSuccess'));
+          queryClient.invalidateQueries(queryKeys.TYPE_LAWSUITS);
+        } catch (error) {
+          logError(error, 'Error deleting type lawsuit');
+          message.error(t('settings.typeLawsuit.deleteError'));
+        }
+      },
+    });
+  }, [t, queryClient]);
 
-  // Table columns
-  const columns: ColumnsType<TypeLawsuitModelType> = [
-    {
-      title: t('settings.typeLawsuit.table.name'),
-      dataIndex: 'name',
-      key: 'name',
-      ellipsis: true,
-      render: (text: string) => (
-        <Text strong className="text-card-foreground">
-          {text}
-        </Text>
-      ),
-    },
-    {
-      title: t('settings.typeLawsuit.table.createdAt'),
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      width: 200,
-      render: (date: string) => (
-        <Text className="text-muted-foreground">
-          {new Date(date).toLocaleDateString()}
-        </Text>
-      ),
-    },
-    {
-      title: t('settings.typeLawsuit.table.actions'),
-      key: 'actions',
-      width: 120,
-      align: 'center',
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title={t('ui.edit')}>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => handleEdit(record)}
-              className="text-blue-600 hover:text-blue-700"
-            />
-          </Tooltip>
-          <Popconfirm
-            title={t('settings.typeLawsuit.deleteConfirm')}
-            description={t('settings.typeLawsuit.deleteConfirmDescription', { name: record.name })}
-            onConfirm={() => handleDelete(record)}
-            okText={t('ui.yes')}
-            cancelText={t('ui.no')}
-          >
-            <Tooltip title={t('ui.delete')}>
-              <Button
-                type="text"
-                icon={<DeleteOutlined />}
-                className="text-red-600 hover:text-red-700"
-              />
-            </Tooltip>
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+  // Error state
+  if (error) {
+    return (
+      <Alert
+        message={t('settings.typeLawsuit.error.title')}
+        description={getErrorMessage(error, t('common.unexpectedError'))}
+        type='error'
+        showIcon
+        className='m-4'
+      />
+    );
+  }
+
+  // Flatten all pages into a single array of types
+  const types = data?.pages.flatMap((page) => page.docs) || [];
+  const totalTypes = data?.pages[0]?.totalDocs || 0;
 
   return (
     <div className="space-y-6">
@@ -211,7 +204,7 @@ export const TypeLawsuit: React.FC = () => {
             {t('settings.typeLawsuit.title')}
           </Title>
           <p className="text-muted-foreground">
-            {t('settings.typeLawsuit.subtitle')}
+            {t('settings.typeLawsuit.subtitle')} ({totalTypes})
           </p>
         </div>
 
@@ -227,17 +220,17 @@ export const TypeLawsuit: React.FC = () => {
             "w-full sm:w-auto"
           )}>
             <ApartmentOutlined className="text-xl text-primary" />
-            <Title level={4} className="!mb-0 text-card-foreground">
+            <Title level={5} className="!mb-0 text-card-foreground">
               {t('settings.typeLawsuit.management')}
             </Title>
           </div>
 
-          <Space className="w-full sm:w-auto">
+          <Space className="w-full sm:w-auto" wrap>
             <Search
               placeholder={t('settings.typeLawsuit.searchPlaceholder')}
               allowClear
               onSearch={handleSearch}
-              style={{ width: 300 }}
+              style={{ width: 250 }}
               enterButton={<SearchOutlined />}
             />
             <Button
@@ -251,29 +244,73 @@ export const TypeLawsuit: React.FC = () => {
           </Space>
         </div>
 
-        {/* Table */}
-        <Table
-          columns={columns}
-          dataSource={typesData?.data.docs}
-          rowKey="_id"
-          loading={isLoading}
-          pagination={{
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: typesData?.data.totalDocs,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) =>
-              t('settings.typeLawsuit.table.showTotal', {
-                start: range[0],
-                end: range[1],
-                total,
-              }),
-          }}
-          onChange={handleTableChange}
-          scroll={{ x: true }}
-          className="border-border"
-        />
+        {/* Types Grid */}
+        <div className='min-h-[400px]'>
+          {isLoading ? (
+            // Initial loading skeletons
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+              {Array.from({ length: 8 }).map((_, index) => (
+                <TypeLawsuitCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : types.length === 0 ? (
+            // Empty state
+            <Card className='border-border'>
+              <div className='flex flex-col items-center justify-center py-12 text-center'>
+                <div className='text-6xl mb-4 text-muted-foreground'>📁</div>
+                <Title level={4} className='!mb-2 text-card-foreground'>
+                  {searchText
+                    ? t('settings.typeLawsuit.empty.search')
+                    : t('settings.typeLawsuit.empty.title')}
+                </Title>
+                <p className='text-muted-foreground mb-4'>
+                  {searchText
+                    ? t('settings.typeLawsuit.empty.searchDescription')
+                    : t('settings.typeLawsuit.empty.description')}
+                </p>
+                {!searchText && (
+                  <Button
+                    type='primary'
+                    icon={<PlusOutlined />}
+                    onClick={handleCreate}
+                  >
+                    {t('settings.typeLawsuit.addType')}
+                  </Button>
+                )}
+              </div>
+            </Card>
+          ) : (
+            <>
+              {/* Responsive Grid */}
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+                {types.map((type) => (
+                  <TypeLawsuitCard
+                    key={type._id}
+                    type={type}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+
+              {/* Load more trigger */}
+              <div ref={loadMoreRef} className='mt-8 text-center'>
+                {isFetchingNextPage && (
+                  <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4'>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <TypeLawsuitCardSkeleton key={`loading-${index}`} />
+                    ))}
+                  </div>
+                )}
+                {!hasNextPage && types.length > 0 && (
+                  <p className='text-muted-foreground py-4'>
+                    {t('settings.typeLawsuit.pagination.endOfList')}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </Card>
 
       {/* Create/Edit Modal */}

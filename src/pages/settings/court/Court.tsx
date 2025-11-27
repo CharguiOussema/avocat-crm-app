@@ -14,12 +14,10 @@ import {
   Input,
   message,
   Typography,
-  Checkbox,
   Alert,
 } from 'antd';
 import {
   PlusOutlined,
-  DeleteOutlined,
   HomeOutlined,
   SearchOutlined,
   ExclamationCircleOutlined,
@@ -58,7 +56,6 @@ export const Court: React.FC = () => {
   const [editingCourt, setEditingCourt] = useState<CourtModelType | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [selectedCourtIds, setSelectedCourtIds] = useState<string[]>([]);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Use infinite scroll hook
@@ -101,7 +98,6 @@ export const Court: React.FC = () => {
   // Handle search
   const handleSearch = useCallback((value: string) => {
     setSearchText(value);
-    setSelectedCourtIds([]);
   }, []);
 
   // Open modal for create
@@ -182,66 +178,6 @@ export const Court: React.FC = () => {
     });
   }, [t, queryClient]);
 
-  // Handle bulk deletion
-  const handleBulkDelete = useCallback(() => {
-    if (selectedCourtIds.length === 0) {
-      message.warning(t('settings.court.bulk.noSelection'));
-      return;
-    }
-
-    confirm({
-      title: t('settings.court.bulk.delete.title'),
-      icon: <ExclamationCircleOutlined />,
-      content: t('settings.court.bulk.delete.confirm', {
-        count: selectedCourtIds.length,
-      }),
-      okText: t('ui.delete'),
-      okType: 'danger',
-      cancelText: t('ui.cancel'),
-      onOk: async () => {
-        try {
-          await Promise.all(
-            selectedCourtIds.map((id) => courtService.delete(id))
-          );
-          message.success(
-            t('settings.court.bulk.delete.success', { count: selectedCourtIds.length })
-          );
-          setSelectedCourtIds([]);
-          queryClient.invalidateQueries(queryKeys.COURTS);
-        } catch (error) {
-          logError(error, 'Error bulk deleting courts');
-          message.error(t('settings.court.bulk.delete.error'));
-        }
-      },
-    });
-  }, [selectedCourtIds, t, queryClient]);
-
-  // Handle card selection
-  const handleCardSelect = useCallback((courtId: string, selected: boolean) => {
-    setSelectedCourtIds((prev) => {
-      if (selected) {
-        return [...prev, courtId];
-      } else {
-        return prev.filter((id) => id !== courtId);
-      }
-    });
-  }, []);
-
-  // Handle select all
-  const handleSelectAll = useCallback(
-    (checked: boolean) => {
-      if (checked && data?.pages) {
-        const allCourtIds = data.pages.flatMap((page) =>
-          page.docs.map((court) => court._id)
-        );
-        setSelectedCourtIds(allCourtIds);
-      } else {
-        setSelectedCourtIds([]);
-      }
-    },
-    [data]
-  );
-
   // Error state
   if (error) {
     return (
@@ -258,7 +194,6 @@ export const Court: React.FC = () => {
   // Flatten all pages into a single array of courts
   const courts = data?.pages.flatMap((page) => page.docs) || [];
   const totalCourts = data?.pages[0]?.totalDocs || 0;
-  const allSelected = courts.length > 0 && selectedCourtIds.length === courts.length;
 
   return (
     <div className="space-y-6">
@@ -309,27 +244,6 @@ export const Court: React.FC = () => {
           </Space>
         </div>
 
-        {/* Selection Actions */}
-        {courts.length > 0 && (
-          <div className="mb-4 flex justify-between items-center">
-            <Checkbox
-              checked={allSelected}
-              indeterminate={
-                selectedCourtIds.length > 0 &&
-                selectedCourtIds.length < courts.length
-              }
-              onChange={(e) => handleSelectAll(e.target.checked)}
-            >
-              {t('settings.court.selectAll')} ({selectedCourtIds.length}/{courts.length})
-            </Checkbox>
-            {selectedCourtIds.length > 0 && (
-              <Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
-                {t('settings.court.bulk.delete.button', { count: selectedCourtIds.length })}
-              </Button>
-            )}
-          </div>
-        )}
-
         {/* Courts Grid */}
         <div className='min-h-[400px]'>
           {isLoading ? (
@@ -375,8 +289,6 @@ export const Court: React.FC = () => {
                     court={court}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    selected={selectedCourtIds.includes(court._id)}
-                    onSelect={handleCardSelect}
                   />
                 ))}
               </div>

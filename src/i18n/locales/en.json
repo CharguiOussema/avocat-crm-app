@@ -671,6 +671,7 @@
       "searchPlaceholder": "Search courts...",
       "addCourt": "Add Court",
       "editCourt": "Edit Court",
+      "selectAll": "Select All",
       "table": {
         "name": "Court Name",
         "createdAt": "Created Date",
@@ -690,7 +691,29 @@
       "updateError": "Failed to update court",
       "deleteError": "Failed to delete court",
       "deleteConfirm": "Delete Court",
-      "deleteConfirmDescription": "Are you sure you want to delete {{name}}? This action cannot be undone."
+      "deleteConfirmDescription": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+      "pagination": {
+        "endOfList": "You've reached the end of the list"
+      },
+      "bulk": {
+        "noSelection": "Please select courts to delete",
+        "delete": {
+          "title": "Delete Courts",
+          "confirm": "Are you sure you want to delete {{count}} court(s)? This action cannot be undone.",
+          "button": "Delete ({{count}})",
+          "success": "Successfully deleted {{count}} court(s)",
+          "error": "Failed to delete selected courts"
+        }
+      },
+      "empty": {
+        "title": "No courts yet",
+        "description": "Start by adding your first court to the system",
+        "search": "No courts found",
+        "searchDescription": "Try adjusting your search criteria"
+      },
+      "error": {
+        "title": "Error loading courts"
+      }
     },
     "lawsuitStage": {
       "title": "Lawsuit Stage Management",
@@ -718,7 +741,19 @@
       "updateError": "Failed to update lawsuit stage",
       "deleteError": "Failed to delete lawsuit stage",
       "deleteConfirm": "Delete Lawsuit Stage",
-      "deleteConfirmDescription": "Are you sure you want to delete {{name}}? This action cannot be undone."
+      "deleteConfirmDescription": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+      "pagination": {
+        "endOfList": "You've reached the end of the list"
+      },
+      "empty": {
+        "title": "No lawsuit stages yet",
+        "description": "Start by adding your first lawsuit stage to the system",
+        "search": "No lawsuit stages found",
+        "searchDescription": "Try adjusting your search criteria"
+      },
+      "error": {
+        "title": "Error loading lawsuit stages"
+      }
     },
     "typeLawsuit": {
       "title": "Lawsuit Type Management",
@@ -746,7 +781,19 @@
       "updateError": "Failed to update lawsuit type",
       "deleteError": "Failed to delete lawsuit type",
       "deleteConfirm": "Delete Lawsuit Type",
-      "deleteConfirmDescription": "Are you sure you want to delete {{name}}? This action cannot be undone."
+      "deleteConfirmDescription": "Are you sure you want to delete {{name}}? This action cannot be undone.",
+      "pagination": {
+        "endOfList": "You've reached the end of the list"
+      },
+      "empty": {
+        "title": "No lawsuit types yet",
+        "description": "Start by adding your first lawsuit type to the system",
+        "search": "No lawsuit types found",
+        "searchDescription": "Try adjusting your search criteria"
+      },
+      "error": {
+        "title": "Error loading lawsuit types"
+      }
     }
   },
   "error": {

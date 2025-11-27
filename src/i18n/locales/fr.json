@@ -671,6 +671,7 @@
       "searchPlaceholder": "Rechercher des tribunaux...",
       "addCourt": "Ajouter un Tribunal",
       "editCourt": "Modifier le Tribunal",
+      "selectAll": "Tout Sélectionner",
       "table": {
         "name": "Nom du Tribunal",
         "createdAt": "Date de Création",
@@ -690,7 +691,29 @@
       "updateError": "Échec de la mise à jour du tribunal",
       "deleteError": "Échec de la suppression du tribunal",
       "deleteConfirm": "Supprimer le Tribunal",
-      "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée."
+      "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée.",
+      "pagination": {
+        "endOfList": "Vous avez atteint la fin de la liste"
+      },
+      "bulk": {
+        "noSelection": "Veuillez sélectionner des tribunaux à supprimer",
+        "delete": {
+          "title": "Supprimer les Tribunaux",
+          "confirm": "Êtes-vous sûr de vouloir supprimer {{count}} tribunal(x) ? Cette action ne peut pas être annulée.",
+          "button": "Supprimer ({{count}})",
+          "success": "{{count}} tribunal(x) supprimé(s) avec succès",
+          "error": "Échec de la suppression des tribunaux sélectionnés"
+        }
+      },
+      "empty": {
+        "title": "Aucun tribunal pour le moment",
+        "description": "Commencez par ajouter votre premier tribunal au système",
+        "search": "Aucun tribunal trouvé",
+        "searchDescription": "Essayez d'ajuster vos critères de recherche"
+      },
+      "error": {
+        "title": "Erreur lors du chargement des tribunaux"
+      }
     },
     "lawsuitStage": {
       "title": "Gestion des Étapes de Litige",
@@ -718,7 +741,19 @@
       "updateError": "Échec de la mise à jour de l'étape de litige",
       "deleteError": "Échec de la suppression de l'étape de litige",
       "deleteConfirm": "Supprimer l'Étape de Litige",
-      "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée."
+      "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée.",
+      "pagination": {
+        "endOfList": "Vous avez atteint la fin de la liste"
+      },
+      "empty": {
+        "title": "Aucune étape de litige pour le moment",
+        "description": "Commencez par ajouter votre première étape de litige au système",
+        "search": "Aucune étape de litige trouvée",
+        "searchDescription": "Essayez d'ajuster vos critères de recherche"
+      },
+      "error": {
+        "title": "Erreur lors du chargement des étapes de litige"
+      }
     },
     "typeLawsuit": {
       "title": "Gestion des Types de Litige",
@@ -746,7 +781,19 @@
       "updateError": "Échec de la mise à jour du type de litige",
       "deleteError": "Échec de la suppression du type de litige",
       "deleteConfirm": "Supprimer le Type de Litige",
-      "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée."
+      "deleteConfirmDescription": "Êtes-vous sûr de vouloir supprimer {{name}} ? Cette action ne peut pas être annulée.",
+      "pagination": {
+        "endOfList": "Vous avez atteint la fin de la liste"
+      },
+      "empty": {
+        "title": "Aucun type de litige pour le moment",
+        "description": "Commencez par ajouter votre premier type de litige au système",
+        "search": "Aucun type de litige trouvé",
+        "searchDescription": "Essayez d'ajuster vos critères de recherche"
+      },
+      "error": {
+        "title": "Erreur lors du chargement des types de litige"
+      }
     }
   },
   "error": {
