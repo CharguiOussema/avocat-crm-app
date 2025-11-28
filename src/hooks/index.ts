@@ -7,10 +7,13 @@ export { useFetch, usePost, usePut, useDelete, useLogin } from './useFetch';
 
 // Export custom fetch hooks
 export { useFetchClients } from './useFetchClients';
+export { useFetchClientById } from './useFetchClientById';
 export { useInfiniteClients } from './useInfiniteClients';
+export { useFetchClientPaymentsByClient } from './useFetchClientPaymentsByClient';
 export { useFetchUsers } from './useFetchUsers';
 export { useInfiniteUsers } from './useInfiniteUsers';
 export { useFetchLawsuits } from './useFetchLawsuits';
+export { useFetchLawsuitsByClient } from './useFetchLawsuitsByClient';
 export { useInfiniteLawsuits } from './useInfiniteLawsuits';
 export { useFetchEvents } from './useFetchEvents';
 export { useInfiniteEvents } from './useInfiniteEvents';

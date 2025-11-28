@@ -102,7 +102,8 @@
     "error": {
       "title": "فشل في تحميل العملاء",
       "fetchTitle": "فشل في تحميل العميل",
-      "fetchFailed": "تعذر جلب بيانات العميل"
+      "fetchFailed": "تعذر جلب بيانات العميل",
+      "notFound": "لم يتم العثور على العميل أو تم حذفه"
     },
     "create": {
       "success": "تم إنشاء {{name}} بنجاح",
@@ -147,6 +148,42 @@
       "description": "ابدأ بإضافة عميلك الأول",
       "search": "لا يوجد عملاء يطابقون بحثك",
       "searchDescription": "حاول تعديل معايير البحث"
+    },
+    "details": {
+      "subtitle": "عرض معلومات العميل وتاريخ الدفع",
+      "contactInformation": "معلومات الاتصال",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "cin": "رقم الهوية الوطنية",
+      "location": "الموقع",
+      "createdAt": "تاريخ الإنشاء",
+      "updatedAt": "آخر تحديث",
+      "createdBy": "أنشأه",
+      "clientSince": "عميل منذ",
+      "paymentStatistics": "إحصائيات الدفع",
+      "totalPayments": "إجمالي سجلات الدفع",
+      "targetAmount": "إجمالي المبلغ المستهدف",
+      "paidAmount": "إجمالي المدفوع",
+      "remainingAmount": "المبلغ المتبقي",
+      "paymentProgress": "تقدم الدفع الإجمالي",
+      "clientPayments": "مدفوعات العميل",
+      "viewAllPayments": "عرض جميع المدفوعات",
+      "noPayments": "لم يتم العثور على سجلات دفع لهذا العميل",
+      "targetPrice": "المستهدف",
+      "payments": "الدفعات",
+      "lawsuitStatistics": "إحصائيات الدعاوى",
+      "totalLawsuits": "إجمالي الدعاوى",
+      "completedLawsuits": "المكتملة",
+      "inProgressLawsuits": "قيد التنفيذ",
+      "scheduledLawsuits": "المجدولة",
+      "cancelledLawsuits": "الملغاة",
+      "lawsuits": "الدعاوى القضائية",
+      "viewAllLawsuits": "عرض جميع الدعاوى",
+      "noLawsuits": "لم يتم العثور على دعاوى لهذا العميل",
+      "lawsuitType": "النوع",
+      "lawsuitStage": "المرحلة",
+      "court": "المحكمة",
+      "currency": "دينار"
     },
     "legacy": {
       "title": "العملاء",

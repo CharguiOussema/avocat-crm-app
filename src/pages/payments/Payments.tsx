@@ -128,18 +128,9 @@ export const Payments: React.FC = () => {
 		navigate("/payments/add");
 	}, [navigate]);
 
-	// Navigate to edit payment page
-	const handleEditPayment = useCallback(
-		(paymentId: string) => {
-			navigate(`/payments/${paymentId}/edit`);
-		},
-		[navigate]
-	);
-
 	// Table columns configuration using custom hook
 	const columns = usePaymentTableColumns({
 		t,
-		onEdit: handleEditPayment,
 		onDelete: handleDelete,
 	});
 

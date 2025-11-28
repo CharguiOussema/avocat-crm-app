@@ -102,7 +102,8 @@
     "error": {
       "title": "Failed to Load Clients",
       "fetchTitle": "Failed to Load Client",
-      "fetchFailed": "Could not fetch client data"
+      "fetchFailed": "Could not fetch client data",
+      "notFound": "Client not found or has been deleted"
     },
     "create": {
       "success": "{{name}} has been created successfully",
@@ -147,6 +148,41 @@
       "description": "Get started by adding your first client",
       "search": "No clients match your search",
       "searchDescription": "Try adjusting your search criteria"
+    },
+    "details": {
+      "subtitle": "View client information and payment history",
+      "contactInformation": "Contact Information",
+      "email": "Email",
+      "phone": "Phone",
+      "cin": "National ID",
+      "location": "Location",
+      "createdAt": "Created At",
+      "updatedAt": "Last Updated",
+      "createdBy": "Created By",
+      "clientSince": "Client Since",
+      "paymentStatistics": "Payment Statistics",
+      "totalPayments": "Total Payment Records",
+      "targetAmount": "Total Target Amount",
+      "paidAmount": "Total Paid",
+      "remainingAmount": "Remaining Amount",
+      "paymentProgress": "Overall Payment Progress",
+      "clientPayments": "Client Payments",
+      "viewAllPayments": "View All Payments",
+      "noPayments": "No payment records found for this client",
+      "targetPrice": "Target",
+      "payments": "Payments",
+      "lawsuitStatistics": "Lawsuit Statistics",
+      "totalLawsuits": "Total Lawsuits",
+      "completedLawsuits": "Completed",
+      "inProgressLawsuits": "In Progress",
+      "scheduledLawsuits": "Scheduled",
+      "cancelledLawsuits": "Cancelled",
+      "lawsuits": "Lawsuits",
+      "viewAllLawsuits": "View All Lawsuits",
+      "noLawsuits": "No lawsuits found for this client",
+      "lawsuitType": "Type",
+      "lawsuitStage": "Stage",
+      "court": "Court"
     },
     "legacy": {
       "title": "Clients",

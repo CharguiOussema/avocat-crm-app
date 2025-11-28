@@ -8,7 +8,7 @@ import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Login } from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
-import { Clients, AddEditClient } from "./pages/clients";
+import { Clients, ClientDetails, AddEditClient } from "./pages/clients";
 import { Users, AddEditUser } from "./pages/users";
 import { Lawsuits, AddEditLawsuit } from "./pages/lawsuits";
 import { ClientPayments, AddEditClientPayment, ClientPaymentDetail } from "./pages/payments";
@@ -99,6 +99,7 @@ const AppContent = () => {
 											<Route path='/clients' element={<Clients />} />
 											<Route path='/clients/add' element={<AddEditClient />} />
 											<Route path='/clients/:id/edit' element={<AddEditClient />} />
+											<Route path='/clients/:id' element={<ClientDetails />} />
 											<Route path='/users' element={<Users />} />
 											<Route path='/users/add' element={<AddEditUser />} />
 											<Route path='/users/:id/edit' element={<AddEditUser />} />

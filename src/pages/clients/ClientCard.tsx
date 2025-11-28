@@ -19,6 +19,7 @@ import { ClientItemResponseType } from "../../models/client";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const { Text, Paragraph } = Typography;
 
@@ -48,18 +49,25 @@ export const ClientCard: React.FC<ClientCardProps> = ({
 }) => {
 	const { t } = useTranslation();
 	const { isRTL } = useApp();
+	const navigate = useNavigate();
 
 	const handleCardClick = (e: React.MouseEvent) => {
-		// Prevent selection when clicking action buttons
+		// Prevent navigation when clicking action buttons
 		if (
 			(e.target as HTMLElement).closest(".card-actions") ||
 			(e.target as HTMLElement).closest(".ant-btn")
 		) {
 			return;
 		}
-		if (onSelect) {
+
+		// If shift key is pressed, toggle selection for bulk operations
+		if (e.shiftKey && onSelect) {
 			onSelect(client._id, !selected);
+			return;
 		}
+
+		// Default behavior: navigate to client details
+		navigate(`/clients/${client._id}`);
 	};
 
 	return (
@@ -108,7 +116,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
 
 				{/* Action Buttons */}
 				<Space size="small" className="card-actions flex-shrink-0">
-					<Tooltip title="Edit">
+					<Tooltip title={t("ui.edit")}>
 						<Button
 							type="text"
 							icon={<EditOutlined />}
@@ -119,7 +127,7 @@ export const ClientCard: React.FC<ClientCardProps> = ({
 							className="hover:text-primary"
 						/>
 					</Tooltip>
-					<Tooltip title="Delete">
+					<Tooltip title={t("ui.delete")}>
 						<Button
 							type="text"
 							danger
