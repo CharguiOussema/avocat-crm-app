@@ -102,7 +102,8 @@
     "error": {
       "title": "Échec du Chargement des Clients",
       "fetchTitle": "Échec du Chargement du Client",
-      "fetchFailed": "Impossible de récupérer les données du client"
+      "fetchFailed": "Impossible de récupérer les données du client",
+      "notFound": "Client introuvable ou supprimé"
     },
     "create": {
       "success": "{{name}} a été créé avec succès",
@@ -147,6 +148,42 @@
       "description": "Commencez par ajouter votre premier client",
       "search": "Aucun client ne correspond à votre recherche",
       "searchDescription": "Essayez d'ajuster vos critères de recherche"
+    },
+    "details": {
+      "subtitle": "Afficher les informations client et l'historique des paiements",
+      "contactInformation": "Coordonnées",
+      "email": "Email",
+      "phone": "Téléphone",
+      "cin": "Numéro National",
+      "location": "Localisation",
+      "createdAt": "Créé le",
+      "updatedAt": "Dernière Mise à Jour",
+      "createdBy": "Créé par",
+      "clientSince": "Client Depuis",
+      "paymentStatistics": "Statistiques de Paiement",
+      "totalPayments": "Total des Enregistrements de Paiement",
+      "targetAmount": "Montant Total Cible",
+      "paidAmount": "Total Payé",
+      "remainingAmount": "Montant Restant",
+      "paymentProgress": "Progression Globale des Paiements",
+      "clientPayments": "Paiements Client",
+      "viewAllPayments": "Voir Tous les Paiements",
+      "noPayments": "Aucun enregistrement de paiement trouvé pour ce client",
+      "targetPrice": "Cible",
+      "payments": "Paiements",
+      "lawsuitStatistics": "Statistiques des Litiges",
+      "totalLawsuits": "Total des Litiges",
+      "completedLawsuits": "Terminés",
+      "inProgressLawsuits": "En Cours",
+      "scheduledLawsuits": "Programmés",
+      "cancelledLawsuits": "Annulés",
+      "lawsuits": "Litiges",
+      "viewAllLawsuits": "Voir Tous les Litiges",
+      "noLawsuits": "Aucun litige trouvé pour ce client",
+      "lawsuitType": "Type",
+      "lawsuitStage": "Étape",
+      "court": "Tribunal",
+      "currency": "TND"
     },
     "legacy": {
       "title": "Clients",

@@ -143,7 +143,7 @@ export const LawsuitCard: React.FC<LawsuitCardProps> = ({
 
 			{/* Lawsuit Details */}
 			<div className="space-y-2 mb-3">
-				{lawsuit.lawsuitType && (
+				{lawsuit.lawsuitType && typeof lawsuit.lawsuitType === 'object' && (
 					<div
 						className={cn(
 							"flex items-center gap-2",
@@ -152,12 +152,12 @@ export const LawsuitCard: React.FC<LawsuitCardProps> = ({
 					>
 						<FileTextOutlined className="text-muted-foreground flex-shrink-0 text-xs" />
 						<Text className="text-sm text-card-foreground">
-							{lawsuit.lawsuitType.name}
+							{(lawsuit.lawsuitType as { name: string }).name}
 						</Text>
 					</div>
 				)}
 
-				{lawsuit.lawsuitStage && (
+				{lawsuit.lawsuitStage && typeof lawsuit.lawsuitStage === 'object' && (
 					<div
 						className={cn(
 							"flex items-center gap-2",
@@ -165,12 +165,12 @@ export const LawsuitCard: React.FC<LawsuitCardProps> = ({
 						)}
 					>
 						<Tag color="blue" className="!m-0">
-							{lawsuit.lawsuitStage.name}
+							{(lawsuit.lawsuitStage as { name: string }).name}
 						</Tag>
 					</div>
 				)}
 
-				{lawsuit.court && (
+				{lawsuit.court && typeof lawsuit.court === 'object' && (
 					<div
 						className={cn(
 							"flex items-center gap-2",
@@ -182,7 +182,7 @@ export const LawsuitCard: React.FC<LawsuitCardProps> = ({
 							className="!mb-0 text-sm text-card-foreground"
 							ellipsis={{ rows: 1, tooltip: true }}
 						>
-							{lawsuit.court.name}
+							{(lawsuit.court as { name: string }).name}
 						</Paragraph>
 					</div>
 				)}
@@ -215,21 +215,25 @@ export const LawsuitCard: React.FC<LawsuitCardProps> = ({
 								backgroundColor: "#fde3cf",
 							}}
 						>
-							{lawsuit.clients.map((client) => (
-								<Tooltip key={client._id} title={client.fullName}>
-									<Avatar
-										src={
-											client.avatar
-												? `/api/files/serve/client-avatar/${client._id}`
-												: undefined
-										}
-										icon={!client.avatar ? <UserOutlined /> : undefined}
-										className="bg-primary/10 text-primary"
-									>
-										{!client.avatar && client.fullName?.charAt(0).toUpperCase()}
-									</Avatar>
-								</Tooltip>
-							))}
+							{lawsuit.clients.map((client) => {
+								const clientObj = typeof client === 'object' ? client as { _id: string; fullName: string; avatar?: string } : null;
+								if (!clientObj) return null;
+								return (
+									<Tooltip key={clientObj._id} title={clientObj.fullName}>
+										<Avatar
+											src={
+												clientObj.avatar
+													? `/api/files/serve/client-avatar/${clientObj._id}`
+													: undefined
+											}
+											icon={!clientObj.avatar ? <UserOutlined /> : undefined}
+											className="bg-primary/10 text-primary"
+										>
+											{!clientObj.avatar && clientObj.fullName?.charAt(0).toUpperCase()}
+										</Avatar>
+									</Tooltip>
+								);
+							})}
 						</Avatar.Group>
 					</div>
 				)}
