@@ -64,10 +64,10 @@ export const Settings: React.FC = () => {
     },
   ];
 
-  // Filter menu items based on user roles
+  // Filter menu items based on user role
   const filteredMenuItems = menuItems.filter(item => {
     if (!item.roles) return true;
-    return currentUser?.roles.some((role: USER_ROLES) => item.roles!.includes(role));
+    return currentUser?.role && item.roles.includes(currentUser.role);
   });
 
   // Get current selected key from path

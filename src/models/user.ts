@@ -1,4 +1,17 @@
-import { USER_ROLES } from "./consts";
+import { USER_ROLES, APP_ACCESS } from "./consts";
+
+export type UserAccessType = {
+  dashboard: APP_ACCESS;
+  clients: APP_ACCESS;
+  users: APP_ACCESS;
+  lawsuits: APP_ACCESS;
+  payments: APP_ACCESS;
+  folders: APP_ACCESS;
+  events: APP_ACCESS;
+  courts: APP_ACCESS;
+  lawsuitStages: APP_ACCESS;
+  lawsuitTypes: APP_ACCESS;
+};
 
 export type UserModelType = {
   _id: string;
@@ -6,7 +19,8 @@ export type UserModelType = {
   email: string;
   phoneNumber: string | null;
   password: string;
-  roles: USER_ROLES[];
+  role: USER_ROLES;
+  userAccess: UserAccessType;
   cin: string | null;
   avatar: string | null;
   company: string;
@@ -19,10 +33,16 @@ export type UserModelType = {
 
 export type CreateUserBodyRequest = Pick<
   UserModelType,
-  "avatar" | "cin" | "email" | "fullName" | "password" | "phoneNumber" | "roles"
->;
-export type UpdateUserBodyRequest = Pick<UserModelType, "_id"> &
-  CreateUserBodyRequest;
+  "avatar" | "cin" | "email" | "fullName" | "password" | "phoneNumber" | "role"
+> & {
+  userAccess?: Partial<UserAccessType>;
+};
+export type UpdateUserBodyRequest = Pick<UserModelType, "_id"> & Pick<
+  UserModelType,
+  "avatar" | "cin" | "email" | "fullName" | "phoneNumber" | "role"
+> & {
+  userAccess?: Partial<UserAccessType>;
+};
 export type LoginBodyRequest = Pick<UserModelType, "email" | "password">;
 export type ChangePasswordBodyRequest = {
   currentPassword: string;
@@ -30,7 +50,7 @@ export type ChangePasswordBodyRequest = {
 };
 export type GetAllUsersQueryRequest = {
   search?: string;
-  roles?: string;
+  role?: USER_ROLES;
   limit: number;
   page: number;
 };
@@ -44,7 +64,8 @@ export type UserItemResponseType = Pick<
   | "email"
   | "phoneNumber"
   | "cin"
-  | "roles"
+  | "role"
+  | "userAccess"
   | "createdAt"
   | "updatedAt"
   | "createdBy"

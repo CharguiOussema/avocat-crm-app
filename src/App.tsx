@@ -6,6 +6,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ProtectedModuleRoute } from "./components/ProtectedModuleRoute";
 import { Login } from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Clients, ClientDetails, AddEditClient } from "./pages/clients";
@@ -95,31 +96,187 @@ const AppContent = () => {
 								<ProtectedRoute>
 									<Layout>
 										<Routes>
-											<Route path='/' element={<Dashboard />} />
-											<Route path='/clients' element={<Clients />} />
-											<Route path='/clients/add' element={<AddEditClient />} />
-											<Route path='/clients/:id/edit' element={<AddEditClient />} />
-											<Route path='/clients/:id' element={<ClientDetails />} />
-											<Route path='/users' element={<Users />} />
-											<Route path='/users/add' element={<AddEditUser />} />
-											<Route path='/users/:id/edit' element={<AddEditUser />} />
-											<Route path='/lawsuits' element={<Lawsuits />} />
-											<Route path='/lawsuits/add' element={<AddEditLawsuit />} />
-											<Route path='/lawsuits/:id/edit' element={<AddEditLawsuit />} />
-											<Route path='/payments' element={<ClientPayments />} />
-											<Route path='/payments/add' element={<AddEditClientPayment />} />
-											<Route path='/payments/:id' element={<ClientPaymentDetail />} />
-											<Route path='/payments/:id/edit' element={<AddEditClientPayment />} />
-											<Route path='/folders' element={<Folders />} />
-											<Route path='/events' element={<Events />} />
+											{/* Dashboard */}
+											<Route
+												path='/'
+												element={
+													<ProtectedModuleRoute module='dashboard'>
+														<Dashboard />
+													</ProtectedModuleRoute>
+												}
+											/>
+
+											{/* Clients */}
+											<Route
+												path='/clients'
+												element={
+													<ProtectedModuleRoute module='clients'>
+														<Clients />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/clients/add'
+												element={
+													<ProtectedModuleRoute module='clients' writeOnly>
+														<AddEditClient />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/clients/:id/edit'
+												element={
+													<ProtectedModuleRoute module='clients' writeOnly>
+														<AddEditClient />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/clients/:id'
+												element={
+													<ProtectedModuleRoute module='clients'>
+														<ClientDetails />
+													</ProtectedModuleRoute>
+												}
+											/>
+
+											{/* Users */}
+											<Route
+												path='/users'
+												element={
+													<ProtectedModuleRoute module='users'>
+														<Users />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/users/add'
+												element={
+													<ProtectedModuleRoute module='users' writeOnly>
+														<AddEditUser />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/users/:id/edit'
+												element={
+													<ProtectedModuleRoute module='users' writeOnly>
+														<AddEditUser />
+													</ProtectedModuleRoute>
+												}
+											/>
+
+											{/* Lawsuits */}
+											<Route
+												path='/lawsuits'
+												element={
+													<ProtectedModuleRoute module='lawsuits'>
+														<Lawsuits />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/lawsuits/add'
+												element={
+													<ProtectedModuleRoute module='lawsuits' writeOnly>
+														<AddEditLawsuit />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/lawsuits/:id/edit'
+												element={
+													<ProtectedModuleRoute module='lawsuits' writeOnly>
+														<AddEditLawsuit />
+													</ProtectedModuleRoute>
+												}
+											/>
+
+											{/* Payments */}
+											<Route
+												path='/payments'
+												element={
+													<ProtectedModuleRoute module='payments'>
+														<ClientPayments />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/payments/add'
+												element={
+													<ProtectedModuleRoute module='payments' writeOnly>
+														<AddEditClientPayment />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/payments/:id'
+												element={
+													<ProtectedModuleRoute module='payments'>
+														<ClientPaymentDetail />
+													</ProtectedModuleRoute>
+												}
+											/>
+											<Route
+												path='/payments/:id/edit'
+												element={
+													<ProtectedModuleRoute module='payments' writeOnly>
+														<AddEditClientPayment />
+													</ProtectedModuleRoute>
+												}
+											/>
+
+											{/* Folders */}
+											<Route
+												path='/folders'
+												element={
+													<ProtectedModuleRoute module='folders'>
+														<Folders />
+													</ProtectedModuleRoute>
+												}
+											/>
+
+											{/* Events */}
+											<Route
+												path='/events'
+												element={
+													<ProtectedModuleRoute module='events'>
+														<Events />
+													</ProtectedModuleRoute>
+												}
+											/>
+
+											{/* Settings */}
 											<Route path='/settings' element={<Settings />}>
 												<Route index element={<MonProfil />} />
 												<Route path='mon-profil' element={<MonProfil />} />
 												<Route path='entreprise' element={<Entreprise />} />
-												<Route path='court' element={<Court />} />
-												<Route path='lawsuit-stage' element={<LawsuitStage />} />
-												<Route path='type-lawsuit' element={<TypeLawsuit />} />
+												<Route
+													path='court'
+													element={
+														<ProtectedModuleRoute module='courts'>
+															<Court />
+														</ProtectedModuleRoute>
+													}
+												/>
+												<Route
+													path='lawsuit-stage'
+													element={
+														<ProtectedModuleRoute module='lawsuitStages'>
+															<LawsuitStage />
+														</ProtectedModuleRoute>
+													}
+												/>
+												<Route
+													path='type-lawsuit'
+													element={
+														<ProtectedModuleRoute module='lawsuitTypes'>
+															<TypeLawsuit />
+														</ProtectedModuleRoute>
+													}
+												/>
 											</Route>
+
 											{/* Catch-all route - redirect any non-existent path to dashboard */}
 											<Route path='*' element={<Navigate to='/' replace />} />
 										</Routes>

@@ -48,7 +48,7 @@ export const Entreprise: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   // Check if user has admin role
-  const isAdmin = currentUser?.roles.includes(USER_ROLES.USER_ADMIN);
+  const isAdmin = currentUser?.role === USER_ROLES.USER_ADMIN || currentUser?.role === USER_ROLES.SUPER_ADMIN;
 
   // Pre-fill form with company data from useAuth
   useEffect(() => {

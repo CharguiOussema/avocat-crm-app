@@ -57,3 +57,9 @@ export enum PAYMENT_TYPE {
   CHECK = "CHECK",
   BANK_TRANSFER = "BANK_TRANSFER",
 }
+
+export enum APP_ACCESS {
+  NO_ACCESS = "NO_ACCESS",
+  READ = "READ",
+  WRITE = "WRITE",
+}

@@ -101,6 +101,17 @@
     "fr": "French",
     "ar": "Arabic"
   },
+  "access": {
+    "noAccess": {
+      "title": "Access Denied",
+      "message": "You don't have permission to access this page. Please contact your administrator if you believe this is an error."
+    },
+    "levels": {
+      "NO_ACCESS": "No Access",
+      "READ": "Read Only",
+      "WRITE": "Full Access"
+    }
+  },
   "clients": {
     "title": "Client Management",
     "subtitle": "Manage your clients and their information",
@@ -376,10 +387,14 @@
         "placeholder": "12345678",
         "invalid": "National ID must be exactly 8 digits"
       },
-      "roles": {
-        "label": "User Roles",
-        "placeholder": "Select user roles",
-        "required": "Please select at least one role"
+      "role": {
+        "label": "User Role",
+        "placeholder": "Select user role",
+        "required": "Please select a role"
+      },
+      "userAccess": {
+        "title": "Access Permissions",
+        "subtitle": "Configure access permissions for this user"
       },
       "password": {
         "label": "Password",

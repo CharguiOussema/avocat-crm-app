@@ -1,4 +1,17 @@
-import { USER_ROLES } from "../consts";
+import { USER_ROLES, APP_ACCESS } from "../consts";
+
+export type UserAccessType = {
+  dashboard: APP_ACCESS;
+  clients: APP_ACCESS;
+  users: APP_ACCESS;
+  lawsuits: APP_ACCESS;
+  payments: APP_ACCESS;
+  folders: APP_ACCESS;
+  events: APP_ACCESS;
+  courts: APP_ACCESS;
+  lawsuitStages: APP_ACCESS;
+  lawsuitTypes: APP_ACCESS;
+};
 
 export type UserModelType = {
   _id: string;
@@ -6,7 +19,8 @@ export type UserModelType = {
   email: string;
   phoneNumber: string | null;
   password: string;
-  roles: USER_ROLES[];
+  role: USER_ROLES;
+  userAccess: UserAccessType;
   cin: string | null;
   avatar: string | null;
   company: string;
