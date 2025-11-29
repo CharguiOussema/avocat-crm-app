@@ -48,6 +48,17 @@
     "fr": "Français",
     "ar": "Arabe"
   },
+  "access": {
+    "noAccess": {
+      "title": "Accès refusé",
+      "message": "Vous n'avez pas la permission d'accéder à cette page. Veuillez contacter votre administrateur si vous pensez qu'il s'agit d'une erreur."
+    },
+    "levels": {
+      "NO_ACCESS": "Aucun accès",
+      "READ": "Lecture seule",
+      "WRITE": "Accès complet"
+    }
+  },
   "clients": {
     "title": "Gestion des Clients",
     "subtitle": "Gérez vos clients et leurs informations",
@@ -324,10 +335,14 @@
         "placeholder": "12345678",
         "invalid": "Le CIN doit contenir exactement 8 chiffres"
       },
-      "roles": {
-        "label": "Rôles de l'Utilisateur",
-        "placeholder": "Sélectionner les rôles utilisateur",
-        "required": "Veuillez sélectionner au moins un rôle"
+      "role": {
+        "label": "Rôle de l'Utilisateur",
+        "placeholder": "Sélectionner un rôle",
+        "required": "Veuillez sélectionner un rôle"
+      },
+      "userAccess": {
+        "title": "Permissions d'Accès",
+        "subtitle": "Configurez les permissions d'accès pour cet utilisateur"
       },
       "password": {
         "label": "Mot de Passe",

@@ -35,10 +35,11 @@ import {
 	UpdateUserBodyRequest,
 	UserItemResponseType,
 } from "../../models/user";
-import { USER_ROLES } from "../../models/consts";
+import { USER_ROLES, APP_ACCESS } from "../../models/consts";
 import { useApp, useAuth } from "../../hooks";
 import { cn } from "../../utils/cn";
 import type { AvatarEntity } from "../../services/AvatarService";
+import type { UserAccessType } from "../../models/user";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -48,9 +49,10 @@ interface FormValues {
 	email: string;
 	password?: string;
 	confirmPassword?: string;
-	roles: USER_ROLES[];
+	role: USER_ROLES;
 	cin?: string;
 	phoneNumber?: string;
+	userAccess?: Partial<UserAccessType>;
 }
 
 // Utility function to extract error message with proper typing
@@ -83,16 +85,25 @@ export const AddEditUser: React.FC = () => {
 	const [error, setError] = useState<string | null>(null);
 
 	const isEditMode = !!id;
+	const [selectedRole, setSelectedRole] = useState<USER_ROLES | null>(null);
+
 	// Get available roles based on current user
 	const getAvailableRoles = () => {
 		const roles = [USER_ROLES.USER_ADMIN, USER_ROLES.USER_AGENT];
 
 		// Only superAdmin can assign superAdmin role
-		if (currentUser?.roles.includes(USER_ROLES.SUPER_ADMIN)) {
+		if (currentUser?.role === USER_ROLES.SUPER_ADMIN) {
 			roles.unshift(USER_ROLES.SUPER_ADMIN);
 		}
 
 		return roles;
+	};
+
+	// Check if current user can manage userAccess (only SUPER_ADMIN and USER_ADMIN can manage USER_AGENT access)
+	const canManageUserAccess = (role: USER_ROLES | null): boolean => {
+		if (!role || !currentUser) return false;
+		const isAdminUser = currentUser.role === USER_ROLES.SUPER_ADMIN || currentUser.role === USER_ROLES.USER_ADMIN;
+		return isAdminUser && role === USER_ROLES.USER_AGENT;
 	};
 
 	// Fetch user data for edit mode
@@ -106,12 +117,13 @@ export const AddEditUser: React.FC = () => {
 				.then((response) => {
 					const user = response.data;
 					setUserData(user);
+					setSelectedRole(user.role);
 
 					// Pre-fill form with user data
 					form.setFieldsValue({
 						fullName: user.fullName,
 						email: user.email,
-						roles: user.roles,
+						role: user.role,
 						cin: user.cin || "",
 						phoneNumber: user.phoneNumber || "",
 					});
@@ -171,12 +183,28 @@ export const AddEditUser: React.FC = () => {
 					_id: userData._id,
 					fullName: values.fullName.trim(),
 					email: values.email.trim(),
-					roles: values.roles,
+					role: values.role,
 					cin: values.cin?.trim() || null,
 					phoneNumber: values.phoneNumber?.trim() || null,
-					password: "", // Password changes handled in profile settings
 					avatar: avatarDocumentId || userData.avatar, // Use new avatar ID or keep existing
 				};
+
+				// Only include userAccess if user can manage it and it's provided
+				if (canManageUserAccess(values.role) && values.userAccess) {
+					// Spread with defaults to ensure all required fields are present
+					updateData.userAccess = {
+						dashboard: values.userAccess.dashboard ?? APP_ACCESS.NO_ACCESS,
+						clients: values.userAccess.clients ?? APP_ACCESS.NO_ACCESS,
+						users: values.userAccess.users ?? APP_ACCESS.NO_ACCESS,
+						lawsuits: values.userAccess.lawsuits ?? APP_ACCESS.NO_ACCESS,
+						payments: values.userAccess.payments ?? APP_ACCESS.NO_ACCESS,
+						folders: values.userAccess.folders ?? APP_ACCESS.NO_ACCESS,
+						events: values.userAccess.events ?? APP_ACCESS.NO_ACCESS,
+						courts: values.userAccess.courts ?? APP_ACCESS.NO_ACCESS,
+						lawsuitStages: values.userAccess.lawsuitStages ?? APP_ACCESS.NO_ACCESS,
+						lawsuitTypes: values.userAccess.lawsuitTypes ?? APP_ACCESS.NO_ACCESS,
+					};
+				}
 
 				await userService.update(updateData);
 				message.success(t("users.update.success", { name: values.fullName }));
@@ -191,11 +219,28 @@ export const AddEditUser: React.FC = () => {
 					fullName: values.fullName.trim(),
 					email: values.email.trim(),
 					password: values.password,
-					roles: values.roles,
+					role: values.role,
 					cin: values.cin?.trim() || null,
 					phoneNumber: values.phoneNumber?.trim() || null,
 					avatar: avatarDocumentId, // Use uploaded avatar document ID
 				};
+
+				// Only include userAccess if user can manage it and it's provided
+				if (canManageUserAccess(values.role) && values.userAccess) {
+					// Spread with defaults to ensure all required fields are present
+					createData.userAccess = {
+						dashboard: values.userAccess.dashboard ?? APP_ACCESS.NO_ACCESS,
+						clients: values.userAccess.clients ?? APP_ACCESS.NO_ACCESS,
+						users: values.userAccess.users ?? APP_ACCESS.NO_ACCESS,
+						lawsuits: values.userAccess.lawsuits ?? APP_ACCESS.NO_ACCESS,
+						payments: values.userAccess.payments ?? APP_ACCESS.NO_ACCESS,
+						folders: values.userAccess.folders ?? APP_ACCESS.NO_ACCESS,
+						events: values.userAccess.events ?? APP_ACCESS.NO_ACCESS,
+						courts: values.userAccess.courts ?? APP_ACCESS.NO_ACCESS,
+						lawsuitStages: values.userAccess.lawsuitStages ?? APP_ACCESS.NO_ACCESS,
+						lawsuitTypes: values.userAccess.lawsuitTypes ?? APP_ACCESS.NO_ACCESS,
+					};
+				}
 
 				await userService.create(createData);
 				message.success(t("users.create.success", { name: values.fullName }));
@@ -452,19 +497,19 @@ export const AddEditUser: React.FC = () => {
 								<Row gutter={16}>
 									<Col xs={24} lg={12}>
 										<Form.Item
-											name='roles'
-											label={t("users.form.roles.label")}
+											name='role'
+											label={t("users.form.role.label")}
 											rules={[
 												{
 													required: true,
-													message: t("users.form.roles.required"),
+													message: t("users.form.role.required"),
 												},
 											]}
 										>
 											<Select
-												mode='multiple'
-												placeholder={t("users.form.roles.placeholder")}
+												placeholder={t("users.form.role.placeholder")}
 												size='large'
+												onChange={(value) => setSelectedRole(value as USER_ROLES)}
 											>
 												{getAvailableRoles().map((role) => (
 													<Option key={role} value={role}>
@@ -485,45 +530,95 @@ export const AddEditUser: React.FC = () => {
 								</Row>
 							</div>
 
-							{/* Security Information - Only for new users */}
-							{!isEditMode && (
+							{/* User Access Management - Only for USER_AGENT */}
+							{canManageUserAccess(selectedRole) && (
 								<div>
 									<h3 className='text-lg font-semibold text-card-foreground mb-4'>
-										{t("users.form.security.title")}
+										{t("users.form.userAccess.title")}
 									</h3>
-									<Row gutter={16}>
-										<Col xs={24} lg={12}>
-											<Form.Item
-												name='password'
-												label={t("users.form.password.label")}
-												rules={[{ validator: validatePassword }]}
-											>
-												<Input.Password
-													placeholder={t("users.form.password.placeholder")}
-													size='large'
-												/>
-											</Form.Item>
-										</Col>
-										<Col xs={24} lg={12}>
-											<Form.Item
-												name='confirmPassword'
-												label={t("users.form.confirmPassword.label")}
-												dependencies={["password"]}
-												rules={[{ validator: validateConfirmPassword }]}
-											>
-												<Input.Password
-													placeholder={t(
-														"users.form.confirmPassword.placeholder"
-													)}
-													size='large'
-												/>
-											</Form.Item>
-										</Col>
+									<p className='text-sm text-muted-foreground mb-4'>
+										{t("users.form.userAccess.subtitle")}
+									</p>
+									<Row gutter={[16, 16]}>
+										{(
+											[
+												"dashboard",
+												"clients",
+												"users",
+												"lawsuits",
+												"payments",
+												"folders",
+												"events",
+												"courts",
+												"lawsuitStages",
+												"lawsuitTypes",
+											] as Array<keyof UserAccessType>
+										).map((module) => (
+											<Col xs={24} sm={12} lg={8} key={module}>
+												<Form.Item
+													name={["userAccess", module]}
+													label={t(`navigation.${module}`)}
+													initialValue={
+														userData?.userAccess?.[module] || APP_ACCESS.NO_ACCESS
+													}
+												>
+													<Select size='large'>
+														<Option value={APP_ACCESS.NO_ACCESS}>
+															{t("access.levels.NO_ACCESS")}
+														</Option>
+														<Option value={APP_ACCESS.READ}>
+															{t("access.levels.READ")}
+														</Option>
+														<Option value={APP_ACCESS.WRITE}>
+															{t("access.levels.WRITE")}
+														</Option>
+													</Select>
+												</Form.Item>
+											</Col>
+										))}
 									</Row>
 								</div>
 							)}
 						</div>
 					</div>
+
+					{/* Security Information - Only for new users */}
+					{!isEditMode && (
+						<div>
+							<h3 className='text-lg font-semibold text-card-foreground mb-4'>
+								{t("users.form.security.title")}
+							</h3>
+							<Row gutter={16}>
+								<Col xs={24} lg={12}>
+									<Form.Item
+										name='password'
+										label={t("users.form.password.label")}
+										rules={[{ validator: validatePassword }]}
+									>
+										<Input.Password
+											placeholder={t("users.form.password.placeholder")}
+											size='large'
+										/>
+									</Form.Item>
+								</Col>
+								<Col xs={24} lg={12}>
+									<Form.Item
+										name='confirmPassword'
+										label={t("users.form.confirmPassword.label")}
+										dependencies={["password"]}
+										rules={[{ validator: validateConfirmPassword }]}
+									>
+										<Input.Password
+											placeholder={t(
+												"users.form.confirmPassword.placeholder"
+											)}
+											size='large'
+										/>
+									</Form.Item>
+								</Col>
+							</Row>
+						</div>
+					)}
 
 					{/* Action Buttons */}
 					<div

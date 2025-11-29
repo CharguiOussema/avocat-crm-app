@@ -196,7 +196,7 @@ export const UserCard: React.FC<UserCardProps> = ({
 				)}
 			</div>
 
-			{/* Footer with Role Tags */}
+			{/* Footer with Role Tag */}
 			<div
 				className={cn(
 					"mt-4 pt-3 border-t border-border",
@@ -209,11 +209,9 @@ export const UserCard: React.FC<UserCardProps> = ({
 						isRTL ? "flex-row-reverse" : "flex-row"
 					)}
 				>
-					{user.roles.map((role) => (
-						<Tag key={role} color={getRoleColor(role)}>
-							{getRoleDisplayName(role)}
-						</Tag>
-					))}
+					<Tag color={getRoleColor(user.role)}>
+						{getRoleDisplayName(user.role)}
+					</Tag>
 				</div>
 			</div>
 		</Card>
