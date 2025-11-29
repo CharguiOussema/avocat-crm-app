@@ -13,7 +13,6 @@ import {
 	Alert,
 	Modal,
 	message,
-	Checkbox,
 } from "antd";
 import {
 	PlusOutlined,
@@ -262,13 +261,6 @@ export const Lawsuits: React.FC = () => {
 		[search, status, lawsuitStage, lawsuitType, client, court, navigate]
 	);
 
-	// Clear all filters
-	const clearFilters = useCallback(() => {
-		navigate({
-			search: "",
-		});
-		setSelectedLawsuitIds([]);
-	}, [navigate]);
 
 	// Handle lawsuit deletion
 	const handleDelete = useCallback(
@@ -356,20 +348,6 @@ export const Lawsuits: React.FC = () => {
 		});
 	}, []);
 
-	// Handle select all
-	const handleSelectAll = useCallback(
-		(checked: boolean) => {
-			if (checked && data?.pages) {
-				const allLawsuitIds = data.pages.flatMap((page) =>
-					page.docs.map((lawsuit) => lawsuit._id)
-				);
-				setSelectedLawsuitIds(allLawsuitIds);
-			} else {
-				setSelectedLawsuitIds([]);
-			}
-		},
-		[data]
-	);
 
 	// Error state
 	if (error) {
@@ -387,7 +365,6 @@ export const Lawsuits: React.FC = () => {
 	// Flatten all pages into a single array of lawsuits
 	const lawsuits = data?.pages.flatMap((page) => page.docs) || [];
 	const totalLawsuits = data?.pages[0]?.totalDocs || 0;
-	const allSelected = lawsuits.length > 0 && selectedLawsuitIds.length === lawsuits.length;
 
 	return (
 		<div className='space-y-6 pb-8'>
@@ -438,30 +415,8 @@ export const Lawsuits: React.FC = () => {
 				lawsuitTypesOptions={lawsuitTypesOptions}
 				onSearchChange={handleSearchChange}
 				onFilterChange={handleFilterChange}
-				onClearFilters={clearFilters}
 				getStatusDisplayName={getStatusDisplayName}
-			>
-				{/* Select All Checkbox */}
-				{lawsuits.length > 0 && (
-					<div
-						className={cn(
-							"flex items-center gap-3",
-							isRTL ? "flex-row-reverse" : "flex-row"
-						)}
-					>
-						<Checkbox
-							checked={allSelected}
-							indeterminate={
-								selectedLawsuitIds.length > 0 &&
-								selectedLawsuitIds.length < lawsuits.length
-							}
-							onChange={(e) => handleSelectAll(e.target.checked)}
-						>
-							{t("lawsuits.selectAll")} ({selectedLawsuitIds.length}/{lawsuits.length})
-						</Checkbox>
-					</div>
-				)}
-			</LawsuitFilters>
+			/>
 
 			{/* Lawsuits Grid */}
 			<div className='min-h-[400px]'>

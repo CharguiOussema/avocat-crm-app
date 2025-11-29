@@ -23,7 +23,6 @@ import {
 	ExclamationCircleOutlined,
 	LineChartOutlined,
 	RiseOutlined,
-	FallOutlined,
 } from "@ant-design/icons";
 import {
 	LineChart,
@@ -36,7 +35,6 @@ import {
 	Tooltip,
 	Legend,
 	ResponsiveContainer,
-	TooltipProps,
 } from "recharts";
 import { dashboardService } from "../../services";
 import type { DashboardStats } from "../../services/DashboardService";
@@ -44,6 +42,28 @@ import { formatStorageSize, formatTND } from "../../utils/format.helpers";
 import moment from "moment";
 
 const { Title, Text, Paragraph } = Typography;
+
+// Type definition for KPI configuration
+interface KpiConfig {
+	title: string;
+	value: number;
+	icon: React.ReactElement;
+	color: string;
+	valueType: "number" | "currency" | "storage";
+}
+
+// Type definition for lawsuit progress data
+interface LawsuitProgressData {
+	date: string;
+	cumulativeCount: number;
+	count: number;
+	statusCounts: {
+		DONE: number;
+		INPROGRESS: number;
+		SCHEDULED: number;
+		CANCELLED: number;
+	};
+}
 
 export const Dashboard: React.FC = () => {
 	const { t } = useTranslation();
@@ -63,7 +83,7 @@ export const Dashboard: React.FC = () => {
 	if (isLoading) {
 		return (
 			<div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
-				<Spin size="large" tip="Loading dashboard..." />
+				<Spin size="large" tip={t("dashboard.loading")} />
 			</div>
 		);
 	}
@@ -71,8 +91,8 @@ export const Dashboard: React.FC = () => {
 	if (error) {
 		return (
 			<Alert
-				message="Error"
-				description="Failed to load dashboard data. Please try again later."
+				message={t("dashboard.error.title")}
+				description={t("dashboard.error.description")}
 				type="error"
 				showIcon
 			/>
@@ -85,53 +105,66 @@ export const Dashboard: React.FC = () => {
 
 	const { kpis, upcomingEvents, clientProgress, paymentProgress, lawsuitProgress } = data;
 
-	const getStatusColor = (status: string): string => {
-		switch (status.toUpperCase()) {
-			case "DONE":
-				return "#52c41a";
-			case "INPROGRESS":
-				return "#1890ff";
-			case "SCHEDULED":
-				return "#faad14";
-			case "CANCELLED":
-				return "#ff4d4f";
-			default:
-				return "#d9d9d9";
-		}
-	};
-
-	const getStatusLabel = (status: string): string => {
-		switch (status.toUpperCase()) {
-			case "DONE":
-				return "Done";
-			case "INPROGRESS":
-				return "In Progress";
-			case "SCHEDULED":
-				return "Scheduled";
-			case "CANCELLED":
-				return "Cancelled";
-			default:
-				return status;
-		}
-	};
+	// KPI Cards configuration
+	const kpiConfigs: KpiConfig[] = [
+		{
+			title: t("dashboard.kpi.totalClients"),
+			value: kpis.totalClients,
+			icon: <UserOutlined />,
+			color: "#1890ff",
+			valueType: "number",
+		},
+		{
+			title: t("dashboard.kpi.totalLawsuits"),
+			value: kpis.totalLawsuits,
+			icon: <FileTextOutlined />,
+			color: "#52c41a",
+			valueType: "number",
+		},
+		{
+			title: t("dashboard.kpi.totalRevenue"),
+			value: kpis.totalRevenue,
+			icon: <DollarOutlined />,
+			color: "#13c2c2",
+			valueType: "currency",
+		},
+		{
+			title: t("dashboard.kpi.moneyNotPaid"),
+			value: kpis.unpaidRevenue,
+			icon: <ExclamationCircleOutlined />,
+			color: "#ff4d4f",
+			valueType: "currency",
+		},
+		{
+			title: t("dashboard.kpi.totalStorage"),
+			value: kpis.totalStorageBytes,
+			icon: <DatabaseOutlined />,
+			color: "#722ed1",
+			valueType: "storage",
+		},
+	];
 
 	// Custom tooltip for lawsuit chart
-	const CustomLawsuitTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload }) => {
+	const CustomLawsuitTooltip = (props: {
+		active?: boolean;
+		payload?: ReadonlyArray<{ payload: LawsuitProgressData }>;
+	}) => {
+		const { active, payload } = props;
 		if (active && payload && payload.length > 0) {
 			const data = payload[0].payload;
 			return (
-				<Card size="small" style={{ minWidth: "200px" }}>
+				<Card size="small" className="shadow-md" style={{ minWidth: "200px" }}>
 					<Space direction="vertical" size="small">
 						<Text strong>{moment(data.date).format("MMM DD, YYYY")}</Text>
-						<Text>Total: {data.cumulativeCount} lawsuits</Text>
-						<Text>New: {data.count} lawsuits</Text>
+						<Text>{t("dashboard.lawsuitProgress.tooltip.total")}: {data.cumulativeCount} {t("dashboard.lawsuitProgress.tooltip.totalLawsuits")}</Text>
+						<Text>{t("dashboard.lawsuitProgress.tooltip.new")}: {data.count} {t("dashboard.lawsuitProgress.tooltip.newLawsuits")}</Text>
 						<div style={{ marginTop: "8px" }}>
-							<Text type="secondary" style={{ fontSize: "12px" }}>Status Breakdown:</Text>
+							<Text type="secondary" style={{ fontSize: "12px" }}>{t("dashboard.lawsuitProgress.tooltip.statusBreakdown")}:</Text>
 							<div style={{ marginTop: "4px" }}>
-								<Tag color="#52c41a">Done: {data.statusCounts.DONE}</Tag>
-								<Tag color="#1890ff">In Progress: {data.statusCounts.INPROGRESS}</Tag>
-								<Tag color="#faad14">Scheduled: {data.statusCounts.SCHEDULED}</Tag>
-								<Tag color="#ff4d4f">Cancelled: {data.statusCounts.CANCELLED}</Tag>
+								<Tag color="#52c41a">{t("dashboard.lawsuitProgress.tooltip.done")}: {data.statusCounts.DONE}</Tag>
+								<Tag color="#1890ff">{t("dashboard.lawsuitProgress.tooltip.inProgress")}: {data.statusCounts.INPROGRESS}</Tag>
+								<Tag color="#faad14">{t("dashboard.lawsuitProgress.tooltip.scheduled")}: {data.statusCounts.SCHEDULED}</Tag>
+								<Tag color="#ff4d4f">{t("dashboard.lawsuitProgress.tooltip.cancelled")}: {data.statusCounts.CANCELLED}</Tag>
 							</div>
 						</div>
 					</Space>
@@ -141,79 +174,68 @@ export const Dashboard: React.FC = () => {
 		return null;
 	};
 
+	// Responsive card title component
+	const CardTitle: React.FC<{ icon: React.ReactNode; title: string; color: string }> = ({ icon, title, color }) => (
+		<Space size="small" style={{ flexWrap: "wrap" }}>
+			{React.cloneElement(icon as React.ReactElement, { style: { color } })}
+			<Text strong style={{ fontSize: "clamp(12px, 3vw, 16px)" }}>
+				{title}
+			</Text>
+		</Space>
+	);
 
 	return (
 		<div style={{ padding: "0" }}>
 			{/* Page Header */}
 			<div style={{ marginBottom: "24px" }}>
-				<Title level={2} style={{ margin: 0 }}>
+				<Title level={2} style={{ margin: 0, fontSize: "clamp(20px, 4vw, 30px)" }}>
 					{t("navigation.dashboard")}
 				</Title>
-				<Paragraph style={{ margin: "8px 0 0", color: "#666" }}>
-					Overview of your law firm's performance and activities
+				<Paragraph style={{ margin: "8px 0 0", color: "#666", fontSize: "clamp(12px, 2.5vw, 14px)" }}>
+					{t("dashboard.overview")}
 				</Paragraph>
 			</div>
 
-			{/* KPI Cards - 5 Cards in One Row */}
-			<Row gutter={[8, 16]} style={{ marginBottom: "24px" }}>
-				{[
-					{
-						title: "Total Clients",
-						value: kpis.totalClients,
-						icon: <UserOutlined />,
-						color: "#1890ff",
-						valueType: "number" as const,
-					},
-					{
-						title: "Total Lawsuits",
-						value: kpis.totalLawsuits,
-						icon: <FileTextOutlined />,
-						color: "#52c41a",
-						valueType: "number" as const,
-					},
-					{
-						title: "Total Revenue",
-						value: kpis.totalRevenue,
-						icon: <DollarOutlined />,
-						color: "#13c2c2",
-						valueType: "currency" as const,
-					},
-					{
-						title: "Money Not Paid",
-						value: kpis.unpaidRevenue,
-						icon: <ExclamationCircleOutlined />,
-						color: "#ff4d4f",
-						valueType: "currency" as const,
-					},
-					{
-						title: "Total Storage",
-						value: kpis.totalStorageBytes,
-						icon: <DatabaseOutlined />,
-						color: "#722ed1",
-						valueType: "storage" as const,
-					},
-				].map((kpi, index) => (
+			{/* KPI Cards - Dynamic Responsive Grid */}
+			<Row gutter={[8, 8]} style={{ marginBottom: "24px", display: "flex", flexWrap: "wrap" }}>
+				{kpiConfigs.map((kpi) => (
 					<Col
-						key={index}
-						xs={{ span: 24 / 5, flex: "1 1 20%" }}
-						sm={{ span: 24 / 5, flex: "1 1 20%" }}
-						md={{ span: 24 / 5, flex: "1 1 20%" }}
-						lg={{ span: 24 / 5, flex: "1 1 20%" }}
-						xl={{ span: 24 / 5, flex: "1 1 20%" }}
-						style={{ minWidth: 0 }}
+						key={`kpi-${kpi.title.toLowerCase().replace(/\s+/g, '-')}`}
+						xs={{ flex: "1 1 calc(50% - 8px)", span: 12 }}
+						sm={{ flex: "1 1 calc(50% - 8px)", span: 12 }}
+						md={{ flex: "1 1 calc(33.33% - 8px)", span: 8 }}
+						lg={{ flex: "1 1 calc(20% - 8px)" }}
+						xl={{ flex: "1 1 calc(20% - 8px)" }}
+						style={{ minWidth: 0, display: "flex" }}
 					>
 						<Card
 							hoverable
-							style={{ height: "100%" }}
-							bodyStyle={{ padding: "16px 12px" }}
+							className="shadow-md"
+							style={{
+								height: "100%",
+								width: "100%",
+								transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+								transform: "translateY(0)",
+							}}
+							bodyStyle={{
+								padding: "clamp(8px, 2vw, 12px)",
+								display: "flex",
+								flexDirection: "column",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
 						>
 							<Statistic
 								title={
 									<Text
 										ellipsis
+										title={kpi.title}
 										style={{
-											fontSize: "clamp(10px, 1.2vw, 14px)",
-											display: "block"
+											fontSize: "clamp(10px, 2.5vw, 14px)",
+											display: "block",
+											wordBreak: "break-word",
+											textAlign: "center",
+											marginBottom: "4px",
 										}}
 									>
 										{kpi.title}
@@ -221,21 +243,27 @@ export const Dashboard: React.FC = () => {
 								}
 								value={
 									kpi.valueType === "currency"
-										? formatTND(kpi.value as number)
+										? formatTND(kpi.value)
 										: kpi.valueType === "storage"
-										? formatStorageSize(kpi.value as number)
+										? formatStorageSize(kpi.value)
 										: kpi.value
 								}
 								prefix={
-									<span style={{ color: kpi.color, fontSize: "clamp(16px, 2vw, 20px)" }}>
+									<span style={{
+										color: kpi.color,
+										fontSize: "clamp(14px, 4vw, 20px)",
+										marginRight: "4px",
+									}}>
 										{kpi.icon}
 									</span>
 								}
 								valueStyle={{
 									color: kpi.color,
-									fontSize: "clamp(14px, 2vw, 24px)",
+									fontSize: "clamp(16px, 4vw, 24px)",
 									fontWeight: "bold",
 									lineHeight: 1.2,
+									wordBreak: "break-word",
+									textAlign: "center",
 								}}
 							/>
 						</Card>
@@ -243,141 +271,28 @@ export const Dashboard: React.FC = () => {
 				))}
 			</Row>
 
-			{/* Upcoming Events Section */}
-			<Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
-				<Col xs={24} lg={24} xl={24}>
-					<Card
-						title={
-							<Space size="small">
-								<CalendarOutlined style={{ color: "#1890ff" }} />
-								<Text strong style={{ fontSize: "clamp(14px, 1.5vw, 16px)" }}>
-									Upcoming Events (Top 10)
-								</Text>
-							</Space>
-						}
-						extra={<Tag color="blue">{upcomingEvents.length} Events</Tag>}
-						bodyStyle={{ padding: "16px" }}
-					>
-						{upcomingEvents.length === 0 ? (
-							<div style={{ textAlign: "center", padding: "40px 0", color: "#999" }}>
-								<CalendarOutlined style={{ fontSize: "48px", marginBottom: "16px" }} />
-								<Paragraph>No upcoming events scheduled</Paragraph>
-							</div>
-						) : (
-							<List
-								itemLayout="horizontal"
-								dataSource={upcomingEvents}
-								renderItem={(event) => (
-									<List.Item>
-										<List.Item.Meta
-											avatar={
-												<div
-													style={{
-														width: "clamp(40px, 5vw, 48px)",
-														height: "clamp(40px, 5vw, 48px)",
-														borderRadius: "8px",
-														background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-														display: "flex",
-														flexDirection: "column",
-														alignItems: "center",
-														justifyContent: "center",
-														color: "white",
-														flexShrink: 0,
-													}}
-												>
-													<div style={{ fontSize: "clamp(10px, 1.2vw, 12px)", fontWeight: "bold" }}>
-														{moment(event.startDate).format("MMM")}
-													</div>
-													<div style={{ fontSize: "clamp(14px, 1.6vw, 16px)", fontWeight: "bold" }}>
-														{moment(event.startDate).format("DD")}
-													</div>
-												</div>
-											}
-											title={
-												<Space direction="vertical" size={0} style={{ width: "100%" }}>
-													<Text
-														strong
-														ellipsis
-														style={{
-															fontSize: "clamp(12px, 1.3vw, 14px)",
-															display: "block",
-														}}
-													>
-														{event.name}
-													</Text>
-													{event.lawsuit && (
-														<Tag color="blue" style={{ fontSize: "clamp(9px, 1vw, 11px)" }}>
-															{event.lawsuit.lawsuitCode}
-														</Tag>
-													)}
-												</Space>
-											}
-											description={
-												<Space direction="vertical" size={4} style={{ width: "100%" }}>
-													{event.description && (
-														<Text
-															type="secondary"
-															style={{ fontSize: "clamp(10px, 1.1vw, 12px)" }}
-															ellipsis
-														>
-															{event.description}
-														</Text>
-													)}
-													<Space wrap size="small">
-														<Text
-															type="secondary"
-															style={{ fontSize: "clamp(10px, 1.1vw, 12px)" }}
-														>
-															<CalendarOutlined /> {moment(event.startDate).format("MMM DD, YYYY HH:mm")} -{" "}
-															{moment(event.endDate).format("HH:mm")}
-														</Text>
-														{event.clients.length > 0 && (
-															<Text
-																type="secondary"
-																style={{ fontSize: "clamp(10px, 1.1vw, 12px)" }}
-																ellipsis
-															>
-																<TeamOutlined /> {event.clients.map((c) => c.fullName).join(", ")}
-															</Text>
-														)}
-													</Space>
-												</Space>
-											}
-										/>
-									</List.Item>
-								)}
-							/>
-						)}
-					</Card>
-				</Col>
-			</Row>
-
-			{/* Progress Charts */}
+			{/* Client Progress and Upcoming Events - Same Row */}
 			<Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
 				{/* Client Progress Chart */}
-				<Col xs={24} sm={24} md={24} lg={24} xl={24}>
+				<Col xs={24} sm={24} md={24} lg={12} xl={12}>
 					<Card
-						title={
-							<Space size="small">
-								<UserOutlined style={{ color: "#1890ff" }} />
-								<Text strong style={{ fontSize: "clamp(14px, 1.5vw, 16px)" }}>
-									Client Progress (Last 30 Days)
-								</Text>
-							</Space>
-						}
+						className="shadow-md"
+						title={<CardTitle icon={<UserOutlined />} title={t("dashboard.clientProgress.title")} color="#1890ff" />}
 						extra={
-							<Space>
-								<Tag color="blue" icon={<RiseOutlined />}>
-									Total: {clientProgress.length > 0 ? clientProgress[clientProgress.length - 1].cumulativeCount : 0}
-								</Tag>
-							</Space>
+							<Tag color="blue" icon={<RiseOutlined />} style={{ fontSize: "clamp(10px, 2vw, 12px)", margin: 0 }}>
+								{t("dashboard.clientProgress.total")}: {clientProgress.length > 0 ? clientProgress[clientProgress.length - 1].cumulativeCount : 0}
+							</Tag>
 						}
-						bodyStyle={{ padding: "16px" }}
+						bodyStyle={{ padding: "16px 8px" }}
+						style={{ height: "100%" }}
+						headStyle={{ flexWrap: "wrap", padding: "12px 16px" }}
 					>
 						{clientProgress.length === 0 ? (
-							<div style={{ textAlign: "center", padding: "60px 0", color: "#999" }}>
-								<LineChartOutlined style={{ fontSize: "48px", marginBottom: "16px" }} />
-								<Paragraph>No client data available for the last 30 days</Paragraph>
+							<div style={{ textAlign: "center", padding: "40px 0", color: "#999" }}>
+								<LineChartOutlined style={{ fontSize: "clamp(36px, 8vw, 48px)", marginBottom: "16px" }} />
+								<Paragraph style={{ fontSize: "clamp(12px, 2.5vw, 14px)" }}>
+									{t("dashboard.clientProgress.noData")}
+								</Paragraph>
 							</div>
 						) : (
 							<ResponsiveContainer width="100%" height={300}>
@@ -392,19 +307,25 @@ export const Dashboard: React.FC = () => {
 									<XAxis
 										dataKey="date"
 										tickFormatter={(date) => moment(date).format("MMM DD")}
-										style={{ fontSize: "clamp(10px, 1vw, 12px)" }}
+										style={{ fontSize: "clamp(9px, 2vw, 12px)" }}
 									/>
-									<YAxis style={{ fontSize: "clamp(10px, 1vw, 12px)" }} />
+									<YAxis style={{ fontSize: "clamp(9px, 2vw, 12px)" }} />
 									<Tooltip
 										content={({ active, payload }) => {
 											if (active && payload && payload.length > 0) {
 												const data = payload[0].payload;
 												return (
-													<Card size="small">
+													<Card size="small" className="shadow-md">
 														<Space direction="vertical" size="small">
-															<Text strong>{moment(data.date).format("MMM DD, YYYY")}</Text>
-															<Text>New Clients: {data.count}</Text>
-															<Text type="success">Total: {data.cumulativeCount}</Text>
+															<Text strong style={{ fontSize: "clamp(11px, 2vw, 13px)" }}>
+																{moment(data.date).format("MMM DD, YYYY")}
+															</Text>
+															<Text style={{ fontSize: "clamp(10px, 2vw, 12px)" }}>
+																{t("dashboard.clientProgress.tooltip.newClients")}: {data.count}
+															</Text>
+															<Text type="success" style={{ fontSize: "clamp(10px, 2vw, 12px)" }}>
+																{t("dashboard.clientProgress.tooltip.total")}: {data.cumulativeCount}
+															</Text>
 														</Space>
 													</Card>
 												);
@@ -412,7 +333,7 @@ export const Dashboard: React.FC = () => {
 											return null;
 										}}
 									/>
-									<Legend wrapperStyle={{ fontSize: "clamp(11px, 1.1vw, 13px)" }} />
+									<Legend wrapperStyle={{ fontSize: "clamp(10px, 2vw, 13px)" }} />
 									<Area
 										type="monotone"
 										dataKey="cumulativeCount"
@@ -420,7 +341,7 @@ export const Dashboard: React.FC = () => {
 										strokeWidth={2}
 										fillOpacity={1}
 										fill="url(#colorClients)"
-										name="Total Clients"
+										name={t("dashboard.kpi.totalClients")}
 									/>
 								</AreaChart>
 							</ResponsiveContainer>
@@ -428,28 +349,140 @@ export const Dashboard: React.FC = () => {
 					</Card>
 				</Col>
 
+				{/* Upcoming Events Section */}
+				<Col xs={24} sm={24} md={24} lg={12} xl={12}>
+					<Card
+						className="shadow-md"
+						title={<CardTitle icon={<CalendarOutlined />} title={t("dashboard.upcomingEvents.title")} color="#1890ff" />}
+						extra={
+							<Tag color="blue" style={{ fontSize: "clamp(10px, 2vw, 12px)", margin: 0 }}>
+								{upcomingEvents.length} {t("dashboard.upcomingEvents.events")}
+							</Tag>
+						}
+						bodyStyle={{ padding: "16px 8px" }}
+						style={{ height: "100%" }}
+						headStyle={{ flexWrap: "wrap", padding: "12px 16px" }}
+					>
+						{upcomingEvents.length === 0 ? (
+							<div style={{ textAlign: "center", padding: "40px 0", color: "#999" }}>
+								<CalendarOutlined style={{ fontSize: "clamp(36px, 8vw, 48px)", marginBottom: "16px" }} />
+								<Paragraph style={{ fontSize: "clamp(12px, 2.5vw, 14px)" }}>
+									{t("dashboard.upcomingEvents.noEvents")}
+								</Paragraph>
+							</div>
+						) : (
+							<div style={{ maxHeight: "400px", overflowY: "auto" }}>
+								<List
+									itemLayout="horizontal"
+									dataSource={upcomingEvents}
+									renderItem={(event) => (
+										<List.Item style={{ padding: "12px 8px" }}>
+											<List.Item.Meta
+												avatar={
+													<div
+														style={{
+															width: "clamp(36px, 8vw, 48px)",
+															height: "clamp(36px, 8vw, 48px)",
+															borderRadius: "8px",
+															background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+															display: "flex",
+															flexDirection: "column",
+															alignItems: "center",
+															justifyContent: "center",
+															color: "white",
+															flexShrink: 0,
+														}}
+													>
+														<div style={{ fontSize: "clamp(9px, 2vw, 12px)", fontWeight: "bold" }}>
+															{moment(event.startDate).format("MMM")}
+														</div>
+														<div style={{ fontSize: "clamp(12px, 3vw, 16px)", fontWeight: "bold" }}>
+															{moment(event.startDate).format("DD")}
+														</div>
+													</div>
+												}
+												title={
+													<Space direction="vertical" size={0} style={{ width: "100%" }}>
+														<Text
+															strong
+															ellipsis
+															style={{
+																fontSize: "clamp(11px, 2.5vw, 14px)",
+																display: "block",
+															}}
+														>
+															{event.name}
+														</Text>
+														{event.lawsuit && (
+															<Tag color="blue" style={{ fontSize: "clamp(9px, 2vw, 11px)", marginTop: "4px" }}>
+																{event.lawsuit.lawsuitCode}
+															</Tag>
+														)}
+													</Space>
+												}
+												description={
+													<Space direction="vertical" size={4} style={{ width: "100%" }}>
+														{event.description && (
+															<Text
+																type="secondary"
+																style={{ fontSize: "clamp(10px, 2vw, 12px)" }}
+																ellipsis
+															>
+																{event.description}
+															</Text>
+														)}
+														<Space wrap size="small" style={{ width: "100%" }}>
+															<Text
+																type="secondary"
+																style={{ fontSize: "clamp(9px, 2vw, 11px)" }}
+															>
+																<CalendarOutlined /> {moment(event.startDate).format("MMM DD, YYYY HH:mm")} -{" "}
+																{moment(event.endDate).format("HH:mm")}
+															</Text>
+															{event.clients.length > 0 && (
+																<Text
+																	type="secondary"
+																	style={{ fontSize: "clamp(9px, 2vw, 11px)" }}
+																	ellipsis
+																>
+																	<TeamOutlined /> {event.clients.map((c) => c.fullName).join(", ")}
+																</Text>
+															)}
+														</Space>
+													</Space>
+												}
+											/>
+										</List.Item>
+									)}
+								/>
+							</div>
+						)}
+					</Card>
+				</Col>
+			</Row>
+
+			{/* Payment and Lawsuit Progress Charts - Same Row */}
+			<Row gutter={[16, 16]} style={{ marginBottom: "24px" }}>
 				{/* Payment Progress Chart */}
 				<Col xs={24} sm={24} md={24} lg={12} xl={12}>
 					<Card
-						title={
-							<Space size="small">
-								<DollarOutlined style={{ color: "#13c2c2" }} />
-								<Text strong style={{ fontSize: "clamp(14px, 1.5vw, 16px)" }}>
-									Payment Progress (Last 30 Days)
-								</Text>
-							</Space>
-						}
+						className="shadow-md"
+						title={<CardTitle icon={<DollarOutlined />} title={t("dashboard.paymentProgress.title")} color="#13c2c2" />}
 						extra={
-							<Tag color="cyan">
+							<Tag color="cyan" style={{ fontSize: "clamp(10px, 2vw, 12px)", margin: 0 }}>
 								{formatTND(paymentProgress.length > 0 ? paymentProgress[paymentProgress.length - 1].cumulativeAmount : 0)}
 							</Tag>
 						}
-						bodyStyle={{ padding: "16px" }}
+						bodyStyle={{ padding: "16px 8px" }}
+						style={{ height: "100%" }}
+						headStyle={{ flexWrap: "wrap", padding: "12px 16px" }}
 					>
 						{paymentProgress.length === 0 ? (
-							<div style={{ textAlign: "center", padding: "60px 0", color: "#999" }}>
-								<LineChartOutlined style={{ fontSize: "48px", marginBottom: "16px" }} />
-								<Paragraph>No payment data available for the last 30 days</Paragraph>
+							<div style={{ textAlign: "center", padding: "40px 0", color: "#999" }}>
+								<LineChartOutlined style={{ fontSize: "clamp(36px, 8vw, 48px)", marginBottom: "16px" }} />
+								<Paragraph style={{ fontSize: "clamp(12px, 2.5vw, 14px)" }}>
+									{t("dashboard.paymentProgress.noData")}
+								</Paragraph>
 							</div>
 						) : (
 							<ResponsiveContainer width="100%" height={300}>
@@ -464,23 +497,31 @@ export const Dashboard: React.FC = () => {
 									<XAxis
 										dataKey="date"
 										tickFormatter={(date) => moment(date).format("MMM DD")}
-										style={{ fontSize: "clamp(10px, 1vw, 12px)" }}
+										style={{ fontSize: "clamp(9px, 2vw, 12px)" }}
 									/>
 									<YAxis
 										tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-										style={{ fontSize: "clamp(10px, 1vw, 12px)" }}
+										style={{ fontSize: "clamp(9px, 2vw, 12px)" }}
 									/>
 									<Tooltip
 										content={({ active, payload }) => {
 											if (active && payload && payload.length > 0) {
 												const data = payload[0].payload;
 												return (
-													<Card size="small">
+													<Card size="small" className="shadow-md">
 														<Space direction="vertical" size="small">
-															<Text strong>{moment(data.date).format("MMM DD, YYYY")}</Text>
-															<Text>Daily: {formatTND(data.amount)}</Text>
-															<Text>Payments: {data.paymentsCount}</Text>
-															<Text type="success">Total: {formatTND(data.cumulativeAmount)}</Text>
+															<Text strong style={{ fontSize: "clamp(11px, 2vw, 13px)" }}>
+																{moment(data.date).format("MMM DD, YYYY")}
+															</Text>
+															<Text style={{ fontSize: "clamp(10px, 2vw, 12px)" }}>
+																{t("dashboard.paymentProgress.tooltip.daily")}: {formatTND(data.amount)}
+															</Text>
+															<Text style={{ fontSize: "clamp(10px, 2vw, 12px)" }}>
+																{t("dashboard.paymentProgress.tooltip.payments")}: {data.paymentsCount}
+															</Text>
+															<Text type="success" style={{ fontSize: "clamp(10px, 2vw, 12px)" }}>
+																{t("dashboard.paymentProgress.tooltip.total")}: {formatTND(data.cumulativeAmount)}
+															</Text>
 														</Space>
 													</Card>
 												);
@@ -488,7 +529,7 @@ export const Dashboard: React.FC = () => {
 											return null;
 										}}
 									/>
-									<Legend wrapperStyle={{ fontSize: "clamp(11px, 1.1vw, 13px)" }} />
+									<Legend wrapperStyle={{ fontSize: "clamp(10px, 2vw, 13px)" }} />
 									<Area
 										type="monotone"
 										dataKey="cumulativeAmount"
@@ -496,7 +537,7 @@ export const Dashboard: React.FC = () => {
 										strokeWidth={2}
 										fillOpacity={1}
 										fill="url(#colorPayments)"
-										name="Total Revenue (TND)"
+										name={t("dashboard.paymentProgress.chartLabel")}
 									/>
 								</AreaChart>
 							</ResponsiveContainer>
@@ -507,25 +548,23 @@ export const Dashboard: React.FC = () => {
 				{/* Lawsuit Progress Chart */}
 				<Col xs={24} sm={24} md={24} lg={12} xl={12}>
 					<Card
-						title={
-							<Space size="small">
-								<FileTextOutlined style={{ color: "#52c41a" }} />
-								<Text strong style={{ fontSize: "clamp(14px, 1.5vw, 16px)" }}>
-									Lawsuit Progress (Last 30 Days)
-								</Text>
-							</Space>
-						}
+						className="shadow-md"
+						title={<CardTitle icon={<FileTextOutlined />} title={t("dashboard.lawsuitProgress.title")} color="#52c41a" />}
 						extra={
-							<Tag color="green">
-								Total: {lawsuitProgress.length > 0 ? lawsuitProgress[lawsuitProgress.length - 1].cumulativeCount : 0}
+							<Tag color="green" style={{ fontSize: "clamp(10px, 2vw, 12px)", margin: 0 }}>
+								{t("dashboard.lawsuitProgress.total")}: {lawsuitProgress.length > 0 ? lawsuitProgress[lawsuitProgress.length - 1].cumulativeCount : 0}
 							</Tag>
 						}
-						bodyStyle={{ padding: "16px" }}
+						bodyStyle={{ padding: "16px 8px" }}
+						style={{ height: "100%" }}
+						headStyle={{ flexWrap: "wrap", padding: "12px 16px" }}
 					>
 						{lawsuitProgress.length === 0 ? (
-							<div style={{ textAlign: "center", padding: "60px 0", color: "#999" }}>
-								<LineChartOutlined style={{ fontSize: "48px", marginBottom: "16px" }} />
-								<Paragraph>No lawsuit data available for the last 30 days</Paragraph>
+							<div style={{ textAlign: "center", padding: "40px 0", color: "#999" }}>
+								<LineChartOutlined style={{ fontSize: "clamp(36px, 8vw, 48px)", marginBottom: "16px" }} />
+								<Paragraph style={{ fontSize: "clamp(12px, 2.5vw, 14px)" }}>
+									{t("dashboard.lawsuitProgress.noData")}
+								</Paragraph>
 							</div>
 						) : (
 							<ResponsiveContainer width="100%" height={300}>
@@ -534,11 +573,11 @@ export const Dashboard: React.FC = () => {
 									<XAxis
 										dataKey="date"
 										tickFormatter={(date) => moment(date).format("MMM DD")}
-										style={{ fontSize: "clamp(10px, 1vw, 12px)" }}
+										style={{ fontSize: "clamp(9px, 2vw, 12px)" }}
 									/>
-									<YAxis style={{ fontSize: "clamp(10px, 1vw, 12px)" }} />
+									<YAxis style={{ fontSize: "clamp(9px, 2vw, 12px)" }} />
 									<Tooltip content={CustomLawsuitTooltip} />
-									<Legend wrapperStyle={{ fontSize: "clamp(11px, 1.1vw, 13px)" }} />
+									<Legend wrapperStyle={{ fontSize: "clamp(10px, 2vw, 13px)" }} />
 									<Line
 										type="monotone"
 										dataKey="cumulativeCount"
@@ -546,7 +585,7 @@ export const Dashboard: React.FC = () => {
 										strokeWidth={2}
 										dot={{ fill: "#52c41a", r: 4 }}
 										activeDot={{ r: 6 }}
-										name="Total Lawsuits"
+										name={t("dashboard.lawsuitProgress.chartLabel")}
 									/>
 								</LineChart>
 							</ResponsiveContainer>

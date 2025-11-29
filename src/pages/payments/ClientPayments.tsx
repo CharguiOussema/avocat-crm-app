@@ -68,16 +68,6 @@ export const ClientPayments: React.FC = () => {
 		});
 	}, [limit, client, navigate]);
 
-	// Clear all filters
-	const clearFilters = useCallback(() => {
-		const searchParams = QueryBuilder.generateSearchParams()
-			.setPage(1)
-			.setLimit(limit).search;
-
-		navigate({
-			search: searchParams,
-		});
-	}, [limit, navigate]);
 
 	// Handle table pagination change
 	const handleTableChange = useCallback(
@@ -202,18 +192,13 @@ export const ClientPayments: React.FC = () => {
 
 			{/* Filters */}
 			<Card className='border-border'>
-				<Row gutter={16} align='middle'>
-					<Col xs={24} sm={12} lg={8}>
+				<Row gutter={[16, 16]} align='middle'>
+					<Col xs={24} sm={12} md={8} lg={5}>
 						<SearchInput
 							value={search}
 							onChange={handleSearchChange}
 							placeholder={t("payments.search.placeholder")}
 						/>
-					</Col>
-					<Col xs={24} sm={24} lg={16}>
-						<Space className='w-full justify-end'>
-							<Button onClick={clearFilters}>{t("payments.filter.clear")}</Button>
-						</Space>
 					</Col>
 				</Row>
 			</Card>

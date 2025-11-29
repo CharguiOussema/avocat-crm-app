@@ -15,7 +15,6 @@ import {
 	message,
 	Row,
 	Col,
-	Checkbox,
 } from "antd";
 import {
 	PlusOutlined,
@@ -178,13 +177,6 @@ export const Users: React.FC = () => {
 		[search, navigate, rolesToUrlParam]
 	);
 
-	// Clear all filters
-	const clearFilters = useCallback(() => {
-		navigate({
-			search: "",
-		});
-		setSelectedUserIds([]);
-	}, [navigate]);
 
 	// Handle user deletion
 	const handleDelete = useCallback(
@@ -269,20 +261,6 @@ export const Users: React.FC = () => {
 		});
 	}, []);
 
-	// Handle select all
-	const handleSelectAll = useCallback(
-		(checked: boolean) => {
-			if (checked && data?.pages) {
-				const allUserIds = data.pages.flatMap((page) =>
-					page.docs.map((user) => user._id)
-				);
-				setSelectedUserIds(allUserIds);
-			} else {
-				setSelectedUserIds([]);
-			}
-		},
-		[data]
-	);
 
 	// Error state
 	if (error) {
@@ -300,7 +278,6 @@ export const Users: React.FC = () => {
 	// Flatten all pages into a single array of users
 	const users = data?.pages.flatMap((page) => page.docs) || [];
 	const totalUsers = data?.pages[0]?.totalDocs || 0;
-	const allSelected = users.length > 0 && selectedUserIds.length === users.length;
 
 	return (
 		<div className='space-y-6 pb-8'>
@@ -338,14 +315,16 @@ export const Users: React.FC = () => {
 			{/* Filters */}
 			<Card className='border-border'>
 				<Row gutter={[16, 16]} align='middle'>
-					<Col xs={24} sm={12} lg={8}>
+					{/* Search Input - 1/5 width */}
+					<Col xs={24} sm={12} md={8} lg={5}>
 						<SearchInput
 							value={search}
 							onChange={handleSearchChange}
 							placeholder={t("users.search.placeholder")}
 						/>
 					</Col>
-					<Col xs={24} sm={12} lg={6}>
+					{/* Role Filter - 1/5 width */}
+					<Col xs={24} sm={12} md={8} lg={5}>
 						<RoleFilter
 							selectedRoles={selectedRoles}
 							availableRoles={getAvailableRoles()}
@@ -353,28 +332,6 @@ export const Users: React.FC = () => {
 							getRoleDisplayName={getRoleDisplayName}
 							t={t}
 						/>
-					</Col>
-					<Col xs={24} sm={24} lg={10}>
-						<div
-							className={cn(
-								"flex flex-wrap items-center gap-3 justify-end",
-								isRTL ? "flex-row-reverse" : "flex-row"
-							)}
-						>
-							{users.length > 0 && (
-								<Checkbox
-									checked={allSelected}
-									indeterminate={
-										selectedUserIds.length > 0 &&
-										selectedUserIds.length < users.length
-									}
-									onChange={(e) => handleSelectAll(e.target.checked)}
-								>
-									{t("users.selectAll")} ({selectedUserIds.length}/{users.length})
-								</Checkbox>
-							)}
-							<Button onClick={clearFilters}>{t("users.filter.clear")}</Button>
-						</div>
 					</Col>
 				</Row>
 			</Card>

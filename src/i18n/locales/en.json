@@ -14,7 +14,60 @@
     "settings": "Settings"
   },
   "dashboard": {
-    "overview": "Overview of your practice management"
+    "overview": "Overview of your law firm's performance and activities",
+    "loading": "Loading dashboard...",
+    "error": {
+      "title": "Error",
+      "description": "Failed to load dashboard data. Please try again later."
+    },
+    "kpi": {
+      "totalClients": "Total Clients",
+      "totalLawsuits": "Total Lawsuits",
+      "totalRevenue": "Total Revenue",
+      "moneyNotPaid": "Money Not Paid",
+      "totalStorage": "Total Storage"
+    },
+    "clientProgress": {
+      "title": "Client Progress (Last 30 Days)",
+      "total": "Total",
+      "noData": "No client data available for the last 30 days",
+      "tooltip": {
+        "newClients": "New Clients",
+        "total": "Total"
+      }
+    },
+    "upcomingEvents": {
+      "title": "Upcoming Events (Top 10)",
+      "events": "Events",
+      "noEvents": "No upcoming events scheduled"
+    },
+    "paymentProgress": {
+      "title": "Payment Progress (Last 30 Days)",
+      "noData": "No payment data available for the last 30 days",
+      "tooltip": {
+        "daily": "Daily",
+        "payments": "Payments",
+        "total": "Total"
+      },
+      "chartLabel": "Total Revenue (TND)"
+    },
+    "lawsuitProgress": {
+      "title": "Lawsuit Progress (Last 30 Days)",
+      "total": "Total",
+      "noData": "No lawsuit data available for the last 30 days",
+      "chartLabel": "Total Lawsuits",
+      "tooltip": {
+        "total": "Total",
+        "totalLawsuits": "lawsuits",
+        "new": "New",
+        "newLawsuits": "lawsuits",
+        "statusBreakdown": "Status Breakdown",
+        "done": "Done",
+        "inProgress": "In Progress",
+        "scheduled": "Scheduled",
+        "cancelled": "Cancelled"
+      }
+    }
   },
   "ui": {
     "menu": "Menu",

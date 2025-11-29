@@ -15,7 +15,6 @@ import {
 	message,
 	Row,
 	Col,
-	Checkbox,
 } from "antd";
 import {
 	PlusOutlined,
@@ -103,13 +102,6 @@ export const Clients: React.FC = () => {
 		[navigate]
 	);
 
-	// Clear all filters
-	const clearFilters = useCallback(() => {
-		navigate({
-			search: "",
-		});
-		setSelectedClientIds([]);
-	}, [navigate]);
 
 	// Handle client deletion
 	const handleDelete = useCallback(
@@ -194,20 +186,6 @@ export const Clients: React.FC = () => {
 		});
 	}, []);
 
-	// Handle select all
-	const handleSelectAll = useCallback(
-		(checked: boolean) => {
-			if (checked && data?.pages) {
-				const allClientIds = data.pages.flatMap((page) =>
-					page.docs.map((client) => client._id)
-				);
-				setSelectedClientIds(allClientIds);
-			} else {
-				setSelectedClientIds([]);
-			}
-		},
-		[data]
-	);
 
 	// Error state
 	if (error) {
@@ -225,7 +203,6 @@ export const Clients: React.FC = () => {
 	// Flatten all pages into a single array of clients
 	const clients = data?.pages.flatMap((page) => page.docs) || [];
 	const totalClients = data?.pages[0]?.totalDocs || 0;
-	const allSelected = clients.length > 0 && selectedClientIds.length === clients.length;
 
 	return (
 		<div className='space-y-6 pb-8'>
@@ -263,34 +240,12 @@ export const Clients: React.FC = () => {
 			{/* Filters */}
 			<Card className='border-border'>
 				<Row gutter={[16, 16]} align='middle'>
-					<Col xs={24} sm={12} lg={8}>
+					<Col xs={24} sm={12} md={8} lg={5}>
 						<SearchInput
 							value={search}
 							onChange={handleSearchChange}
 							placeholder={t("clients.search.placeholder")}
 						/>
-					</Col>
-					<Col xs={24} sm={12} lg={16}>
-						<div
-							className={cn(
-								"flex flex-wrap items-center gap-3 justify-end",
-								isRTL ? "flex-row-reverse" : "flex-row"
-							)}
-						>
-							{clients.length > 0 && (
-								<Checkbox
-									checked={allSelected}
-									indeterminate={
-										selectedClientIds.length > 0 &&
-										selectedClientIds.length < clients.length
-									}
-									onChange={(e) => handleSelectAll(e.target.checked)}
-								>
-									Select All ({selectedClientIds.length}/{clients.length})
-								</Checkbox>
-							)}
-							<Button onClick={clearFilters}>{t("clients.filter.clear")}</Button>
-						</div>
 					</Col>
 				</Row>
 			</Card>

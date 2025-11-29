@@ -7,15 +7,12 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
 	Typography,
-	Button,
 	Card,
 	Alert,
 	Modal,
 	message,
-	Checkbox,
 } from "antd";
 import {
-	DeleteOutlined,
 	ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
@@ -164,11 +161,6 @@ export const EventList: React.FC<EventListProps> = ({ onEdit }) => {
 		[search, lawsuit, client, navigate]
 	);
 
-	// Clear all filters
-	const clearFilters = useCallback(() => {
-		navigate({ search: "" });
-		setSelectedEventIds([]);
-	}, [navigate]);
 
 	// Delete handler
 	const handleDelete = useCallback(
@@ -240,20 +232,6 @@ export const EventList: React.FC<EventListProps> = ({ onEdit }) => {
 		});
 	}, []);
 
-	// Handle select all
-	const handleSelectAll = useCallback(
-		(checked: boolean) => {
-			if (checked && data?.pages) {
-				const allEventIds = data.pages.flatMap((page) =>
-					page.docs.map((event) => event._id)
-				);
-				setSelectedEventIds(allEventIds);
-			} else {
-				setSelectedEventIds([]);
-			}
-		},
-		[data]
-	);
 
 	// Error state
 	if (error) {
@@ -270,7 +248,6 @@ export const EventList: React.FC<EventListProps> = ({ onEdit }) => {
 
 	// Flatten all pages into a single array of events
 	const events = data?.pages.flatMap((page) => page.docs) || [];
-	const allSelected = events.length > 0 && selectedEventIds.length === events.length;
 
 	return (
 		<div className='space-y-4'>
@@ -283,34 +260,7 @@ export const EventList: React.FC<EventListProps> = ({ onEdit }) => {
 				clientsOptions={clientsOptions}
 				onSearchChange={handleSearchChange}
 				onFilterChange={handleFilterChange}
-				onClearFilters={clearFilters}
-			>
-				{/* Select All and Bulk Actions */}
-				<div
-					className={cn(
-						"flex items-center gap-3",
-						isRTL ? "flex-row-reverse" : "flex-row"
-					)}
-				>
-					{events.length > 0 && (
-						<Checkbox
-							checked={allSelected}
-							indeterminate={
-								selectedEventIds.length > 0 &&
-								selectedEventIds.length < events.length
-							}
-							onChange={(e) => handleSelectAll(e.target.checked)}
-						>
-							{t("events.selectAll")} ({selectedEventIds.length}/{events.length})
-						</Checkbox>
-					)}
-					{selectedEventIds.length > 0 && (
-						<Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
-							{t("events.bulk.delete.button", { count: selectedEventIds.length })}
-						</Button>
-					)}
-				</div>
-			</EventFilters>
+			/>
 
 			{/* Events Grid */}
 			<div className='min-h-[400px]'>

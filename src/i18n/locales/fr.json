@@ -14,7 +14,60 @@
     "settings": "Paramètres"
   },
   "dashboard": {
-    "overview": "Aperçu de la gestion de votre cabinet"
+    "overview": "Aperçu de la performance et des activités de votre cabinet d'avocats",
+    "loading": "Chargement du tableau de bord...",
+    "error": {
+      "title": "Erreur",
+      "description": "Échec du chargement des données du tableau de bord. Veuillez réessayer plus tard."
+    },
+    "kpi": {
+      "totalClients": "Total des Clients",
+      "totalLawsuits": "Total des Litiges",
+      "totalRevenue": "Revenu Total",
+      "moneyNotPaid": "Argent Non Payé",
+      "totalStorage": "Stockage Total"
+    },
+    "clientProgress": {
+      "title": "Progression des Clients (30 Derniers Jours)",
+      "total": "Total",
+      "noData": "Aucune donnée client disponible pour les 30 derniers jours",
+      "tooltip": {
+        "newClients": "Nouveaux Clients",
+        "total": "Total"
+      }
+    },
+    "upcomingEvents": {
+      "title": "Événements à Venir (Top 10)",
+      "events": "Événements",
+      "noEvents": "Aucun événement à venir programmé"
+    },
+    "paymentProgress": {
+      "title": "Progression des Paiements (30 Derniers Jours)",
+      "noData": "Aucune donnée de paiement disponible pour les 30 derniers jours",
+      "tooltip": {
+        "daily": "Quotidien",
+        "payments": "Paiements",
+        "total": "Total"
+      },
+      "chartLabel": "Revenu Total (TND)"
+    },
+    "lawsuitProgress": {
+      "title": "Progression des Litiges (30 Derniers Jours)",
+      "total": "Total",
+      "noData": "Aucune donnée de litige disponible pour les 30 derniers jours",
+      "chartLabel": "Total des Litiges",
+      "tooltip": {
+        "total": "Total",
+        "totalLawsuits": "litiges",
+        "new": "Nouveaux",
+        "newLawsuits": "litiges",
+        "statusBreakdown": "Répartition par Statut",
+        "done": "Terminé",
+        "inProgress": "En Cours",
+        "scheduled": "Programmé",
+        "cancelled": "Annulé"
+      }
+    }
   },
   "ui": {
     "menu": "Menu",
