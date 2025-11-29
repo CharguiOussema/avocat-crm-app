@@ -402,6 +402,15 @@
       "superAdmin": "Developer",
       "admin": "Avocat",
       "agent": "Secretary"
+    },
+    "pagination": {
+      "endOfList": "No more users to load"
+    },
+    "empty": {
+      "title": "No users found",
+      "description": "Get started by adding your first user",
+      "search": "No users match your search",
+      "searchDescription": "Try adjusting your search criteria"
     }
   },
   "common": {
@@ -558,7 +567,8 @@
       "update": "Update Lawsuit"
     },
     "pagination": {
-      "showTotal": "{{start}}-{{end}} of {{total}} lawsuits"
+      "showTotal": "{{start}}-{{end}} of {{total}} lawsuits",
+      "endOfList": "No more lawsuits to load"
     }
   },
   "events": {
@@ -672,7 +682,8 @@
       "clickToView": "Click to view details"
     },
     "pagination": {
-      "showTotal": "{{start}}-{{end}} of {{total}} events"
+      "showTotal": "{{start}}-{{end}} of {{total}} events",
+      "endOfList": "No more events to load"
     }
   },
   "settings": {
@@ -978,9 +989,14 @@
     "filesSelected": "{{count}} file(s) selected"
   },
   "payments": {
-    "title": "Payments",
+    "title": "Client Payments",
     "subtitle": "Manage client payments and track progress",
-    "empty": "No payments found",
+    "empty": {
+      "title": "No client payments found",
+      "description": "Get started by creating your first client payment",
+      "search": "No client payments match your search",
+      "searchDescription": "Try adjusting your search criteria"
+    },
     "addClientPayment": {
       "button": "New Client Payment",
       "title": "Create Client Payment",
@@ -992,15 +1008,23 @@
     },
     "detail": {
       "subtitle": "View and manage payments",
+      "backTooltip": "Back to client payments list",
       "information": "Client Payment Information",
-      "paymentsList": "Payments",
+      "paymentInformation": "Payment Information",
+      "financialSummary": "Financial Summary",
+      "paymentsList": "Individual Payments",
       "title": "Title",
       "client": "Client",
       "description": "Description",
       "targetPrice": "Target Price",
       "total": "Total Paid",
-      "progress": "Progress",
-      "createdAt": "Created At"
+      "progress": "Payment Progress",
+      "createdAt": "Created At",
+      "updatedAt": "Last Updated",
+      "createdBy": "Created By",
+      "updatedBy": "Last Updated By",
+      "emptyPayments": "No individual payments yet",
+      "emptyPaymentsDescription": "Start by adding the first payment to this client payment"
     },
     "table": {
       "title": "Title",
@@ -1014,6 +1038,12 @@
       "description": "Description",
       "type": "Payment Type",
       "price": "Amount"
+    },
+    "card": {
+      "viewTooltip": "View payment details",
+      "editTooltip": "Edit client payment",
+      "deleteTooltip": "Delete client payment",
+      "createdBy": "Created by"
     },
     "clientPayments": {
       "tableTitle": "Client Payments"
@@ -1084,6 +1114,16 @@
       "confirm": "Are you sure you want to delete \"{{title}}\"? All associated payments will also be deleted.",
       "success": "\"{{title}}\" has been deleted successfully"
     },
+    "bulk": {
+      "noSelection": "Please select client payments to delete",
+      "delete": {
+        "title": "Delete Multiple Client Payments",
+        "button": "Delete {{count}} Client Payments",
+        "confirm": "Are you sure you want to delete {{count}} client payments? All associated payments will also be deleted. This action cannot be undone.",
+        "success": "{{count}} client payments have been deleted successfully",
+        "error": "Failed to delete selected client payments"
+      }
+    },
     "add": {
       "button": "Add Payment",
       "title": "Add New Payment",
@@ -1103,7 +1143,22 @@
     },
     "error": {
       "title": "Failed to Load Payments",
-      "notFound": "Payment not found"
+      "notFound": "Payment not found or has been deleted"
+    },
+    "pagination": {
+      "endOfList": "No more client payments to load"
+    },
+    "currency": "TND"
+  },
+  "clientPayments": {
+    "delete": {
+      "title": "Delete Client Payment",
+      "confirm": "Are you sure you want to delete \"{{title}}\"?",
+      "success": "\"{{title}}\" has been deleted successfully",
+      "error": "Failed to delete client payment"
+    },
+    "bulk": {
+      "noSelection": "Please select client payments to delete"
     }
   }
 }

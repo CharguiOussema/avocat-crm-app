@@ -1,12 +1,16 @@
-import React, { useCallback } from "react";
+/*
+ * Developer: Claude Code
+ * Company: Avocat Project
+ * Date: 11/29/2025
+ */
+
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
 	Typography,
 	Card,
-	Table,
 	Button,
 	Space,
 	Alert,
-	Spin,
 	Modal,
 	message,
 	Row,
@@ -14,21 +18,22 @@ import {
 } from "antd";
 import {
 	PlusOutlined,
+	DeleteOutlined,
 	ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
-import { useFetchClientPayments } from "../../hooks/useFetchClientPayments";
+import { useInfiniteClientPayments } from "../../hooks/useInfiniteClientPayments";
 import { clientPaymentService } from "../../services/ClientPaymentService";
 import { queryKeys } from "../../services/QueryClientManager";
-import { QueryBuilder } from "../../services/QueryBuilder";
 import { useNavigate } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 import { useApp } from "../../hooks";
 import { cn } from "../../utils/cn";
 import { getErrorMessage, logError } from "../../utils/errorHandling";
-import { useClientPaymentTableColumns } from "./ClientPaymentTableColumns";
 import { SearchInput } from "../../components/common/SearchInput";
+import { ClientPaymentCard } from "./ClientPaymentCard";
+import { ClientPaymentCardSkeleton } from "./ClientPaymentCardSkeleton";
 
 const { Title } = Typography;
 const { confirm } = Modal;
@@ -36,8 +41,6 @@ const { confirm } = Modal;
 interface QueryParams extends Record<string, unknown> {
 	search?: string;
 	client?: string;
-	page?: number;
-	limit?: number;
 }
 
 export const ClientPayments: React.FC = () => {
@@ -45,45 +48,60 @@ export const ClientPayments: React.FC = () => {
 	const { isRTL } = useApp();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
-	const {
-		search = "",
-		client = "",
-		page = 1,
-		limit = 10,
-	} = useQueryParams<QueryParams>();
+	const { search = "", client = "" } = useQueryParams<QueryParams>();
 
-	const { response } = useFetchClientPayments();
-	const { data, error, isLoading, isFetching } = response;
+	const [selectedClientPaymentIds, setSelectedClientPaymentIds] = useState<string[]>([]);
+	const loadMoreRef = useRef<HTMLDivElement>(null);
+
+	// Use infinite scroll hook
+	const {
+		data,
+		error,
+		isLoading,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useInfiniteClientPayments({ search, client, limit: 20 });
+
+	// Intersection Observer for infinite scroll
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const first = entries[0];
+				if (first.isIntersecting && hasNextPage && !isFetchingNextPage) {
+					fetchNextPage();
+				}
+			},
+			{ threshold: 0.1 }
+		);
+
+		const currentRef = loadMoreRef.current;
+		if (currentRef) {
+			observer.observe(currentRef);
+		}
+
+		return () => {
+			if (currentRef) {
+				observer.unobserve(currentRef);
+			}
+		};
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
 	// Handle search input change
 	const handleSearchChange = useCallback((value: string) => {
-		const searchParams = QueryBuilder.generateSearchParams()
-			.setPage(1)
-			.setLimit(limit)
-			.setQueryParam("search", value || undefined)
-			.setQueryParam("client", client || undefined).search;
-
+		const searchParams = new URLSearchParams();
+		if (value) {
+			searchParams.set("search", value);
+		}
+		if (client) {
+			searchParams.set("client", client);
+		}
 		navigate({
-			search: searchParams,
+			search: searchParams.toString(),
 		});
-	}, [limit, client, navigate]);
+		setSelectedClientPaymentIds([]);
+	}, [client, navigate]);
 
-
-	// Handle table pagination change
-	const handleTableChange = useCallback(
-		(pagination: { pageSize?: number; current?: number }) => {
-			const searchParams = QueryBuilder.generateSearchParams()
-				.setLimit(pagination.pageSize || limit)
-				.setPage(pagination.current || page)
-				.setQueryParam("search", search || undefined)
-				.setQueryParam("client", client || undefined).search;
-
-			navigate({
-				search: searchParams,
-			});
-		},
-		[limit, page, search, client, navigate]
-	);
 
 	// Handle client payment deletion
 	const handleDelete = useCallback(
@@ -110,6 +128,38 @@ export const ClientPayments: React.FC = () => {
 		[t, queryClient]
 	);
 
+	// Handle bulk deletion
+	const handleBulkDelete = useCallback(() => {
+		if (selectedClientPaymentIds.length === 0) {
+			message.warning(t("payments.bulk.noSelection"));
+			return;
+		}
+
+		confirm({
+			title: t("payments.bulk.delete.title"),
+			icon: <ExclamationCircleOutlined />,
+			content: t("payments.bulk.delete.confirm", {
+				count: selectedClientPaymentIds.length,
+			}),
+			okText: t("ui.delete"),
+			okType: "danger",
+			cancelText: t("ui.cancel"),
+			onOk: async () => {
+				try {
+					await clientPaymentService.bulkDelete(selectedClientPaymentIds);
+					message.success(
+						t("payments.bulk.delete.success", { count: selectedClientPaymentIds.length })
+					);
+					setSelectedClientPaymentIds([]);
+					queryClient.invalidateQueries(queryKeys.CLIENT_PAYMENTS);
+				} catch (error) {
+					logError(error, "Error bulk deleting client payments");
+					message.error(t("payments.bulk.delete.error"));
+				}
+			},
+		});
+	}, [selectedClientPaymentIds, t, queryClient]);
+
 	// Navigate to add client payment page
 	const handleAddClientPayment = useCallback(() => {
 		navigate("/payments/add");
@@ -131,22 +181,17 @@ export const ClientPayments: React.FC = () => {
 		[navigate]
 	);
 
-	// Table columns configuration using custom hook
-	const columns = useClientPaymentTableColumns({
-		t,
-		onView: handleViewClientPayment,
-		onEdit: handleEditClientPayment,
-		onDelete: handleDelete,
-	});
+	// Handle card selection
+	const handleCardSelect = useCallback((clientPaymentId: string, selected: boolean) => {
+		setSelectedClientPaymentIds((prev) => {
+			if (selected) {
+				return [...prev, clientPaymentId];
+			} else {
+				return prev.filter((id) => id !== clientPaymentId);
+			}
+		});
+	}, []);
 
-	// Loading state
-	if (isLoading) {
-		return (
-			<div className='flex justify-center items-center min-h-[400px]'>
-				<Spin size='large' />
-			</div>
-		);
-	}
 
 	// Error state
 	if (error) {
@@ -161,25 +206,33 @@ export const ClientPayments: React.FC = () => {
 		);
 	}
 
-	const clientPayments = data?.data?.docs || [];
-	const total = data?.data?.totalDocs || 0;
+	// Flatten all pages into a single array of client payments
+	const clientPayments = data?.pages.flatMap((page) => page.data.docs) || [];
+	const totalClientPayments = data?.pages[0]?.data?.totalDocs || 0;
 
 	return (
-		<div className='space-y-6'>
+		<div className='space-y-6 pb-8'>
 			{/* Header */}
 			<div
 				className={cn(
-					"flex items-center justify-between",
-					isRTL ? "flex-row-reverse" : "flex-row"
+					"flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
+					isRTL ? "sm:flex-row-reverse" : "sm:flex-row"
 				)}
 			>
 				<div>
 					<Title level={2} className='!mb-2 text-card-foreground'>
 						{t("payments.title")}
 					</Title>
-					<p className='text-muted-foreground'>{t("payments.subtitle")}</p>
+					<p className='text-muted-foreground'>
+						{t("payments.subtitle")} ({totalClientPayments})
+					</p>
 				</div>
-				<Space>
+				<Space wrap>
+					{selectedClientPaymentIds.length > 0 && (
+						<Button danger icon={<DeleteOutlined />} onClick={handleBulkDelete}>
+							{t("payments.bulk.delete.button", { count: selectedClientPaymentIds.length })}
+						</Button>
+					)}
 					<Button
 						type='primary'
 						icon={<PlusOutlined />}
@@ -203,30 +256,74 @@ export const ClientPayments: React.FC = () => {
 				</Row>
 			</Card>
 
-			{/* Client Payments Table */}
-			<Card className='border-border' title={t("payments.clientPayments.tableTitle")}>
-				<Table
-					columns={columns}
-					dataSource={clientPayments}
-					rowKey='_id'
-					pagination={{
-						current: page,
-						pageSize: limit,
-						total,
-						showSizeChanger: true,
-						showQuickJumper: true,
-						showTotal: (total, range) =>
-							t("common.pagination.total", {
-								start: range[0],
-								end: range[1],
-								total,
-							}),
-					}}
-					onChange={handleTableChange}
-					loading={isFetching}
-					className='client-payments-table'
-				/>
-			</Card>
+			{/* Client Payments Grid */}
+			<div className='min-h-[400px]'>
+				{isLoading ? (
+					// Initial loading skeletons
+					<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+						{Array.from({ length: 8 }).map((_, index) => (
+							<ClientPaymentCardSkeleton key={index} />
+						))}
+					</div>
+				) : clientPayments.length === 0 ? (
+					// Empty state
+					<Card className='border-border'>
+						<div className='flex flex-col items-center justify-center py-12 text-center'>
+							<div className='text-6xl mb-4 text-muted-foreground'>💳</div>
+							<Title level={4} className='!mb-2 text-card-foreground'>
+								{search || client ? t("payments.empty.search") : t("payments.empty.title")}
+							</Title>
+							<p className='text-muted-foreground mb-4'>
+								{search || client
+									? t("payments.empty.searchDescription")
+									: t("payments.empty.description")}
+							</p>
+							{!search && !client && (
+								<Button
+									type='primary'
+									icon={<PlusOutlined />}
+									onClick={handleAddClientPayment}
+								>
+									{t("payments.addClientPayment.button")}
+								</Button>
+							)}
+						</div>
+					</Card>
+				) : (
+					<>
+						{/* Responsive Grid */}
+						<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+							{clientPayments.map((clientPayment) => (
+								<ClientPaymentCard
+									key={clientPayment._id}
+									clientPayment={clientPayment}
+									onView={handleViewClientPayment}
+									onEdit={handleEditClientPayment}
+									onDelete={handleDelete}
+									selected={selectedClientPaymentIds.includes(clientPayment._id)}
+									onSelect={handleCardSelect}
+								/>
+							))}
+						</div>
+
+						{/* Load more trigger */}
+						<div ref={loadMoreRef} className='mt-8 text-center'>
+							{isFetchingNextPage && (
+								<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4'>
+									{Array.from({ length: 4 }).map((_, index) => (
+										<ClientPaymentCardSkeleton key={`loading-${index}`} />
+									))}
+								</div>
+							)}
+							{!hasNextPage && clientPayments.length > 0 && (
+								<p className='text-muted-foreground py-4'>
+									{t("payments.pagination.endOfList")}
+								</p>
+							)}
+						</div>
+					</>
+				)}
+			</div>
 		</div>
 	);
 };
