@@ -1,45 +1,45 @@
 // Configuration types
 export type ConfigType = {
-	API_URL: string;
-	CRM_URL: string;
+  API_URL: string;
+  CRM_URL: string;
 };
 
 // Environment-specific configurations
 const DEV_CONFIG: ConfigType = {
-	API_URL: "http://localhost:3001",
-	CRM_URL: "http://localhost:5173",
+  API_URL: "http://localhost:3001",
+  CRM_URL: "http://192.168.0.5:5173",
 };
 
 const PRODUCTION_CONFIG: ConfigType = {
-	API_URL: "http://localhost:3005",
-	CRM_URL: "http://localhost:5173",
+  API_URL: "http://localhost:3005",
+  CRM_URL: "http://192.168.1.107:5173",
 };
 
 const TEST_CONFIG: ConfigType = {
-	API_URL: "http://localhost:3005",
-	CRM_URL: "http://localhost:5173",
+  API_URL: "http://localhost:3005",
+  CRM_URL: "http://localhost:5173",
 };
 
 // Get current environment
 const getEnvironment = (): "development" | "production" | "test" => {
-	if (import.meta.env.MODE === "test") return "test";
-	if (import.meta.env.MODE === "production") return "production";
-	return "development";
+  if (import.meta.env.MODE === "test") return "test";
+  if (import.meta.env.MODE === "production") return "production";
+  return "development";
 };
 
 // Get configuration based on environment
 const getConfig = (): ConfigType => {
-	const env = getEnvironment();
+  const env = getEnvironment();
 
-	switch (env) {
-		case "production":
-			return PRODUCTION_CONFIG;
-		case "test":
-			return TEST_CONFIG;
-		case "development":
-		default:
-			return DEV_CONFIG;
-	}
+  switch (env) {
+    case "production":
+      return PRODUCTION_CONFIG;
+    case "test":
+      return TEST_CONFIG;
+    case "development":
+    default:
+      return DEV_CONFIG;
+  }
 };
 
 // Export the configuration

@@ -1176,5 +1176,32 @@
     "bulk": {
       "noSelection": "Veuillez sélectionner des paiements clients à supprimer"
     }
+  },
+  "pwa": {
+    "offline": {
+      "message": "Vous êtes hors ligne",
+      "syncMessage": "Les modifications seront synchronisées lors de la reconnexion",
+      "backOnline": "Vous êtes de nouveau en ligne !"
+    },
+    "install": {
+      "title": "Installer Avocat CRM",
+      "description": "Installez notre application pour un accès rapide, un support hors ligne et une meilleure expérience !",
+      "button": "Installer",
+      "notNow": "Pas maintenant",
+      "installing": "Installation..."
+    },
+    "update": {
+      "title": "Mise à Jour Disponible",
+      "description": "Une nouvelle version d'Avocat CRM est prête. Mettez à jour maintenant pour obtenir les dernières fonctionnalités et améliorations.",
+      "button": "Mettre à Jour"
+    },
+    "notification": {
+      "title": "Restez Informé",
+      "description": "Activez les notifications pour recevoir des mises à jour importantes sur les rendez-vous, les dates d'audience et les messages des clients.",
+      "button": "Activer",
+      "later": "Plus tard",
+      "requesting": "En cours...",
+      "note": "Vous pouvez modifier cela dans les paramètres de votre navigateur à tout moment."
+    }
   }
 }

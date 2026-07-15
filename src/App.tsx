@@ -7,6 +7,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ProtectedModuleRoute } from "./components/ProtectedModuleRoute";
+import { PWAProvider } from "./components/PWAProvider";
 import { Login } from "./pages/auth";
 import { Dashboard } from "./pages/dashboard";
 import { Clients, ClientDetails, AddEditClient } from "./pages/clients";
@@ -77,25 +78,26 @@ const AppContent = () => {
 			locale={language === "ar" ? undefined : undefined}
 		>
 			<AntdApp>
-				<Router>
-					<Routes>
-						{/* Public route - login page */}
-						<Route
-							path='/login'
-							element={
-								<ProtectedRoute requireAuth={false}>
-									<Login />
-								</ProtectedRoute>
-							}
-						/>
+				<PWAProvider>
+					<Router>
+						<Routes>
+							{/* Public route - login page */}
+							<Route
+								path='/login'
+								element={
+									<ProtectedRoute requireAuth={false}>
+										<Login />
+									</ProtectedRoute>
+								}
+							/>
 
-						{/* Protected routes - require authentication */}
-						<Route
-							path='/*'
-							element={
-								<ProtectedRoute>
-									<Layout>
-										<Routes>
+							{/* Protected routes - require authentication */}
+							<Route
+								path='/*'
+								element={
+									<ProtectedRoute>
+										<Layout>
+											<Routes>
 											{/* Dashboard */}
 											<Route
 												path='/'
@@ -286,6 +288,7 @@ const AppContent = () => {
 						/>
 					</Routes>
 				</Router>
+				</PWAProvider>
 			</AntdApp>
 		</ConfigProvider>
 	);

@@ -1175,5 +1175,32 @@
     "bulk": {
       "noSelection": "Please select client payments to delete"
     }
+  },
+  "pwa": {
+    "offline": {
+      "message": "You're offline",
+      "syncMessage": "Changes will sync when reconnected",
+      "backOnline": "You're back online!"
+    },
+    "install": {
+      "title": "Install Avocat CRM",
+      "description": "Install our app for quick access, offline support, and a better experience!",
+      "button": "Install",
+      "notNow": "Not now",
+      "installing": "Installing..."
+    },
+    "update": {
+      "title": "Update Available",
+      "description": "A new version of Avocat CRM is ready. Update now to get the latest features and improvements.",
+      "button": "Update Now"
+    },
+    "notification": {
+      "title": "Stay Updated",
+      "description": "Enable notifications to receive important updates about appointments, court dates, and client messages.",
+      "button": "Enable",
+      "later": "Later",
+      "requesting": "Requesting...",
+      "note": "You can change this in your browser settings anytime."
+    }
   }
 }
